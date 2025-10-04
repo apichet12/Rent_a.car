@@ -1,16 +1,19 @@
-// server.js
+require('dotenv').config();
 const express = require('express');
 const mysql = require('mysql');
 const cors = require('cors');
+const path = require('path');
+
 const app = express();
 
 app.use(cors());
 app.use(express.json());
 
+// MySQL connection
 const db = mysql.createConnection({
   host: 'localhost',
-  user: 'root',        // ถ้าไม่มี password ให้ใส่ '' 
-  password: '',         // root ของ XAMPP
+  user: 'root',
+  password: '',
   database: 'carrental'
 });
 
@@ -19,7 +22,25 @@ db.connect(err => {
   else console.log('DB connected');
 });
 
-// Login API
+// API: Get all cars
+app.get('/api/cars', (req, res) => {
+  db.query('SELECT * FROM cars', (err, results) => {
+    if(err) return res.status(500).json({ error: 'DB error' });
+    res.json(results);
+  });
+});
+
+// API: Get car by ID
+app.get('/api/cars/:id', (req, res) => {
+  const id = req.params.id;
+  db.query('SELECT * FROM cars WHERE id=?', [id], (err, results) => {
+    if(err) return res.status(500).json({ error: 'DB error' });
+    if(results.length === 0) return res.status(404).json({ message: 'Car not found' });
+    res.json(results[0]);
+  });
+});
+
+// API: Login
 app.post('/api/login', (req, res) => {
   const { username, password } = req.body;
   db.query('SELECT * FROM users WHERE username=? AND password=?', [username, password], (err, results) => {
@@ -29,4 +50,13 @@ app.post('/api/login', (req, res) => {
   });
 });
 
-app.listen(5000, () => console.log('Server running on port 5000'));
+// Serve React build
+app.use(express.static(path.join(__dirname, 'build')));
+
+// All other routes => React SPA
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'build', 'index.html'));
+});
+
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

@@ -1,12 +1,39 @@
-import React, { useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import carsData from '../data/cars';
 
 const CarDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const car = useMemo(() => carsData.find(c => String(c.id) === String(id)), [id]);
-  if (!car) return <div style={{ padding: 24 }}>รถไม่พบ (Car not found)</div>;
+  const [car, setCar] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchCar = async () => {
+      try {
+        const res = await fetch(`https://rentacar-0kj9.onrender.com/cars/${id}`);
+        if (!res.ok) throw new Error('รถไม่พบ (Car not found)');
+        const data = await res.json();
+        setCar(data);
+      } catch (err) {
+        console.warn('Backend ไม่ตอบสนอง, ใช้ mock data แทน');
+        const fallbackCar = carsData.find(c => String(c.id) === String(id));
+        if (fallbackCar) {
+          setCar({ ...fallbackCar, available: Math.random() > 0.3 }); // เพิ่มสถานะ available แบบ random
+        } else {
+          setError('รถไม่พบ');
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchCar();
+  }, [id]);
+
+  if (loading) return <div style={{ padding: 24 }}>กำลังโหลดข้อมูล...</div>;
+  if (error) return <div style={{ padding: 24 }}>{error}</div>;
+  if (!car) return <div style={{ padding: 24 }}>รถไม่พบ</div>;
 
   return (
     <div style={{ maxWidth: 1000, margin: '2rem auto', padding: 20 }}>
@@ -35,14 +62,18 @@ const CarDetail = () => {
           <div style={{ fontSize: 14, color: '#6b7280' }}>ราคา/วัน</div>
           <div style={{ fontSize: 22, fontWeight: 800, color: '#06b6d4' }}>{car.price.toLocaleString()} ฿</div>
           <div style={{ marginTop: 12 }}>
-            <button onClick={() => navigate('/booking', { state: { car } })} style={{ width: '100%', padding: 12, borderRadius: 8, border: 'none', background: 'linear-gradient(90deg,#06b6d4,#4f46e5)', color: '#fff', fontWeight: 800 }}>
-              จองรถ
+            <button
+              disabled={!car.available}
+              onClick={() => navigate('/booking', { state: { car } })}
+              style={{ width: '100%', padding: 12, borderRadius: 8, border: 'none', background: car.available ? 'linear-gradient(90deg,#06b6d4,#4f46e5)' : '#ddd', color: car.available ? '#fff' : '#888', fontWeight: 800 }}
+            >
+              {car.available ? 'จองรถ' : 'ไม่ว่าง'}
             </button>
             <button onClick={() => navigate('/carlist')} style={{ width: '100%', padding: 10, borderRadius: 8, border: '1px solid #e6e9f2', background: '#fff', color: '#374151', marginTop: 8 }}>
               กลับไปยังรายการ
             </button>
           </div>
-          <div style={{ marginTop: 16, color: '#6b7280' }}>หมายเหตุ: สถานะการว่างเป็นการจำลองในฝั่งไคลเอนต์</div>
+          <div style={{ marginTop: 16, color: '#6b7280' }}>หมายเหตุ: สถานะการว่างมาจาก backend หรือ mock data</div>
         </aside>
       </div>
 

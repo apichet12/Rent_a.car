@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import carsData from '../data/cars';
 
 const CarList = () => {
-  const [selected, setSelected] = useState(null);
   const [cars, setCars] = useState([]);
+  const [selected, setSelected] = useState(null);
   const [favorites, setFavorites] = useState({});
   const navigate = useNavigate();
+
+  // Filters
   const [q, setQ] = useState('');
   const [minPrice, setMinPrice] = useState('');
   const [maxPrice, setMaxPrice] = useState('');
@@ -15,31 +16,35 @@ const CarList = () => {
   const [onlyAvailable, setOnlyAvailable] = useState(false);
   const [sortBy, setSortBy] = useState('recommended');
 
-  const toggleFavorite = (id) => {
-    setFavorites(prev => ({ ...prev, [id]: !prev[id] }));
-  };
-
+  // Fetch cars from backend
   useEffect(() => {
-    try {
-      const stored = localStorage.getItem('cars_availability');
-      if (stored) {
-        const map = JSON.parse(stored);
-        setCars(carsData.map(c => ({ ...c, available: map[c.id] !== undefined ? map[c.id] : true })));
-      } else {
-        const initial = carsData.map(c => ({ ...c, available: Math.random() > 0.3 }));
-        setCars(initial);
-        const map = {};
-        initial.forEach(x => (map[x.id] = x.available));
-        localStorage.setItem('cars_availability', JSON.stringify(map));
+    const fetchCars = async () => {
+      try {
+        const res = await fetch('/api/cars');
+        const data = await res.json();
+        setCars(data);
+
+        // Load favorites from localStorage
+        const storedFav = JSON.parse(localStorage.getItem('cars_favorites') || '{}');
+        setFavorites(storedFav);
+      } catch (err) {
+        console.error('Cannot fetch cars:', err);
       }
-    } catch (e) {
-      setCars(carsData.map(c => ({ ...c, available: Math.random() > 0.3 })));
-    }
+    };
+    fetchCars();
   }, []);
 
+  // Toggle favorite
+  const toggleFavorite = (id) => {
+    const updated = { ...favorites, [id]: !favorites[id] };
+    setFavorites(updated);
+    localStorage.setItem('cars_favorites', JSON.stringify(updated));
+  };
+
+  // Filter and sort cars
   const filteredCars = useMemo(() => {
-    let list = cars.slice();
-    if (q) list = list.filter(c => c.name.toLowerCase().includes(q.toLowerCase()) || c.desc.toLowerCase().includes(q.toLowerCase()));
+    let list = [...cars];
+    if (q) list = list.filter(c => c.name.toLowerCase().includes(q.toLowerCase()) || (c.desc?.toLowerCase()?.includes(q.toLowerCase())));
     if (minPrice) list = list.filter(c => c.price >= Number(minPrice));
     if (maxPrice) list = list.filter(c => c.price <= Number(maxPrice));
     if (seatsFilter) list = list.filter(c => String(c.seats) === String(seatsFilter));
@@ -52,11 +57,11 @@ const CarList = () => {
   }, [cars, q, minPrice, maxPrice, seatsFilter, fuelFilter, onlyAvailable, sortBy]);
 
   return (
-    <div style={{padding:'2rem', maxWidth: '1200px', margin: '0 auto'}}>
-      <h2 style={{fontSize:'2rem', fontWeight:700, color:'#0f172a', textAlign:'center'}}>เลือกรถ / Select Car</h2>
+    <div style={{padding:'2rem', maxWidth:'1200px', margin:'0 auto'}}>
+      <h2 style={{textAlign:'center'}}>เลือกรถ / Select Car</h2>
 
       {/* Filters */}
-      <div className="filters" style={{display:'flex',gap:12,flexWrap:'wrap',alignItems:'center',marginBottom:18}}>
+      <div className="filters" style={{display:'flex', flexWrap:'wrap', gap:12, marginBottom:20}}>
         <input placeholder="ค้นหาชื่อหรือคำอธิบาย" value={q} onChange={e=>setQ(e.target.value)} />
         <input placeholder="ราคาต่ำสุด" value={minPrice} onChange={e=>setMinPrice(e.target.value)} />
         <input placeholder="ราคาสูงสุด" value={maxPrice} onChange={e=>setMaxPrice(e.target.value)} />
@@ -84,27 +89,18 @@ const CarList = () => {
         <button onClick={()=>{setQ(''); setMinPrice(''); setMaxPrice(''); setSeatsFilter(''); setFuelFilter(''); setOnlyAvailable(false); setSortBy('recommended');}}>เคลียร์</button>
       </div>
 
-      {/* Car Cards */}
-      <div className="car-grid">
+      {/* Car Grid */}
+      <div className="car-grid" style={{display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(260px,1fr))', gap:'20px'}}>
         {filteredCars.map(car => (
-          <div key={car.id} className="car-card">
-            <div className="car-image">
-              <img src={car.image} alt={car.name} onClick={()=>setSelected(car)} />
-              <span className={car.available ? 'badge-available' : 'badge-unavailable'}>
-                {car.available?'ว่าง':'ไม่ว่าง'}
-              </span>
-            </div>
+          <div key={car.id} className="car-card" style={{borderRadius:'12px', boxShadow:'0 4px 12px rgba(0,0,0,0.1)', background:'#fff', display:'flex', flexDirection:'column', padding:12}}>
+            <img src={car.image} alt={car.name} style={{width:'100%', height:160, objectFit:'cover', borderRadius:8, cursor:'pointer'}} onClick={()=>setSelected(car)} />
             <h3 onClick={()=>setSelected(car)}>{car.name}</h3>
-            <span>{car.desc}</span>
+            <div>{car.desc}</div>
             <div>ปี {car.year} | {car.seats} ที่นั่ง | {car.fuel}</div>
-            <ul>{car.features.map((f,i)=>(<li key={i}>• {f}</li>))}</ul>
-            <p>ราคา/วัน: {car.price.toLocaleString()} บาท</p>
-            <div className="car-actions">
-              <button disabled={!car.available} onClick={()=>{ if(car.available) navigate('/booking',{state:{car}}) }}>จอง / Book</button>
-              <button
-                style={{color: favorites[car.id] ? 'red' : '#fff'}}
-                onClick={()=>toggleFavorite(car.id)}
-              >❤</button>
+            <p>ราคา/วัน: {car.price?.toLocaleString()} บาท</p>
+            <div style={{display:'flex', gap:8}}>
+              <button disabled={!car.available} onClick={()=>navigate('/booking',{state:{car}})} style={{flex:1}}>{car.available?'จอง / Book':'ไม่ว่าง'}</button>
+              <button onClick={()=>toggleFavorite(car.id)} style={{color:favorites[car.id]?'red':'#000'}}>❤</button>
             </div>
           </div>
         ))}
@@ -112,74 +108,18 @@ const CarList = () => {
 
       {/* Modal */}
       {selected && (
-        <div className="car-modal-backdrop" onClick={()=>setSelected(null)}>
-          <div className="car-modal" onClick={e=>e.stopPropagation()}>
-            <img src={selected.image} alt={selected.name} />
+        <div style={{position:'fixed',top:0,left:0,width:'100vw',height:'100vh',background:'rgba(0,0,0,0.3)',display:'flex',alignItems:'center',justifyContent:'center',zIndex:99}} onClick={()=>setSelected(null)}>
+          <div style={{background:'#fff', padding:20, borderRadius:12, maxWidth:500, width:'90%'}} onClick={e=>e.stopPropagation()}>
+            <img src={selected.image} alt={selected.name} style={{width:'100%', height:200, objectFit:'cover', borderRadius:8}} />
             <h2>{selected.name}</h2>
-            <span>{selected.desc}</span>
+            <p>{selected.desc}</p>
             <div>ปี {selected.year} | {selected.seats} ที่นั่ง | {selected.fuel}</div>
-            <ul>{selected.features.map((f,i)=>(<li key={i}>• {f}</li>))}</ul>
-            <p>ราคา/วัน: {selected.price.toLocaleString()} บาท</p>
-            <button onClick={()=>{navigate('/booking',{state:{car:selected}});setSelected(null);}}>จองรถ</button>
-            <button className="close-modal" onClick={()=>setSelected(null)}>✕</button>
+            <p>ราคา/วัน: {selected.price?.toLocaleString()} บาท</p>
+            <button onClick={()=>{navigate('/booking',{state:{car:selected}}); setSelected(null);}}>จองรถ</button>
+            <button onClick={()=>setSelected(null)} style={{marginLeft:8}}>✕ ปิด</button>
           </div>
         </div>
       )}
-
-      {/* Responsive CSS */}
-      <style>
-        {`
-        .filters input, .filters select, .filters button, .filters label {
-          padding:10px;
-          border-radius:8px;
-          border:1px solid #e6eefc;
-          min-width:120px;
-        }
-        .car-grid {
-          display:grid;
-          grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
-          gap:20px;
-        }
-        .car-card {
-          border-radius:16px;
-          overflow:hidden;
-          background:#fff;
-          box-shadow:0 8px 20px rgba(0,0,0,0.08);
-          transition:transform 0.3s;
-          display:flex;
-          flex-direction:column;
-          align-items:center;
-          height:100%;
-        }
-        .car-card:hover { transform:translateY(-5px); }
-        .car-image { position:relative; width:100%; }
-        .car-image img { width:100%; height:160px; object-fit:cover; cursor:pointer; border-radius:12px 12px 0 0; }
-        .badge-available { position:absolute; top:10px; left:10px; padding:4px 8px; border-radius:8px; font-size:0.8rem; font-weight:bold; background:linear-gradient(90deg,#22c55e,#16a34a); color:#fff; }
-        .badge-unavailable { position:absolute; top:10px; left:10px; padding:4px 8px; border-radius:8px; font-size:0.8rem; font-weight:bold; background:linear-gradient(90deg,#ef4444,#b91c1c); color:#fff; }
-
-        .car-actions { display:flex; gap:8px; width:100%; padding:8px; margin-top:auto; }
-        .car-actions button { flex:1; padding:10px; border:none; border-radius:10px; font-weight:bold; cursor:pointer; transition:0.3s; }
-        .car-actions button:disabled { background:#ddd; cursor:not-allowed; }
-        .car-actions button:not(:disabled):not([style*="color:red"]) { background:linear-gradient(90deg,#06b6d4,#4f46e5); color:#fff; }
-
-        .car-modal-backdrop { position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.35); display:flex; align-items:center; justify-content:center; z-index:99; }
-        .car-modal { background:#fff; border-radius:16px; padding:2rem; min-width:320px; max-width:500px; box-shadow:0 8px 30px rgba(0,0,0,0.25); position:relative; }
-        .car-modal img { width:100%; height:200px; object-fit:cover; border-radius:12px; margin-bottom:12px; }
-        .car-modal .close-modal { position:absolute; top:12px; right:12px; padding:4px 12px; background:#eee; border:none; border-radius:8px; cursor:pointer; font-weight:bold; }
-
-        @media (max-width: 768px) {
-          .filters { flex-direction:column; align-items:stretch; gap:8px; }
-          .filters input, .filters select, .filters button, .filters label { width:100%; }
-          .car-grid { grid-template-columns:1fr; gap:12px; }
-          .car-card img { height:200px; }
-        }
-        @media (max-width: 480px) {
-          .car-modal { width:95vw; padding:1rem; border-radius:12px; }
-          .car-modal img { height:180px; }
-          .car-modal button { font-size:0.9rem; padding:10px; }
-        }
-        `}
-      </style>
     </div>
   );
 };

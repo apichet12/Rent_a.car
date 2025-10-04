@@ -1,128 +1,84 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 const Booking = () => {
   const { state } = useLocation();
   const navigate = useNavigate();
-  const preCar = state?.car || null;
-  const [form, setForm] = useState({
-    car: preCar ? preCar.name : '',
-    date: '',
-    name: '',
-    phone: ''
-  });
-  const [acceptTerms, setAcceptTerms] = useState(false);
+  const car = state?.car;
 
-  useEffect(() => {
-    if(preCar) setForm(f => ({ ...f, car: preCar.name }));
-  }, [preCar]);
+  const [name, setName] = useState('');
+  const [phone, setPhone] = useState('');
+  const [date, setDate] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState('');
 
-  const handleChange = e => setForm({ ...form, [e.target.name]: e.target.value });
+  if (!car) {
+    return (
+      <div style={{padding:'2rem'}}>
+        <h2>ไม่พบข้อมูลรถ</h2>
+        <button onClick={()=>navigate('/')}>กลับไปหน้ารถ</button>
+      </div>
+    );
+  }
 
-  const handleSubmit = e => {
-    e.preventDefault();
-    if (!acceptTerms) return alert("กรุณายอมรับข้อกำหนดก่อนดำเนินการ");
+  const handleBooking = async () => {
+    if (!name || !phone || !date) {
+      setMessage('กรุณากรอกข้อมูลให้ครบถ้วน');
+      return;
+    }
+    setLoading(true);
+    setMessage('');
+
     try {
-      const bookings = JSON.parse(localStorage.getItem('bookings') || '[]');
-      bookings.push({ ...form, carId: preCar?.id || null, createdAt: new Date().toISOString() });
-      localStorage.setItem('bookings', JSON.stringify(bookings));
-      const map = JSON.parse(localStorage.getItem('cars_availability') || '{}');
-      if(preCar) map[preCar.id] = false;
-      localStorage.setItem('cars_availability', JSON.stringify(map));
-    } catch (err) { console.log(err) }
-    alert('จองรถสำเร็จ!');
-    navigate('/carlist');
+      // เรียก API อัปเดตสถานะรถเป็นไม่ว่าง
+      const res = await fetch(`https://rentacar-0kj9.onrender.com/book/${car.id}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, phone, date })
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        // อัปเดต localStorage
+        const stored = JSON.parse(localStorage.getItem('cars_availability') || '{}');
+        stored[car.id] = false;
+        localStorage.setItem('cars_availability', JSON.stringify(stored));
+
+        setMessage('จองรถสำเร็จ!');
+        setTimeout(()=>navigate('/'), 2000);
+      } else {
+        setMessage(data.error || 'เกิดข้อผิดพลาดในการจอง');
+      }
+    } catch (err) {
+      console.error(err);
+      setMessage('เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <div style={{padding:'2rem', maxWidth:700, margin:'auto', fontFamily:'sans-serif'}}>
-      <h2 style={{textAlign:'center', marginBottom:20}}>จองรถ / Booking</h2>
-
-      {/* Car Info Card */}
-      {preCar && (
-        <div style={{
-          display:'flex', gap:16, alignItems:'center',
-          background:'#fff', padding:16, borderRadius:12, boxShadow:'0 8px 24px rgba(0,0,0,0.08)', marginBottom:24
-        }}>
-          <img src={preCar.image} alt={preCar.name} style={{width:120, height:80, objectFit:'cover', borderRadius:8}}/>
-          <div>
-            <div style={{fontWeight:700, fontSize:16}}>{preCar.name}</div>
-            <div style={{fontSize:13, color:'#6b7280'}}>ราคา: {preCar.price.toLocaleString()} ฿/วัน • ปี {preCar.year}</div>
-          </div>
-        </div>
-      )}
-
-      {/* Booking Form Card */}
-      <form onSubmit={handleSubmit} style={{background:'#fff', padding:20, borderRadius:12, boxShadow:'0 8px 24px rgba(0,0,0,0.08)'}}>
-        <div style={{marginBottom:12}}>
-          <label style={{display:'block', fontWeight:600, marginBottom:4}}>ชื่อรถ / Car</label>
-          <input name="car" value={form.car} onChange={handleChange} required
-            style={{width:'100%', padding:10, borderRadius:8, border:'1px solid #cbd5e1'}}/>
-        </div>
-        <div style={{marginBottom:12}}>
-          <label style={{display:'block', fontWeight:600, marginBottom:4}}>วันที่จอง / Date</label>
-          <input type="date" name="date" value={form.date} onChange={handleChange} required
-            style={{width:'100%', padding:10, borderRadius:8, border:'1px solid #cbd5e1'}}/>
-        </div>
-        <div style={{marginBottom:12}}>
-          <label style={{display:'block', fontWeight:600, marginBottom:4}}>ชื่อผู้จอง / Name</label>
-          <input name="name" value={form.name} onChange={handleChange} required
-            style={{width:'100%', padding:10, borderRadius:8, border:'1px solid #cbd5e1'}}/>
-        </div>
-        <div style={{marginBottom:12}}>
-          <label style={{display:'block', fontWeight:600, marginBottom:4}}>เบอร์โทร / Phone</label>
-          <input name="phone" value={form.phone} onChange={handleChange} required
-            style={{width:'100%', padding:10, borderRadius:8, border:'1px solid #cbd5e1'}}/>
-        </div>
-
-        <label style={{display:'flex', alignItems:'center', gap:8, marginBottom:16}}>
-          <input type="checkbox" checked={acceptTerms} onChange={e=>setAcceptTerms(e.target.checked)} />
-          ฉันยอมรับข้อกำหนดและเงื่อนไข
-        </label>
-
-        <button type="submit"
-          style={{
-            width:'100%',
-            padding:14,
-            background: acceptTerms ? 'linear-gradient(90deg,#06b6d4,#4f46e5)' : '#cbd5e1',
-            color:'#fff',
-            fontWeight:600,
-            border:'none',
-            borderRadius:10,
-            cursor: acceptTerms ? 'pointer' : 'not-allowed'
-          }}>
-          จองรถ / Book Now
-        </button>
-      </form>
-
-      {/* Existing Bookings */}
-      <div style={{marginTop:32}}>
-        <h3>รายการจองของคุณ (จำลอง)</h3>
-        <BookingList />
+    <div style={{padding:'2rem', maxWidth:'600px', margin:'0 auto'}}>
+      <h2>จองรถ / Booking</h2>
+      <div style={{marginBottom:'1rem'}}>
+        <img src={car.image} alt={car.name} style={{width:'100%', borderRadius:'12px', marginBottom:'12px'}} />
+        <h3>{car.name}</h3>
+        <div>ปี {car.year} | {car.seats} ที่นั่ง | {car.fuel}</div>
+        <p>ราคา/วัน: {car.price.toLocaleString()} บาท</p>
       </div>
-    </div>
-  );
-};
 
-const BookingList = () => {
-  const [list, setList] = useState([]);
-  useEffect(() => {
-    try { setList(JSON.parse(localStorage.getItem('bookings')||'[]')); }
-    catch(e){ setList([]) }
-  }, []);
+      <div style={{display:'flex', flexDirection:'column', gap:'12px'}}>
+        <input placeholder="ชื่อ-นามสกุล" value={name} onChange={e=>setName(e.target.value)} />
+        <input placeholder="เบอร์โทรศัพท์" value={phone} onChange={e=>setPhone(e.target.value)} />
+        <input type="date" value={date} onChange={e=>setDate(e.target.value)} />
+        <button onClick={handleBooking} disabled={loading} style={{padding:'10px', borderRadius:'8px', background:'linear-gradient(90deg,#06b6d4,#4f46e5)', color:'#fff', fontWeight:'bold', cursor:'pointer'}}>
+          {loading ? 'กำลังจอง...' : 'จองรถ'}
+        </button>
+        {message && <p>{message}</p>}
+      </div>
 
-  if(!list.length) return <div style={{color:'#6b7280', marginTop:12}}>ยังไม่มีการจอง</div>;
-
-  return (
-    <div style={{display:'grid', gap:12, marginTop:12}}>
-      {list.map((b,i) => (
-        <div key={i} style={{background:'#fff', padding:16, borderRadius:12, boxShadow:'0 8px 20px rgba(0,0,0,0.06)'}}>
-          <div style={{fontWeight:700}}>{b.car || 'รถไม่ทราบชื่อ'}</div>
-          <div style={{fontSize:13, color:'#6b7280'}}>
-            วันที่: {b.date} • ผู้จอง: {b.name} • โทร: {b.phone}
-          </div>
-        </div>
-      ))}
+      <button onClick={()=>navigate('/')} style={{marginTop:'20px'}}>กลับไปหน้ารถ</button>
     </div>
   );
 };
