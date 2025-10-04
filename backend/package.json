@@ -1,7 +1,7 @@
 {
   "name": "backend",
   "version": "1.0.0",
-  "description": "เช่ารถกับแคทตี้ Backend API",
+  "description": "- ใช้ Node.js + Express\n- เชื่อมต่อ MySQL\n- รองรับ JWT Auth (Admin/User)\n- API: จัดการรถ, การจอง, รายงาน, อัปโหลด/ตรวจสอบเอกสาร, แจ้งเตือน\n- รองรับ S3 สำหรับไฟล์",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
