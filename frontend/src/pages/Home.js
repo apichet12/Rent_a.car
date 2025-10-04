@@ -54,12 +54,8 @@ function CertificateCard({ cert }) {
           objectFit: 'cover',
         }}
       />
-      <h3 style={{ color: '#4f46e5', margin: '2.2rem 0 0.25rem 0' }}>
-        {cert.name}
-      </h3>
-      <p style={{ color: '#555', fontSize: 14, padding: '0 0.8rem' }}>
-        {cert.desc}
-      </p>
+      <h3 style={{ color: '#4f46e5', margin: '2.2rem 0 0.25rem 0' }}>{cert.name}</h3>
+      <p style={{ color: '#555', fontSize: 14, padding: '0 0.8rem' }}>{cert.desc}</p>
     </div>
   );
 }
@@ -107,7 +103,12 @@ const FeaturedCars = ({ searchQuery }) => {
       const stored = localStorage.getItem('cars_availability');
       if (stored) {
         const map = JSON.parse(stored);
-        setCars(carsData.slice(0, 6).map(c => ({ ...c, available: map[c.id] !== undefined ? map[c.id] : true })));
+        setCars(
+          carsData.slice(0, 6).map(c => ({
+            ...c,
+            available: map[c.id] !== undefined ? map[c.id] : true,
+          }))
+        );
       } else {
         const initial = carsData.slice(0, 6).map(c => ({ ...c, available: Math.random() > 0.3 }));
         setCars(initial);
@@ -120,21 +121,33 @@ const FeaturedCars = ({ searchQuery }) => {
     }
   }, []);
 
-  const goToBooking = car => { navigate('/booking', { state: { car } }); };
+  const goToBooking = car => navigate('/booking', { state: { car } });
 
-  const filteredCars = cars.filter(c =>
-    c.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredCars = cars.filter(c => c.name.toLowerCase().includes(searchQuery.toLowerCase()));
 
   return (
     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(240px,1fr))', gap: 16 }}>
       {filteredCars.map(car => (
-        <div key={car.id}
-          style={{ background: '#fff', padding: 12, borderRadius: 12, boxShadow: '0 6px 20px rgba(2,6,23,0.06)', display: 'flex', flexDirection: 'column', transition: 'transform .2s' }}
+        <div
+          key={car.id}
+          style={{
+            background: '#fff',
+            padding: 12,
+            borderRadius: 12,
+            boxShadow: '0 6px 20px rgba(2,6,23,0.06)',
+            display: 'flex',
+            flexDirection: 'column',
+            transition: 'transform .2s',
+          }}
           onMouseEnter={e => (e.currentTarget.style.transform = 'translateY(-4px)')}
-          onMouseLeave={e => (e.currentTarget.style.transform = 'translateY(0)')}>
-          <img src={car.image} alt={car.name} loading="lazy"
-            style={{ width: '100%', height: 140, objectFit: 'cover', borderRadius: 8 }} />
+          onMouseLeave={e => (e.currentTarget.style.transform = 'translateY(0)')}
+        >
+          <img
+            src={car.image}
+            alt={car.name}
+            loading="lazy"
+            style={{ width: '100%', height: 140, objectFit: 'cover', borderRadius: 8 }}
+          />
           <div style={{ marginTop: 8, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div>
               <div style={{ fontWeight: 700, color: '#111827' }}>{car.name}</div>
@@ -143,18 +156,43 @@ const FeaturedCars = ({ searchQuery }) => {
             <div style={{ textAlign: 'right' }}>
               <div style={{ fontWeight: 800, color: '#06b6d4' }}>{car.price.toLocaleString()} ฿/วัน</div>
               <div style={{ fontSize: 12, marginTop: 6 }}>
-                {car.available ? <span style={{ color: '#059669', fontWeight: 700 }}>ว่าง</span> :
-                                <span style={{ color: '#ef4444', fontWeight: 700 }}>ไม่ว่าง</span>}
+                {car.available ? (
+                  <span style={{ color: '#059669', fontWeight: 700 }}>ว่าง</span>
+                ) : (
+                  <span style={{ color: '#ef4444', fontWeight: 700 }}>ไม่ว่าง</span>
+                )}
               </div>
             </div>
           </div>
           <div style={{ marginTop: 10, display: 'flex', gap: 8 }}>
-            <button disabled={!car.available} onClick={() => goToBooking(car)}
-              style={{ flex: 1, padding: 10, borderRadius: 8, border: 'none', background: car.available ? 'linear-gradient(90deg,#06b6d4,#4f46e5)' : '#e5e7eb', color: '#fff', fontWeight: 700, cursor: car.available ? 'pointer' : 'not-allowed' }}>
+            <button
+              disabled={!car.available}
+              onClick={() => goToBooking(car)}
+              style={{
+                flex: 1,
+                padding: 10,
+                borderRadius: 8,
+                border: 'none',
+                background: car.available
+                  ? 'linear-gradient(90deg,#06b6d4,#4f46e5)'
+                  : '#e5e7eb',
+                color: '#fff',
+                fontWeight: 700,
+                cursor: car.available ? 'pointer' : 'not-allowed',
+              }}
+            >
               จอง
             </button>
-            <button onClick={() => navigate(`/cars/${car.id}`)}
-              style={{ padding: 10, borderRadius: 8, background: '#fff', border: '1px solid #e6e9f2', color: '#374151' }}>
+            <button
+              onClick={() => navigate(`/cars/${car.id}`)}
+              style={{
+                padding: 10,
+                borderRadius: 8,
+                background: '#fff',
+                border: '1px solid #e6e9f2',
+                color: '#374151',
+              }}
+            >
               รายละเอียด
             </button>
           </div>
@@ -182,51 +220,87 @@ const Home = () => {
 
   return (
     <div style={{ padding: 0, background: 'linear-gradient(120deg,#f8fafc 60%,#e0e7ff 100%)', minHeight: '100vh', fontFamily: 'Segoe UI, sans-serif' }}>
-
       {/* HERO */}
-      <section style={{ background: 'linear-gradient(90deg,#06b6d4,#4f46e5)', color: '#fff', padding: '3rem 2rem', borderRadius: '0 0 28px 28px', boxShadow: '0 12px 48px #3336', marginBottom: '2rem' }}>
+      <section
+        style={{
+          background: 'linear-gradient(90deg,#06b6d4,#4f46e5)',
+          color: '#fff',
+          padding: '3rem 2rem',
+          borderRadius: '0 0 28px 28px',
+          boxShadow: '0 12px 48px #3336',
+          marginBottom: '2rem',
+        }}
+      >
         <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: '2rem', maxWidth: 1200, margin: 'auto' }}>
           <div style={{ flex: '1 1 100%', maxWidth: 480, textAlign: 'center' }}>
             <h1 style={{ fontSize: '2.5rem', margin: 0 }}>ระบบเช่ารถออนไลน์และปลอดภัย</h1>
             <p style={{ fontSize: '1.1rem', opacity: 0.95, marginTop: '1rem' }}>รถใหม่ สะอาด ปลอดภัย พร้อมบริการครบวงจร</p>
-            <div style={{ marginTop: '1.5rem', display: 'flex', gap: '12px', justifyContent:'center', flexWrap:'wrap'}}>
+            <div style={{ marginTop: '1.5rem', display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
               <a href="/cars" style={{ background: '#fff', color: '#06b6d4', padding: '10px 18px', borderRadius: 10, fontWeight: 700, textDecoration: 'none' }}>เลือกรถ</a>
               <a href="/booking" style={{ background: 'rgba(255,255,255,0.12)', color: '#fff', padding: '10px 18px', borderRadius: 10, border: '1px solid rgba(255,255,255,0.08)', textDecoration: 'none' }}>จองรถ</a>
             </div>
           </div>
-          <div style={{ flex: '1 1 100%', maxWidth: 420, textAlign:'center', marginTop: '1rem' }}>
+          <div style={{ flex: '1 1 100%', maxWidth: 420, textAlign: 'center', marginTop: '1rem' }}>
             <AutoPlayVideo src="https://www.pexels.com/th-th/download/video/855432/" poster={heroImages[0]} />
           </div>
         </div>
       </section>
 
       {/* FEATURED CARS + SEARCH */}
-      <div style={{ marginTop: 28, gridColumn: '1 / -1' }}>
-        <h2 style={{ fontSize: 26, color: '#111827', marginBottom: 12 }}>รถแนะนำ / Featured Cars</h2>
-        <input
-          type="text"
-          placeholder="🔍 ค้นหาชื่อรถ..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          style={{
-            width: '100%',
-            maxWidth: 400,
-            padding: '10px 14px',
-            borderRadius: 10,
-            border: '1px solid #cbd5e1',
-            marginBottom: 20,
-            fontSize: '1rem',
-            outline: 'none',
-          }}
-        />
+      <div style={{ marginTop: 28, gridColumn: '1 / -1', textAlign: 'center' }}>
+        <h2 style={{ fontSize: 26, color: '#111827', marginBottom: 16 }}>รถแนะนำ / Featured Cars</h2>
+
+        {/* 🔍 SEARCH BAR สวยขึ้น */}
+        <div style={{ position: 'relative', width: '100%', maxWidth: 420, margin: '0 auto 28px auto' }}>
+          <span
+            style={{
+              position: 'absolute',
+              left: 14,
+              top: '50%',
+              transform: 'translateY(-50%)',
+              color: '#94a3b8',
+              fontSize: 18,
+            }}
+          >
+            🔍
+          </span>
+          <input
+            type="text"
+            placeholder="ค้นหาชื่อรถ หรือรุ่น..."
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            style={{
+              width: '100%',
+              padding: '12px 16px 12px 42px',
+              borderRadius: 14,
+              border: '1.5px solid #e2e8f0',
+              boxShadow: '0 3px 10px rgba(0,0,0,0.05)',
+              fontSize: '1rem',
+              transition: 'all 0.25s ease',
+              outline: 'none',
+              background: '#fff',
+            }}
+            onFocus={e => {
+              e.target.style.border = '1.5px solid #06b6d4';
+              e.target.style.boxShadow = '0 4px 16px rgba(6,182,212,0.15)';
+            }}
+            onBlur={e => {
+              e.target.style.border = '1.5px solid #e2e8f0';
+              e.target.style.boxShadow = '0 3px 10px rgba(0,0,0,0.05)';
+            }}
+          />
+        </div>
+
         <FeaturedCars searchQuery={search} />
       </div>
 
-      {/* CERTIFICATES + FAQ + FOOTER เหมือนเดิม */}
+      {/* CERTIFICATES */}
       <section style={{ maxWidth: 1200, margin: '2rem auto', padding: '1.25rem' }}>
         <h3 style={{ margin: '0 0 0.5rem 0', color: '#0b74a6' }}>ใบรับรองและรางวัล</h3>
         <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', justifyContent: 'center' }}>
-          {certificates.map((c, i) => <CertificateCard key={i} cert={c} />)}
+          {certificates.map((c, i) => (
+            <CertificateCard key={i} cert={c} />
+          ))}
         </div>
       </section>
     </div>
