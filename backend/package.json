@@ -1,15 +1,12 @@
 {
   "name": "backend",
   "version": "1.0.0",
-  "description": "- ใช้ Node.js + Express\r - เชื่อมต่อ MySQL\r - รองรับ JWT Auth (Admin/User)\r - API: จัดการรถ, การจอง, รายงาน, อัปโหลด/ตรวจสอบเอกสาร, แจ้งเตือน\r - รองรับ S3 สำหรับไฟล์",
+  "description": "เช่ารถกับแคทตี้ Backend API",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
   "dependencies": {
     "aws-sdk": "^2.1692.0",
     "cors": "^2.8.5",
