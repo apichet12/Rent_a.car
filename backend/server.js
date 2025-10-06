@@ -1,63 +1,65 @@
 require('dotenv').config();
 const express = require('express');
-const mysql = require('mysql');
+const { Pool } = require('pg');  // ใช้ PostgreSQL
 const cors = require('cors');
 const path = require('path');
 
 const app = express();
-
 app.use(cors());
 app.use(express.json());
 
-// MySQL connection
-const db = mysql.createConnection({
-  host: 'localhost',
-  user: 'root',
-  password: '',
-  database: 'carrental'
+// PostgreSQL connection
+const pool = new Pool({
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
+  port: process.env.DB_PORT,
 });
 
-db.connect(err => {
-  if (err) console.log('DB error', err);
-  else console.log('DB connected');
-});
+pool.connect()
+  .then(() => console.log("DB connected ✅"))
+  .catch(err => console.error("DB error:", err));
 
 // ===== API =====
-
-// Get all cars
-app.get('/api/cars', (req, res) => {
-  db.query('SELECT * FROM cars', (err, results) => {
-    if (err) return res.status(500).json({ error: 'DB error' });
-    res.json(results);
-  });
+app.get('/api/cars', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM cars');
+    res.json(result.rows);
+  } catch (err) {
+    res.status(500).json({ error: 'DB error' });
+  }
 });
 
-// Get car by ID
-app.get('/api/cars/:id', (req, res) => {
+app.get('/api/cars/:id', async (req, res) => {
   const id = req.params.id;
-  db.query('SELECT * FROM cars WHERE id=?', [id], (err, results) => {
-    if (err) return res.status(500).json({ error: 'DB error' });
-    if (results.length === 0) return res.status(404).json({ message: 'Car not found' });
-    res.json(results[0]);
-  });
+  try {
+    const result = await pool.query('SELECT * FROM cars WHERE id=$1', [id]);
+    if (result.rows.length === 0) return res.status(404).json({ message: 'Car not found' });
+    res.json(result.rows[0]);
+  } catch (err) {
+    res.status(500).json({ error: 'DB error' });
+  }
 });
 
-// Login
-app.post('/api/login', (req, res) => {
+app.post('/api/login', async (req, res) => {
   const { username, password } = req.body;
-  db.query('SELECT * FROM users WHERE username=? AND password=?', [username, password], (err, results) => {
-    if (err) return res.status(500).json({ error: 'DB error' });
-    if (results.length > 0) res.json({ success: true, user: results[0] });
+  try {
+    const result = await pool.query(
+      'SELECT * FROM users WHERE username=$1 AND password=$2',
+      [username, password]
+    );
+    if (result.rows.length > 0) res.json({ success: true, user: result.rows[0] });
     else res.json({ success: false, message: 'Username or password incorrect' });
-  });
+  } catch (err) {
+    res.status(500).json({ error: 'DB error' });
+  }
 });
 
 // ===== Serve React build =====
-app.use(express.static(path.join(__dirname, 'build')));
-
-// All other routes => React SPA
+app.use(express.static(path.join(__dirname, 'frontend/build')));
 app.get(/.*/, (req, res) => {
-  res.sendFile(path.join(__dirname, 'build', 'index.html'));
+  res.sendFile(path.join(__dirname, 'frontend/build', 'index.html'));
 });
 
 // ===== Start server =====
