@@ -15,7 +15,7 @@ const Booking = () => {
 
   if (!car)
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen p-4">
+      <div className="flex flex-col items-center justify-center min-h-screen p-4 bg-gray-100">
         <h2 className="text-2xl font-semibold mb-4">ไม่พบข้อมูลรถ</h2>
         <button
           onClick={() => navigate('/')}
@@ -61,8 +61,8 @@ const Booking = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 p-4 flex justify-center items-start">
-      <div className="bg-white shadow-xl rounded-2xl p-6 max-w-lg w-full mt-10">
+    <div className="min-h-screen bg-gradient-to-b from-gray-100 to-gray-200 p-4 flex justify-center items-start">
+      <div className="bg-white shadow-2xl rounded-3xl p-6 max-w-md w-full mt-12 md:mt-20">
         <h2 className="text-3xl font-bold mb-6 text-center text-indigo-600">จองรถ / Booking</h2>
 
         {/* Car Card */}
@@ -70,10 +70,10 @@ const Booking = () => {
           <img
             src={car.image}
             alt={car.name}
-            className="w-full h-60 object-cover rounded-xl shadow-md mb-4"
+            className="w-full h-56 sm:h-64 object-cover rounded-xl shadow-md mb-4"
           />
           <h3 className="text-xl font-semibold">{car.name}</h3>
-          <div className="text-gray-500 mb-2">
+          <div className="text-gray-500 mb-1 text-sm sm:text-base">
             ปี {car.year || '-'} | {car.seats} ที่นั่ง | {car.fuel}
           </div>
           <p className="text-lg font-medium text-indigo-700">
@@ -87,19 +87,19 @@ const Booking = () => {
             placeholder="ชื่อ-นามสกุล"
             value={name}
             onChange={e => setName(e.target.value)}
-            className="p-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+            className="p-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-400 transition"
           />
           <input
             placeholder="เบอร์โทรศัพท์"
             value={phone}
             onChange={e => setPhone(e.target.value)}
-            className="p-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+            className="p-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-400 transition"
           />
           <input
             type="date"
             value={date}
             onChange={e => setDate(e.target.value)}
-            className="p-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+            className="p-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-400 transition"
           />
 
           <button
@@ -109,7 +109,16 @@ const Booking = () => {
           >
             {loading ? 'กำลังจอง...' : 'จองรถ'}
           </button>
-          {message && <p className="text-center mt-2 text-red-500 font-medium">{message}</p>}
+
+          {message && (
+            <p
+              className={`text-center mt-2 font-medium ${
+                message.includes('สำเร็จ') ? 'text-green-500' : 'text-red-500'
+              }`}
+            >
+              {message}
+            </p>
+          )}
         </div>
 
         <button
