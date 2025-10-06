@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom'; // ดึงข้อมูล state จากการ navigate
 
 const Booking = () => {
   const { state } = useLocation();
@@ -127,4 +127,4 @@ const BookingList = () => {
   );
 };
 
-export default Booking;
+export default Booking;     
