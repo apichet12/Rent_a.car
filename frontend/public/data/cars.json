@@ -1,13 +1,13 @@
 [
   {
-    "id": 1,
-    "name": "Toyota Camry",
-    "price": 1000,
-    "seats": 5,
-    "fuel": "เบนซิน",
-    "image": "/images/toyota.jpg",
-    "desc": "รถสวย นั่งสบาย",
-    "features": ["แอร์", "ABS"]
+    "id":1,
+    "name":"Toyota Camry",
+    "price":1000,
+    "seats":5,
+    "fuel":"เบนซิน",
+    "image":"/images/toyota.jpg",
+    "desc":"รถสวย นั่งสบาย",
+    "features":["แอร์","ABS"]
   },
   {
     "id": 2,

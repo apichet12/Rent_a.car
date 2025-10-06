@@ -1,13 +1,13 @@
 // CarList.jsx
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { API_URL } from '../config';
-import carsData from '../data/cars.json';
+
+
 
 const CarList = () => {
   const [selected, setSelected] = useState(null);
   const [cars, setCars] = useState([]);
-  setCars(carsData);
+ 
   const [favorites, setFavorites] = useState({});
   const navigate = useNavigate();
 
@@ -23,7 +23,7 @@ const CarList = () => {
  useEffect(() => {
   const fetchCars = async () => {
     try {
-      const res = await fetch(`${API_URL}/api/cars`);
+      const res = await fetch('/data/cars.json'); // fetch จาก public folder
       const data = await res.json();
 
       // โหลดสถานะ availability จาก localStorage
@@ -49,6 +49,8 @@ const CarList = () => {
   };
   fetchCars();
 }, []);
+
+
 
   const toggleFavorite = id => {
     setFavorites(prev => {
@@ -110,7 +112,7 @@ const CarList = () => {
         {filteredCars.map(car => (
           <div key={car.id} className="car-card">
             <div className="car-image">
-          <img src={`${API_URL}${car.image}`} alt={car.name} />
+          <img src={car.image} alt={car.name} onClick={()=>setSelected(car)} />
 
               <span className={car.available ? 'badge-available' : 'badge-unavailable'}>
                 {car.available ? 'ว่าง' : 'ไม่ว่าง'}
