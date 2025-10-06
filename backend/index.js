@@ -6,7 +6,9 @@ require('dotenv').config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+// =========================
 // Middleware
+// =========================
 app.use(cors());
 app.use(express.json());
 
@@ -22,7 +24,6 @@ app.get('/api/cars', (req, res) => {
   res.json(cars);
 });
 
-// หน้าแรก API
 app.get('/api', (req, res) => {
   res.send('เช่ารถกับแคทตี้ Backend API พร้อมใช้งาน');
 });
@@ -33,8 +34,9 @@ app.get('/api', (req, res) => {
 const frontendBuildPath = path.join(__dirname, '../frontend/build');
 app.use(express.static(frontendBuildPath));
 
-// React Router SPA
-app.get('/*', (req, res) => {
+// SPA Fallback: ทุก route ที่ไม่ใช่ /api/... ให้ React handle
+app.use((req, res, next) => {
+  if (req.path.startsWith('/api')) return next();
   res.sendFile(path.join(frontendBuildPath, 'index.html'));
 });
 
