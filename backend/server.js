@@ -1,67 +1,57 @@
 require('dotenv').config();
 const express = require('express');
-const { Pool } = require('pg');  // ใช้ PostgreSQL
 const cors = require('cors');
-const path = require('path');
+const mysql = require('mysql2/promise');
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-// PostgreSQL connection
-const pool = new Pool({
+const pool = mysql.createPool({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
-  port: process.env.DB_PORT,
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0
 });
-
-pool.connect()
-  .then(() => console.log("DB connected ✅"))
-  .catch(err => console.error("DB error:", err));
 
 // ===== API =====
+
+// ดึงรถทั้งหมด
 app.get('/api/cars', async (req, res) => {
   try {
-    const result = await pool.query('SELECT * FROM cars');
-    res.json(result.rows);
+    const [rows] = await pool.query('SELECT * FROM cars');
+    res.json(rows);
   } catch (err) {
+    console.error(err);
     res.status(500).json({ error: 'DB error' });
   }
 });
 
-app.get('/api/cars/:id', async (req, res) => {
-  const id = req.params.id;
+// จองรถ
+app.post('/api/book/:id', async (req, res) => {
+  const carId = req.params.id;
+  const { name, phone, date } = req.body;
   try {
-    const result = await pool.query('SELECT * FROM cars WHERE id=$1', [id]);
-    if (result.rows.length === 0) return res.status(404).json({ message: 'Car not found' });
-    res.json(result.rows[0]);
+    // เช็ค availability
+    const [cars] = await pool.query('SELECT * FROM cars WHERE id=?', [carId]);
+    if (cars.length === 0) return res.status(404).json({ error: 'Car not found' });
+    if (!cars[0].available) return res.status(400).json({ error: 'Car not available' });
+
+    // เพิ่ม booking
+    await pool.query('INSERT INTO bookings (car_id, user_name, phone, date) VALUES (?,?,?,?)', [carId, name, phone, date]);
+
+    // อัปเดต availability
+    await pool.query('UPDATE cars SET available=0 WHERE id=?', [carId]);
+
+    res.json({ success: true });
   } catch (err) {
+    console.error(err);
     res.status(500).json({ error: 'DB error' });
   }
 });
 
-app.post('/api/login', async (req, res) => {
-  const { username, password } = req.body;
-  try {
-    const result = await pool.query(
-      'SELECT * FROM users WHERE username=$1 AND password=$2',
-      [username, password]
-    );
-    if (result.rows.length > 0) res.json({ success: true, user: result.rows[0] });
-    else res.json({ success: false, message: 'Username or password incorrect' });
-  } catch (err) {
-    res.status(500).json({ error: 'DB error' });
-  }
-});
-
-// ===== Serve React build =====
-app.use(express.static(path.join(__dirname, 'frontend/build')));
-app.get(/.*/, (req, res) => {
-  res.sendFile(path.join(__dirname, 'frontend/build', 'index.html'));
-});
-
-// ===== Start server =====
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

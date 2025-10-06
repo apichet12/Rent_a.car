@@ -1,0 +1,32 @@
+[
+  {
+    "id": 1,
+    "name": "Toyota Camry",
+    "price": 1000,
+    "seats": 5,
+    "fuel": "เบนซิน",
+    "image": "/images/toyota.jpg",
+    "desc": "รถสวย นั่งสบาย",
+    "features": ["แอร์", "ABS"]
+  },
+  {
+    "id": 2,
+    "name": "Honda Civic",
+    "price": 900,
+    "seats": 5,
+    "fuel": "เบนซิน",
+    "image": "/images/honda.jpg",
+    "desc": "ประหยัดน้ำมัน",
+    "features": ["GPS", "Bluetooth"]
+  },
+  {
+    "id": 3,
+    "name": "Tesla Model 3",
+    "price": 2500,
+    "seats": 5,
+    "fuel": "ไฟฟ้า",
+    "image": "/images/tesla.jpg",
+    "desc": "รถไฟฟ้า ทันสมัย",
+    "features": ["Autopilot", "Touchscreen"]
+  }
+]

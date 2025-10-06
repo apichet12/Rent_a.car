@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { API_URL } from '../config';
 
 const Booking = () => {
   const { state } = useLocation();
@@ -12,14 +13,12 @@ const Booking = () => {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
 
-  if (!car) {
-    return (
-      <div style={{padding:'2rem'}}>
-        <h2>ไม่พบข้อมูลรถ</h2>
-        <button onClick={()=>navigate('/')}>กลับไปหน้ารถ</button>
-      </div>
-    );
-  }
+  if (!car) return (
+    <div style={{padding:'2rem'}}>
+      <h2>ไม่พบข้อมูลรถ</h2>
+      <button onClick={()=>navigate('/')}>กลับไปหน้ารถ</button>
+    </div>
+  );
 
   const handleBooking = async () => {
     if (!name || !phone || !date) {
@@ -30,17 +29,14 @@ const Booking = () => {
     setMessage('');
 
     try {
-      // เรียก API อัปเดตสถานะรถเป็นไม่ว่าง
-      const res = await fetch(`https://rentacar-0kj9.onrender.com/book/${car.id}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, phone, date })
-      });
+      const res = await fetch(`${API_URL}/book/${car.id}`, {
+  method: 'POST',
+  headers: {'Content-Type': 'application/json'},
+  body: JSON.stringify({ name, phone, date })
+});
 
       const data = await res.json();
-
       if (res.ok) {
-        // อัปเดต localStorage
         const stored = JSON.parse(localStorage.getItem('cars_availability') || '{}');
         stored[car.id] = false;
         localStorage.setItem('cars_availability', JSON.stringify(stored));
@@ -50,6 +46,7 @@ const Booking = () => {
       } else {
         setMessage(data.error || 'เกิดข้อผิดพลาดในการจอง');
       }
+
     } catch (err) {
       console.error(err);
       setMessage('เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์');

@@ -1,10 +1,13 @@
 // CarList.jsx
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { API_URL } from '../config';
+import carsData from '../data/cars.json';
 
 const CarList = () => {
   const [selected, setSelected] = useState(null);
   const [cars, setCars] = useState([]);
+  setCars(carsData);
   const [favorites, setFavorites] = useState({});
   const navigate = useNavigate();
 
@@ -20,7 +23,7 @@ const CarList = () => {
  useEffect(() => {
   const fetchCars = async () => {
     try {
-      const res = await fetch('/api/cars'); // relative path
+      const res = await fetch(`${API_URL}/api/cars`);
       const data = await res.json();
 
       // โหลดสถานะ availability จาก localStorage
@@ -107,7 +110,8 @@ const CarList = () => {
         {filteredCars.map(car => (
           <div key={car.id} className="car-card">
             <div className="car-image">
-              <img src={car.image} alt={car.name} onClick={()=>setSelected(car)} />
+          <img src={`${API_URL}${car.image}`} alt={car.name} />
+
               <span className={car.available ? 'badge-available' : 'badge-unavailable'}>
                 {car.available ? 'ว่าง' : 'ไม่ว่าง'}
               </span>
