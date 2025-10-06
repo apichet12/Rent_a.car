@@ -62,23 +62,36 @@ const Booking = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-100 to-gray-200 p-4 flex justify-center items-start">
-      <div className="bg-white shadow-2xl rounded-3xl p-6 max-w-md w-full mt-12 md:mt-20">
+      <div className="bg-white shadow-2xl rounded-3xl p-6 max-w-lg w-full mt-12 md:mt-20">
         <h2 className="text-3xl font-bold mb-6 text-center text-indigo-600">จองรถ / Booking</h2>
 
-        {/* Car Card */}
-        <div className="flex flex-col items-center mb-6">
+        {/* Car Info Card */}
+        <div className="bg-gray-50 rounded-xl shadow-inner p-4 mb-6 flex flex-col items-center">
           <img
             src={car.image}
             alt={car.name}
             className="w-full h-56 sm:h-64 object-cover rounded-xl shadow-md mb-4"
           />
-          <h3 className="text-xl font-semibold">{car.name}</h3>
-          <div className="text-gray-500 mb-1 text-sm sm:text-base">
+          <h3 className="text-2xl font-semibold mb-1">{car.name}</h3>
+          <div className="text-gray-600 mb-1 text-sm sm:text-base text-center">
             ปี {car.year || '-'} | {car.seats} ที่นั่ง | {car.fuel}
           </div>
-          <p className="text-lg font-medium text-indigo-700">
+          <p className="text-lg font-medium text-indigo-700 mb-2">
             ราคา/วัน: {car.price.toLocaleString()} บาท
           </p>
+          {car.desc && <p className="text-gray-500 text-center text-sm">{car.desc}</p>}
+          {car.features && car.features.length > 0 && (
+            <div className="flex flex-wrap gap-2 mt-3 justify-center">
+              {car.features.map((feat, idx) => (
+                <span
+                  key={idx}
+                  className="px-3 py-1 bg-indigo-100 text-indigo-800 rounded-full text-sm font-medium"
+                >
+                  {feat}
+                </span>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Booking Form */}
@@ -86,19 +99,19 @@ const Booking = () => {
           <input
             placeholder="ชื่อ-นามสกุล"
             value={name}
-            onChange={e => setName(e.target.value)}
+            onChange={(e) => setName(e.target.value)}
             className="p-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-400 transition"
           />
           <input
             placeholder="เบอร์โทรศัพท์"
             value={phone}
-            onChange={e => setPhone(e.target.value)}
+            onChange={(e) => setPhone(e.target.value)}
             className="p-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-400 transition"
           />
           <input
             type="date"
             value={date}
-            onChange={e => setDate(e.target.value)}
+            onChange={(e) => setDate(e.target.value)}
             className="p-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-400 transition"
           />
 
