@@ -292,31 +292,61 @@ const Home = () => {
       </section>
 
       {/* FOOTER */}
-      <footer style={{ background: '#eef2ff', padding: '2rem 1rem', marginTop: '2rem' }}>
-        <div style={{ maxWidth: 1200, margin: 'auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(220px,1fr))', gap: 16 }}>
-          <div>
-            <h4 style={{ color: '#0b74a6' }}>บริการลูกค้า</h4>
-            <ul style={{ color: '#334155', listStyle: 'none', padding: 0 }}>
-              <li>การรับประกันบริการ</li>
-              <li>ข้อมูลบริการเพิ่มเติม</li>
-              <li>ติดต่อเรา</li>
-            </ul>
-          </div>
-          <div>
-            <h4 style={{ color: '#0b74a6' }}>เกี่ยวกับ</h4>
-            <ul style={{ color: '#334155', listStyle: 'none', padding: 0 }}>
-              <li>เกี่ยวกับ RentWheels</li>
-              <li>ร่วมงานกับเรา</li>
-              <li>ข้อกำหนดและเงื่อนไข</li>
-            </ul>
-          </div>
-          <div>
-            <h4 style={{ color: '#0b74a6' }}>ช่องทางติดต่อ</h4>
-            <div style={{ color: '#334155' }}>โทร 02-123-4567 • Line: @rentwheels • Email: contact@rentwheels.com</div>
-          </div>
-        </div>
-        <div style={{ textAlign: 'center', color: '#64748b', marginTop: 16, fontSize: 13 }}>© {new Date().getFullYear()} RentWheels — All rights reserved</div>
-      </footer>
+<footer style={{ background: '#eef2ff', padding: '2rem 1rem', marginTop: '2rem' }}>
+  <div style={{
+    maxWidth: 1200,
+    margin: 'auto',
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fit,minmax(220px,1fr))',
+    gap: 16
+  }}>
+    <div>
+      <h4 style={{ color: '#0b74a6' }}>บริการลูกค้า</h4>
+      <ul style={{ color: '#334155', listStyle: 'none', padding: 0 }}>
+        <li>การรับประกันบริการ</li>
+        <li>ข้อมูลบริการเพิ่มเติม</li>
+        <li>ติดต่อเรา</li>
+      </ul>
+    </div>
+    <div>
+      <h4 style={{ color: '#0b74a6' }}>เกี่ยวกับ</h4>
+      <ul style={{ color: '#334155', listStyle: 'none', padding: 0 }}>
+        <li>เกี่ยวกับ RentWheels</li>
+        <li>ร่วมงานกับเรา</li>
+        <li>ข้อกำหนดและเงื่อนไข</li>
+      </ul>
+    </div>
+    <div>
+      <h4 style={{ color: '#0b74a6' }}>ช่องทางติดต่อ</h4>
+      <div style={{ color: '#334155' }}>โทร 02-123-4567 • Line: @rentwheels • Email: contact@rentwheels.com</div>
+    </div>
+    {/* APP DOWNLOAD */}
+    <div>
+      <h4 style={{ color: '#0b74a6' }}>ดาวน์โหลดแอพ</h4>
+      <p style={{ color: '#334155', fontSize: 14, marginBottom: 8 }}>เช่ารถสะดวกยิ่งขึ้นด้วยมือถือ</p>
+      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+        <a href="https://www.apple.com/app-store/" target="_blank" rel="noopener noreferrer"
+           style={{
+             display: 'inline-flex', alignItems: 'center', gap: 6,
+             padding: '6px 12px', background: '#000', borderRadius: 6, color: '#fff', textDecoration: 'none', fontWeight: 600
+           }}>
+          <img src="/images/apple-logo.png" alt="App Store" style={{ width: 20, height: 20 }} /> App Store
+        </a>
+        <a href="https://play.google.com/store" target="_blank" rel="noopener noreferrer"
+           style={{
+             display: 'inline-flex', alignItems: 'center', gap: 6,
+             padding: '6px 12px', background: '#34A853', borderRadius: 6, color: '#fff', textDecoration: 'none', fontWeight: 600
+           }}>
+          <img src="/images/google-play-logo.png" alt="Google Play" style={{ width: 20, height: 20 }} /> Google Play
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div style={{ textAlign: 'center', color: '#64748b', marginTop: 16, fontSize: 13 }}>
+    © {new Date().getFullYear()} RentWheels — All rights reserved
+  </div>
+</footer>
 
       {/* SCROLL TO TOP */}
       <ScrollToTopButton />
