@@ -47,25 +47,31 @@ const Login = () => {
       return;
     }
     try {
-      const res = await fetch("https://rentacar-0kj9.onrender.com/api/login", {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({ username: form.username, password: form.password }),
-});
+  const res = await fetch("https://rentacar-0kj9.onrender.com/api/login", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ username: form.username, password: form.password }),
+  });
 
+  // ตรวจสอบ status ก่อน parse เป็น JSON
+  if (!res.ok) {
+    const text = await res.text(); // อ่าน response เป็น text
+    console.error("Server Error Response:", text);
+    throw new Error(`Server responded with status ${res.status}`);
+  }
 
+  const data = await res.json();
 
-      const data = await res.json();
-      if (data.success) {
-        login(data.user.username, data.user.role);
-        navigate("/dashboard");
-      } else {
-        setError(data.message || "เข้าสู่ระบบไม่สำเร็จ");
-      }
-    } catch (err) {
-      console.error("❌ Fetch Error:", err);
-      setError("ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้ (ตรวจสอบ XAMPP หรือ URL)");
-    }
+  if (data.success) {
+    login(data.user.username, data.user.role);
+    navigate("/dashboard");
+  } else {
+    setError(data.message || "เข้าสู่ระบบไม่สำเร็จ");
+  }
+} catch (err) {
+  console.error("❌ Fetch Error:", err);
+  setError("ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้ (ตรวจสอบ server หรือ URL)");
+}
   };
 
   const inputStyle = {
