@@ -80,39 +80,12 @@ const Booking = () => {
         📝 ดำเนินการจองรถ
       </h2>
 
-      <div
-        style={{
-          display: 'flex',
-          gap: '2rem',
-          alignItems: 'flex-start',
-          flexWrap: 'wrap'
-        }}
-      >
-        {/* Left Column: Form */}
+      <div style={{ display: 'flex', gap: '2rem', alignItems: 'flex-start', flexWrap: 'wrap' }}>
         <div style={{ flex: 1, minWidth: '300px', maxWidth: '65%' }}>
-          <form
-            onSubmit={handleSubmit}
-            style={{
-              background: CARD_BG,
-              padding: '2rem',
-              borderRadius: 20,
-              boxShadow: SHADOW_STYLE,
-              border: `1px solid ${BORDER_COLOR}`
-            }}
-          >
-            {/* Date Section */}
-            <SectionTitle /*number={1} */text="ช่วงเวลาเช่า 🗓️" />
+          <form onSubmit={handleSubmit} style={{ background: CARD_BG, padding: '2rem', borderRadius: 20, boxShadow: SHADOW_STYLE, border: `1px solid ${BORDER_COLOR}` }}>
+            <SectionTitle text="ช่วงเวลาเช่า 🗓️" />
 
-            <div
-              style={{
-                display: 'flex',
-                gap: '1rem',
-                border: `2px solid ${ACCENT_COLOR}70`,
-                borderRadius: 15,
-                overflow: 'hidden',
-                boxShadow: '0 4px 15px rgba(0,123,255,0.2)'
-              }}
-            >
+            <div style={{ display: 'flex', gap: '1rem', border: `2px solid ${ACCENT_COLOR}70`, borderRadius: 15, overflow: 'hidden', boxShadow: '0 4px 15px rgba(0,123,255,0.2)' }}>
               <DateRangeField
                 label="วันรับรถ (Check In)"
                 name="pickupDate"
@@ -132,29 +105,15 @@ const Booking = () => {
               />
             </div>
 
-            <div
-              style={{
-                textAlign: 'center',
-                margin: '1rem 0 2rem 0',
-                fontWeight: 600,
-                color: durationDays > 0 ? TEXT_COLOR : RED_COLOR
-              }}
-            >
+            <div style={{ textAlign: 'center', margin: '1rem 0 2rem 0', fontWeight: 600, color: durationDays > 0 ? TEXT_COLOR : RED_COLOR }}>
               {durationDays > 0
                 ? `👉 ระยะเวลาเช่าทั้งหมด: ${durationDays} วัน`
                 : 'กรุณาเลือกวันรับและวันคืนรถ'}
             </div>
 
-            {/* Contact Section */}
-            <SectionTitle /*number={2}*/ text="ข้อมูลผู้ติดต่อ 📞" />
+            <SectionTitle text="ข้อมูลผู้ติดต่อ 📞" />
 
-            <div
-              style={{
-                display: 'grid',
-                gridTemplateColumns: '1fr 1fr',
-                gap: '1rem'
-              }}
-            >
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
               <InputField
                 label="ชื่อผู้จอง (Full Name)"
                 name="name"
@@ -164,7 +123,6 @@ const Booking = () => {
                 TEXT_COLOR={TEXT_COLOR}
                 ACCENT_COLOR={ACCENT_COLOR}
                 required
-                fullWidth
                 gridSpan={2}
               />
               <InputField
@@ -189,7 +147,6 @@ const Booking = () => {
               />
             </div>
 
-            {/* Terms & Submit */}
             <div style={{ marginTop: '2rem', borderTop: `1px solid ${BORDER_COLOR}`, paddingTop: '1rem' }}>
               <label style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', fontSize: 14, color: SUB_TEXT_COLOR }}>
                 <input
@@ -224,22 +181,11 @@ const Booking = () => {
           </form>
         </div>
 
-        {/* Right Column: Summary */}
-        <div
-          style={{
-            flex: 1,
-            minWidth: '250px',
-            maxWidth: '35%',
-            position: 'sticky',
-            top: '2rem',
-            alignSelf: 'flex-start'
-          }}
-        >
+        <div style={{ flex: 1, minWidth: '250px', maxWidth: '35%', position: 'sticky', top: '2rem', alignSelf: 'flex-start' }}>
           <SummaryCard preCar={preCar} durationDays={durationDays} totalPrice={totalPrice} />
         </div>
       </div>
 
-      {/* Booking List */}
       <div style={{ marginTop: '2rem' }}>
         <BookingList />
       </div>
