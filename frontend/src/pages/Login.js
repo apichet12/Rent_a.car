@@ -48,10 +48,11 @@ const Login = () => {
     }
     try {
   const res = await fetch("https://rentacar-0kj9.onrender.com/api/login", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ username: form.username, password: form.password }),
-  });
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ username: form.username, password: form.password }),
+});
+
 
   // ตรวจสอบ status ก่อน parse เป็น JSON
   if (!res.ok) {

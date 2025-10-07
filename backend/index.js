@@ -52,23 +52,32 @@ app.get('/api', (req, res) => {
 });
 
 // Simple registration endpoint for demo purposes
-const crypto = require('crypto');
-app.post('/api/register', (req, res) => {
-  const { username, email, password, name, phone } = req.body || {};
-  if (!username || !email || !password) return res.status(400).json({ success: false, message: 'username, email and password required' });
+
+app.post('/api/login', (req, res) => {
+  const { username, password } = req.body || {};
+  if (!username || !password) {
+    return res.status(400).json({ success: false, message: 'กรุณากรอก username และ password' });
+  }
 
   const users = readUsers();
-  if (users.find(u => u.username === username)) return res.status(400).json({ success: false, message: 'username already exists' });
-  if (users.find(u => u.email === email)) return res.status(400).json({ success: false, message: 'email already registered' });
+  const user = users.find(u => u.username === username);
+  if (!user) {
+    return res.status(401).json({ success: false, message: 'ไม่พบผู้ใช้' });
+  }
 
+  
   const hash = crypto.createHash('sha256').update(password).digest('hex');
-  const newUser = { id: Date.now(), username, email, passwordHash: hash, name: name || '', phone: phone || '', createdAt: new Date().toISOString() };
-  users.push(newUser);
-  writeUsers(users);
 
-  res.json({ success: true, message: 'Registered (demo).', userId: newUser.id });
+  if (hash !== user.passwordHash) {
+    return res.status(401).json({ success: false, message: 'รหัสผ่านไม่ถูกต้อง' });
+  }
+
+  // Login สำเร็จ
+  res.json({
+    success: true,
+    user: { id: user.id, username: user.username, name: user.name }
+  });
 });
-
 // =========================
 // Serve React Frontend
 // =========================
@@ -86,4 +95,21 @@ app.use((req, res, next) => {
 // =========================
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
+});
+
+
+app.post('/api/login', (req, res) => {
+  const { username, password } = req.body || {};
+  if (!username || !password)
+    return res.status(400).json({ success: false, message: 'username และ password ต้องระบุ' });
+
+  const users = readUsers();
+  const user = users.find(u => u.username === username);
+  if (!user) return res.status(401).json({ success: false, message: 'ไม่พบผู้ใช้' });
+
+  const hash = crypto.createHash('sha256').update(password).digest('hex');
+  if (hash !== user.passwordHash)
+    return res.status(401).json({ success: false, message: 'รหัสผ่านไม่ถูกต้อง' });
+
+  res.json({ success: true, user: { username: user.username, name: user.name, id: user.id } });
 });
