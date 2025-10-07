@@ -25,8 +25,8 @@ const Register = () => {
       return;
     }
 
-    // ใช้ IP ของเครื่องแทน localhost เพื่อให้มือถือเข้าถึงได้
-const SERVER_URL = "http://192.168.100.24/carrental/api/register.php";
+    
+const SERVER_URL = "http://localhost:8083/carrental/api/register.php";
 
     try {
       const res = await fetch(SERVER_URL, {
