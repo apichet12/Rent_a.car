@@ -13,6 +13,7 @@ import CarDetail from './pages/CarDetail';
 import './App.css';
 import './i18n';
 import './responsive.css';
+import 'react-datepicker/dist/react-datepicker.css';
 
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
