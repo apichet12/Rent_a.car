@@ -47,11 +47,13 @@ const Login = () => {
       return;
     }
     try {
-      const res = await fetch("http://192.168.100.24/carrental/api/login.php", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username: form.username, password: form.password }),
-      });
+      const res = await fetch("http://localhost:5000/api/login", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ username: form.username, password: form.password }),
+});
+
+
       const data = await res.json();
       if (data.success) {
         login(data.user.username, data.user.role);

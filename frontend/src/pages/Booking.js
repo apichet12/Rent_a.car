@@ -75,17 +75,17 @@ const Booking = () => {
   };
 
   return (
-    <div style={{ padding: '2rem', background: LIGHT_BG, minHeight: '100vh', fontFamily: 'Inter, sans-serif' }}>
+    <div className="booking-container" style={{ padding: '2rem', background: LIGHT_BG, minHeight: '100vh', fontFamily: 'Inter, sans-serif' }}>
       <h2 style={{ fontSize: '2rem', fontWeight: 800, color: TEXT_COLOR, marginBottom: '2rem' }}>
         📝 ดำเนินการจองรถ
       </h2>
 
-      <div style={{ display: 'flex', gap: '2rem', alignItems: 'flex-start', flexWrap: 'wrap' }}>
-        <div style={{ flex: 1, minWidth: '300px', maxWidth: '65%' }}>
-          <form onSubmit={handleSubmit} style={{ background: CARD_BG, padding: '2rem', borderRadius: 20, boxShadow: SHADOW_STYLE, border: `1px solid ${BORDER_COLOR}` }}>
+      <div className="booking-main" style={{ display: 'flex', gap: '2rem', alignItems: 'flex-start', flexWrap: 'wrap' }}>
+        <div className="booking-left" style={{ flex: 1, minWidth: '300px', maxWidth: '65%' }}>
+          <form className="booking-form" onSubmit={handleSubmit} style={{ background: CARD_BG, padding: '2rem', borderRadius: 20, boxShadow: SHADOW_STYLE, border: `1px solid ${BORDER_COLOR}` }}>
             <SectionTitle text="ช่วงเวลาเช่า 🗓️" />
 
-            <div style={{ display: 'flex', gap: '1rem', border: `2px solid ${ACCENT_COLOR}70`, borderRadius: 15, overflow: 'hidden', boxShadow: '0 4px 15px rgba(0,123,255,0.2)' }}>
+            <div className="booking-dates" style={{ display: 'flex', gap: '1rem', border: `2px solid ${ACCENT_COLOR}70`, borderRadius: 15, overflow: 'hidden', boxShadow: '0 4px 15px rgba(0,123,255,0.2)' }}>
               <DateRangeField
                 label="วันรับรถ (Check In)"
                 name="pickupDate"
@@ -113,7 +113,7 @@ const Booking = () => {
 
             <SectionTitle text="ข้อมูลผู้ติดต่อ 📞" />
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+            <div className="booking-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
               <InputField
                 label="ชื่อผู้จอง (Full Name)"
                 name="name"
@@ -181,7 +181,7 @@ const Booking = () => {
           </form>
         </div>
 
-        <div style={{ flex: 1, minWidth: '250px', maxWidth: '35%', position: 'sticky', top: '2rem', alignSelf: 'flex-start' }}>
+        <div className="booking-summary" style={{ flex: 1, minWidth: '250px', maxWidth: '35%', position: 'sticky', top: '2rem', alignSelf: 'flex-start' }}>
           <SummaryCard preCar={preCar} durationDays={durationDays} totalPrice={totalPrice} />
         </div>
       </div>

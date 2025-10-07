@@ -58,3 +58,31 @@
     font-size: 13px;
   }
 }
+
+/* Booking page specific responsive tweaks */
+@media (max-width: 680px) {
+  .booking-container { padding: 12px !important; }
+
+  /* Stack main columns */
+  .booking-main { flex-direction: column !important; }
+  .booking-left, .booking-summary { flex: 1 1 100% !important; max-width: 100% !important; }
+
+  /* Make summary scrollable block instead of sticky */
+  .booking-summary { position: static !important; top: auto !important; }
+
+  /* Form adjustments */
+  .booking-form { padding: 1rem !important; border-radius: 12px !important; }
+  .booking-dates { flex-direction: column !important; }
+  .booking-dates > div { border-right: none !important; border-bottom: 1px solid #e6eefc; }
+
+  /* Inputs and grid: single column */
+  .booking-grid { grid-template-columns: 1fr !important; }
+  .booking-grid input, .booking-form input { padding: 12px !important; font-size: 15px !important; }
+
+  /* Larger tap targets */
+  .booking-form button[type="submit"] { padding: 14px !important; font-size: 1rem !important; border-radius: 12px !important; }
+
+  /* Summary card adjust */
+  .booking-summary img { height: 64px !important; width: 96px !important; }
+  .booking-summary h4 { font-size: 1.1rem !important; }
+}

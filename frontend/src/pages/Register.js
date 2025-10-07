@@ -26,7 +26,8 @@ const Register = () => {
     }
 
     
-const SERVER_URL = "https://rentacar-0kj9.onrender.com/api/register.php";
+  // Prefer configured API_URL, otherwise use relative path so it works with the same-origin backend
+const SERVER_URL = 'http://localhost:5000/api/register';
 
     try {
       const res = await fetch(SERVER_URL, {

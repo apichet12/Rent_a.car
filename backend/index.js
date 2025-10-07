@@ -6,6 +6,29 @@ require('dotenv').config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+const fs = require('fs');
+const usersFile = path.join(__dirname, 'users.json');
+
+// helper to read/write users
+const readUsers = () => {
+  try {
+    if (!fs.existsSync(usersFile)) return [];
+    const txt = fs.readFileSync(usersFile, 'utf8') || '[]';
+    return JSON.parse(txt);
+  } catch (err) {
+    console.error('readUsers error', err);
+    return [];
+  }
+};
+
+const writeUsers = (users) => {
+  try {
+    fs.writeFileSync(usersFile, JSON.stringify(users, null, 2), 'utf8');
+  } catch (err) {
+    console.error('writeUsers error', err);
+  }
+};
+
 // =========================
 // Middleware
 // =========================
@@ -26,6 +49,24 @@ app.get('/api/cars', (req, res) => {
 
 app.get('/api', (req, res) => {
   res.send('เช่ารถกับแคทตี้ Backend API พร้อมใช้งาน');
+});
+
+// Simple registration endpoint for demo purposes
+const crypto = require('crypto');
+app.post('/api/register', (req, res) => {
+  const { username, email, password, name, phone } = req.body || {};
+  if (!username || !email || !password) return res.status(400).json({ success: false, message: 'username, email and password required' });
+
+  const users = readUsers();
+  if (users.find(u => u.username === username)) return res.status(400).json({ success: false, message: 'username already exists' });
+  if (users.find(u => u.email === email)) return res.status(400).json({ success: false, message: 'email already registered' });
+
+  const hash = crypto.createHash('sha256').update(password).digest('hex');
+  const newUser = { id: Date.now(), username, email, passwordHash: hash, name: name || '', phone: phone || '', createdAt: new Date().toISOString() };
+  users.push(newUser);
+  writeUsers(users);
+
+  res.json({ success: true, message: 'Registered (demo).', userId: newUser.id });
 });
 
 // =========================

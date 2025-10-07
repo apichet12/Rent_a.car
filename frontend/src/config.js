@@ -1,3 +1,3 @@
 // src/config.js
-export const API_URL = 'https://rosalie-unventable-laically.ngrok-free.dev';
-// export const API_URL = 'http://localhost:5000'; // สำหรับรันในเครื่องตัวเอง
+// Use local backend during development to avoid CORS with external servers
+export const API_URL = 'http://localhost:5000';
