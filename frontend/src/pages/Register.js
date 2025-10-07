@@ -26,7 +26,7 @@ const Register = () => {
     }
 
     
-const SERVER_URL = "http://localhost:8083/carrental/api/register.php";
+const SERVER_URL = "https://rentacar-api.onrender.com/api/register.php";
 
     try {
       const res = await fetch(SERVER_URL, {
