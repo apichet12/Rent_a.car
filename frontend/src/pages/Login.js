@@ -2,139 +2,143 @@ import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 
-const Icon = ({ name }) => {
-  if (name === 'user') return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-      <path d="M12 12c2.761 0 5-2.239 5-5s-2.239-5-5-5-5 
-      2.239-5 5 2.239 5 5 5z" 
-      stroke="#6b7280" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
-      <path d="M4 20c0-3.314 2.686-6 6-6h4c3.314 0 6 
-      2.686 6 6" stroke="#6b7280" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
-    </svg>
-  );
-  if (name === 'lock') return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-      <rect x="3" y="11" width="18" height="10" rx="2" stroke="#6b7280" strokeWidth="1.2"/>
-      <path d="M7 11V8a5 5 0 0 1 10 0v3" stroke="#6b7280" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
-    </svg>
-  );
-  return null;
-};
-
-const Login = () => {
+export default function Login() {
   const navigate = useNavigate();
   const { login } = useContext(AuthContext);
-  const [form, setForm] = useState({ username: '', password: '' });
+
+  const [mode, setMode] = useState('login');
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const handleChange = e => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+  const [loginEmail, setLoginEmail] = useState('');
+  const [loginPassword, setLoginPassword] = useState('');
+
+  const [reg, setReg] = useState({ username: '', email: '', phone: '', password: '', confirmPassword: '' });
+  const [otpSent, setOtpSent] = useState(false);
+  const [otpCode, setOtpCode] = useState('');
+  const [verifiedPhone, setVerifiedPhone] = useState('');
+
+  const doLogin = async (e) => {
+    e && e.preventDefault();
     setError('');
+    if (!loginEmail || !loginPassword) return setError('กรุณากรอกข้อมูลให้ครบ');
+    setLoading(true);
+    try {
+      const res = await fetch('/api/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username: loginEmail, password: loginPassword }) });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        login(data.user.username, data.user.role);
+        navigate('/dashboard');
+      } else setError(data.message || 'เข้าสู่ระบบไม่สำเร็จ');
+    } catch (e) { setError('ไม่สามารถติดต่อเซิร์ฟเวอร์ได้'); }
+    setLoading(false);
   };
 
-  const handleSubmit = async e => {
-    e.preventDefault();
-
-    if (!form.username || !form.password) {
-      setError("กรุณากรอก username และ password");
-      return;
-    }
-
+  const sendOtp = async () => {
+    setError('');
+    if (!reg.phone) return setError('กรุณากรอกหมายเลขโทรศัพท์');
     try {
-      console.log("Submitting login", form);
-
-      const res = await fetch("/api/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
-      });
-
-      console.log("Response received:", res);
-
-      if (!res.ok) {
-        const text = await res.text();
-        console.error("Server Error Response:", text);
-        throw new Error(`Server responded with status ${res.status}`);
-      }
-
+      const res = await fetch('/api/otp/send', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ phone: reg.phone }) });
       const data = await res.json();
+      if (res.ok && data.success) {
+        setOtpSent(true);
+        if (data.code) window.alert('OTP (dev): ' + data.code);
+      } else setError(data.message || 'ส่ง OTP ไม่ได้');
+    } catch (e) { setError('ส่ง OTP ผิดพลาด'); }
+  };
 
-      if (data.success) {
-        login(data.user.username, data.user.role);
-        navigate("/dashboard");
-      } else {
-        setError(data.message || "เข้าสู่ระบบไม่สำเร็จ");
-      }
-    } catch (err) {
-      console.error("❌ Fetch Error:", err);
-      setError("ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้ (ตรวจสอบ server หรือ URL)");
-    }
+  const verifyOtp = async () => {
+    setError('');
+    if (!reg.phone || !otpCode) return setError('กรุณาระบุหมายเลขและรหัส OTP');
+    try {
+      const res = await fetch('/api/otp/verify', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ phone: reg.phone, code: otpCode }) });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setVerifiedPhone(data.phone || reg.phone);
+        window.alert('ยืนยันหมายเลขเรียบร้อย');
+      } else setError(data.message || 'ยืนยัน OTP ไม่สำเร็จ');
+    } catch (e) { setError('ยืนยัน OTP ผิดพลาด'); }
+  };
+
+  const doRegister = async (e) => {
+    e && e.preventDefault();
+    setError('');
+    if (reg.password !== reg.confirmPassword) return setError('รหัสผ่านไม่ตรงกัน');
+    if (reg.phone && !verifiedPhone) return setError('กรุณายืนยันหมายเลขโทรศัพท์ก่อนสมัคร');
+    try {
+      const res = await fetch('/api/register', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(reg) });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        window.alert('สมัครสมาชิกสำเร็จ');
+        setMode('login');
+      } else setError(data.message || 'สมัครสมาชิกไม่สำเร็จ');
+    } catch (e) { setError('สมัครสมาชิกผิดพลาด'); }
   };
 
   return (
-    <div style={{ display: 'flex', justifyContent: 'center', padding: 24 }}>
-      <div style={{ width: '100%', maxWidth: 1000 }}>
-        <div style={{ display: 'flex', gap: 18, flexWrap: 'wrap' }}>
-          {/* Left hero with logo and description */}
-          <div style={{ flex: '1 1 360px', minWidth: 300, padding: 28, borderRadius: 12, background: 'linear-gradient(180deg,#f0fbff,#eef6ff)', boxShadow: '0 8px 30px rgba(2,6,23,0.04)' }}>
-            <div style={{ textAlign: 'left' }}>
-              <img src="/logo192.png" alt="logo" style={{ width: 120, marginBottom: 12 }} />
-              <h1 style={{ margin: 0, marginTop: 6, fontSize: 26, color: '#07203a' }}>ยินดีต้อนรับสู่ Drivehub</h1>
-              <p style={{ color: '#475569', marginTop: 8 }}>เข้าสู่ระบบสมาชิกติดตามสถานะกับเราได้ง่ายกว่า</p>
-
-              <div style={{ marginTop: 20 }}>
-                <button className="btn-ghost" style={{ width: '100%', padding: 12, borderRadius: 8, marginBottom: 10 }} onClick={() => alert('Login via email not implemented')}>📧 อีเมล</button>
-                <button className="btn-ghost" style={{ width: '100%', padding: 12, borderRadius: 8, marginBottom: 10 }} onClick={() => alert('Login via phone not implemented')}>📞 เบอร์โทรศัพท์</button>
-                <button className="btn-ghost" style={{ width: '100%', padding: 12, borderRadius: 8, marginBottom: 10 }} onClick={async () => {
-                  try {
-                    const r = await fetch('/auth/facebook');
-                    const j = await r.json();
-                    alert(j.message || 'Facebook login not configured');
-                  } catch (e) { alert('Facebook login error'); }
-                }}>🔵 เข้าสู่ระบบด้วย Facebook</button>
-                <button className="btn-ghost" style={{ width: '100%', padding: 12, borderRadius: 8 }} onClick={async () => {
-                  try {
-                    const r = await fetch('/auth/google');
-                    const j = await r.json();
-                    alert(j.message || 'Google login not configured');
-                  } catch (e) { alert('Google login error'); }
-                }}>🔴 เข้าสู่ระบบด้วย Google</button>
-              </div>
-
+    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f6f8fb', padding: 24 }}>
+      <div style={{ width: 520, borderRadius: 12, boxShadow: '0 10px 40px rgba(2,6,23,0.08)', overflow: 'hidden', background: '#fff' }}>
+        <div style={{ padding: 18, borderBottom: '1px solid #eef2f7', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <img src="/logo192.png" alt="logo" style={{ width: 44 }} />
+            <div>
+              <div style={{ fontWeight: 800, fontSize: 18 }}>ยินดีต้อนรับกลับมา!</div>
+              <div style={{ color: '#6b7280', fontSize: 13 }}>เข้าสู่ระบบสมาชิกติดตามสถานะกับเราได้ง่ายกว่า</div>
             </div>
           </div>
+          <div>
+            <button onClick={() => setMode(mode === 'login' ? 'register' : 'login')} style={{ background: 'transparent', border: '1px solid #e6eef6', padding: '8px 12px', borderRadius: 8, color: '#0ea5b1' }}>
+              {mode === 'login' ? 'สมัครสมาชิกเลย' : 'เข้าสู่ระบบ'}
+            </button>
+          </div>
+        </div>
 
-          {/* Right: form */}
-          <div style={{ flex: '1 1 420px', minWidth: 300, padding: 28, background: '#fff', borderRadius: 12, boxShadow: '0 8px 30px rgba(2,6,23,0.04)' }}>
-            <h2 style={{ color: '#07203a', fontWeight: 800, marginBottom: 6 }}>เข้าสู่ระบบ</h2>
-            <p style={{ color: '#6b7280', marginTop: 0, marginBottom: 18 }}>กรุณาเข้าสู่ระบบเพื่อจัดการการจองหรือดูรายละเอียดรถ</p>
+        <div style={{ padding: 22 }}>
+          {error && <div style={{ background: '#fff1f2', color: '#991b1b', padding: 10, borderRadius: 8, marginBottom: 12 }}>{error}</div>}
 
-            <form onSubmit={handleSubmit} style={{ display: 'grid', gap: 12 }}>
-              {error && (
-                <div style={{ background: '#fff1f2', color: '#991b1b', padding: '10px 12px', borderRadius: 8, fontSize: 14 }}>{error}</div>
-              )}
-
-              <div style={{ position: 'relative' }}>
-                <div style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)' }}><Icon name="user" /></div>
-                <input className="nice-input" name="username" placeholder="ชื่อผู้ใช้ / Username" value={form.username} onChange={handleChange} required autoComplete="username" style={{ paddingLeft: 40 }} />
-              </div>
-
-              <div style={{ position: 'relative' }}>
-                <div style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)' }}><Icon name="lock" /></div>
-                <input className="nice-input" name="password" type="password" placeholder="รหัสผ่าน / Password" value={form.password} onChange={handleChange} required autoComplete="current-password" style={{ paddingLeft: 40 }} />
-              </div>
-
-              <button type="submit" className="btn-primary" disabled={!form.username || !form.password} style={{ marginTop: 6, fontWeight: 800 }}>เข้าสู่ระบบ</button>
+          {mode === 'login' ? (
+            <form onSubmit={doLogin} style={{ display: 'grid', gap: 12 }}>
+              <input className="nice-input" placeholder="อีเมล หรือ ชื่อผู้ใช้" value={loginEmail} onChange={e => setLoginEmail(e.target.value)} />
+              <input className="nice-input" type="password" placeholder="รหัสผ่าน" value={loginPassword} onChange={e => setLoginPassword(e.target.value)} />
+              <button className="btn-primary" type="submit" disabled={loading} style={{ fontWeight: 800 }}>{loading ? 'กำลังเข้าสู่ระบบ...' : 'เข้าสู่ระบบ'}</button>
             </form>
+          ) : (
+            <form onSubmit={doRegister} style={{ display: 'grid', gap: 10 }}>
+              <input className="nice-input" name="username" placeholder="ชื่อผู้ใช้" value={reg.username} onChange={e => setReg({ ...reg, username: e.target.value })} required />
+              <input className="nice-input" name="email" placeholder="อีเมล (ถ้ามี)" value={reg.email} onChange={e => setReg({ ...reg, email: e.target.value })} />
+              <div style={{ display: 'flex', gap: 8 }}>
+                <input className="nice-input" name="phone" placeholder="เบอร์โทรศัพท์" value={reg.phone} onChange={e => setReg({ ...reg, phone: e.target.value })} />
+                <div style={{ display: 'flex', gap: 8 }}>
+                  {!otpSent ? (
+                    <button type="button" className="btn-outline" onClick={sendOtp}>ส่ง OTP</button>
+                  ) : (
+                    <>
+                      <input className="nice-input" placeholder="รหัส OTP" value={otpCode} onChange={e => setOtpCode(e.target.value)} />
+                      <button type="button" className="btn-outline" onClick={verifyOtp}>ยืนยัน</button>
+                    </>
+                  )}
+                </div>
+              </div>
+              <input className="nice-input" name="password" type="password" placeholder="รหัสผ่าน" value={reg.password} onChange={e => setReg({ ...reg, password: e.target.value })} required />
+              <input className="nice-input" name="confirmPassword" type="password" placeholder="ยืนยันรหัสผ่าน" value={reg.confirmPassword} onChange={e => setReg({ ...reg, confirmPassword: e.target.value })} required />
+              <button className="btn-primary" type="submit" style={{ fontWeight: 800 }}>สมัครสมาชิก</button>
+            </form>
+          )}
 
-            <div style={{ textAlign: 'center', marginTop: 16, color: '#475569' }}>
-              ยังไม่มีบัญชี? <a href="/register" style={{ color: '#06b6d4', fontWeight: 700, textDecoration: 'none' }}>สมัครสมาชิกใหม่ฟรี!</a>
-            </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, margin: '18px 0' }}>
+            <div style={{ flex: 1, height: 1, background: '#eef2f7' }}></div>
+            <div style={{ color: '#94a3b8' }}>หรือ</div>
+            <div style={{ flex: 1, height: 1, background: '#eef2f7' }}></div>
           </div>
+
+          <div style={{ display: 'grid', gap: 10 }}>
+            <button className="btn-ghost" style={{ padding: 12 }} onClick={() => alert('เข้าสู่ระบบด้วยเบอร์: ฟีเจอร์ OTP ที่หน้า สมัคร')}>📞 เบอร์โทรศัพท์</button>
+            <button className="btn-ghost" style={{ padding: 12 }} onClick={async () => { try { const r = await fetch('/auth/facebook'); const j = await r.json(); alert(j.message || 'Facebook'); } catch(e){ alert('Facebook login error') } }}>🔵 เข้าสู่ระบบด้วย Facebook</button>
+            <button className="btn-ghost" style={{ padding: 12 }} onClick={async () => { try { const r = await fetch('/auth/google'); const j = await r.json(); alert(j.message || 'Google'); } catch(e){ alert('Google login error') } }}>🔴 เข้าสู่ระบบด้วย Google</button>
+          </div>
+
         </div>
       </div>
     </div>
   );
-};
-
-export default Login;
+}
