@@ -4,7 +4,6 @@ import { useLocation } from 'react-router-dom';
 const ACCENT_COLOR = '#007BFF';
 const LIGHT_BG = '#F7F9FC';
 const TEXT_COLOR = '#1A202C';
-const BORDER_COLOR = '#E2E8F0';
 
 const MobileBooking = () => {
   const { state } = useLocation();
@@ -72,7 +71,7 @@ const MobileBooking = () => {
         📝 จองรถ (Mobile)
       </h2>
 
-      <form onSubmit={handleSubmit} style={{ background: '#fff', padding: 16, borderRadius: 12, boxShadow: '0 4px 10px rgba(0,0,0,0.05)' }}>
+  <form onSubmit={handleSubmit} style={{ background: '#fff', padding: 16, borderRadius: 12, boxShadow: '0 4px 10px rgba(0,0,0,0.05)' }}>
         <h3 style={{ fontWeight: 600, marginBottom: 12, color: TEXT_COLOR }}>ช่วงเวลาเช่า 🗓️</h3>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
           <DateInput label="วันรับรถ" name="pickupDate" value={form.pickupDate} onChange={handleChange} />
@@ -89,7 +88,7 @@ const MobileBooking = () => {
           <TextInput label="ชื่อรถ" name="car" value={form.car} onChange={handleChange} placeholder="ระบุชื่อรถ" disabled={!!preCar} />
         </div>
 
-        <button type="submit" style={{ marginTop: 16, width: '100%', padding: 12, background: ACCENT_COLOR, color: '#fff', fontWeight: 700, borderRadius: 8, border: 'none', fontSize: 16 }}>
+        <button type="submit" className="btn-primary" style={{ marginTop: 16, width: '100%', padding: 12, fontWeight: 700, borderRadius: 8, fontSize: 16 }}>
           💸 ยืนยันการจอง
         </button>
       </form>
@@ -103,16 +102,16 @@ const MobileBooking = () => {
 
 // --- Subcomponents ---
 const DateInput = ({ label, name, value, onChange }) => (
-  <div style={{ display: 'flex', flexDirection: 'column' }}>
-    <label style={{ fontSize: 12, fontWeight: 600, marginBottom: 4 }}>{label}</label>
-    <input type="date" name={name} value={value} onChange={onChange} style={{ padding: 8, borderRadius: 6, border: `1px solid ${BORDER_COLOR}` }} />
+  <div className="form-group" style={{ display: 'flex', flexDirection: 'column' }}>
+    <label style={{ fontSize: 12, fontWeight: 600, marginBottom: 6 }}>{label}</label>
+    <input className="nice-input" type="date" name={name} value={value} onChange={onChange} />
   </div>
 );
 
 const TextInput = ({ label, name, value, onChange, placeholder, disabled }) => (
-  <div style={{ display: 'flex', flexDirection: 'column' }}>
-    <label style={{ fontSize: 12, fontWeight: 600, marginBottom: 4 }}>{label}</label>
-    <input type="text" name={name} value={value} onChange={onChange} placeholder={placeholder} disabled={disabled} style={{ padding: 8, borderRadius: 6, border: `1px solid ${BORDER_COLOR}`, background: disabled ? '#F0F0F0' : '#fff' }} />
+  <div className="form-group" style={{ display: 'flex', flexDirection: 'column' }}>
+    <label style={{ fontSize: 12, fontWeight: 600, marginBottom: 6 }}>{label}</label>
+    <input className="nice-input" type="text" name={name} value={value} onChange={onChange} placeholder={placeholder} disabled={disabled} />
   </div>
 );
 

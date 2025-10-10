@@ -31,14 +31,8 @@ const Review = () => {
         background: '#fff', padding: '2rem', borderRadius: '16px', boxShadow: '0 8px 24px rgba(0,0,0,0.08)',
         marginBottom: '2rem', display: 'flex', flexDirection: 'column', gap: '1rem'
       }}>
-        <input
-          name="name" placeholder="ชื่อ / Name" value={form.name} onChange={handleChange} required
-          style={{ padding: '12px', borderRadius: '10px', border: '1px solid #cbd5e1', width: '100%' }}
-        />
-        <textarea
-          name="comment" placeholder="รีวิว / Review" value={form.comment} onChange={handleChange} required
-          style={{ padding: '12px', borderRadius: '10px', border: '1px solid #cbd5e1', width: '100%', minHeight: '80px' }}
-        />
+        <input className="nice-input" name="name" placeholder="ชื่อ / Name" value={form.name} onChange={handleChange} required />
+        <textarea className="nice-input" name="comment" placeholder="รีวิว / Review" value={form.comment} onChange={handleChange} required style={{ minHeight: '80px' }} />
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <span>คะแนน: </span>
           {[1, 2, 3, 4, 5].map(star => (
@@ -48,10 +42,7 @@ const Review = () => {
             </label>
           ))}
         </div>
-        <button type="submit" style={{
-          width: '100%', padding: '14px', background: 'linear-gradient(90deg,#06b6d4,#4f46e5)',
-          color: '#fff', fontWeight: 600, border: 'none', borderRadius: '10px', cursor: 'pointer', transition: '0.3s'
-        }}>ส่งรีวิว</button>
+        <button type="submit" className="btn-primary">ส่งรีวิว</button>
       </form>
 
       {/* Reviews Grid */}

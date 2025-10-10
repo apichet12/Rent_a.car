@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 
@@ -25,15 +25,7 @@ const Login = () => {
   const navigate = useNavigate();
   const { login } = useContext(AuthContext);
   const [form, setForm] = useState({ username: '', password: '' });
-  
   const [error, setError] = useState('');
-  const [isMobile, setIsMobile] = useState(window.innerWidth <= 480);
-
-  useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth <= 480);
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
 
   const handleChange = e => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -42,66 +34,46 @@ const Login = () => {
 
   const handleSubmit = async e => {
     e.preventDefault();
+
     if (!form.username || !form.password) {
       setError("กรุณากรอก username และ password");
       return;
     }
+
     try {
-  const res = await fetch("https://rentacar-0kj9.onrender.com/api/login", {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({ username: form.username, password: form.password }),
-});
+      console.log("Submitting login", form);
 
+      const res = await fetch("/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
 
-  // ตรวจสอบ status ก่อน parse เป็น JSON
-  if (!res.ok) {
-    const text = await res.text(); // อ่าน response เป็น text
-    console.error("Server Error Response:", text);
-    throw new Error(`Server responded with status ${res.status}`);
-  }
+      console.log("Response received:", res);
 
-  const data = await res.json();
+      if (!res.ok) {
+        const text = await res.text();
+        console.error("Server Error Response:", text);
+        throw new Error(`Server responded with status ${res.status}`);
+      }
 
-  if (data.success) {
-    login(data.user.username, data.user.role);
-    navigate("/dashboard");
-  } else {
-    setError(data.message || "เข้าสู่ระบบไม่สำเร็จ");
-  }
-} catch (err) {
-  console.error("❌ Fetch Error:", err);
-  setError("ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้ (ตรวจสอบ server หรือ URL)");
-}
+      const data = await res.json();
+
+      if (data.success) {
+        login(data.user.username, data.user.role);
+        navigate("/dashboard");
+      } else {
+        setError(data.message || "เข้าสู่ระบบไม่สำเร็จ");
+      }
+    } catch (err) {
+      console.error("❌ Fetch Error:", err);
+      setError("ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้ (ตรวจสอบ server หรือ URL)");
+    }
   };
-
-  const inputStyle = {
-    width: '100%',
-    padding: `12px ${isMobile ? 36 : 40}px 12px 40px`,
-    borderRadius: 10,
-    border: '1px solid #e6eefc',
-    outline: 'none',
-    boxSizing: 'border-box',
-    WebkitTapHighlightColor: 'transparent', // ป้องกัน highlight สีฟ้า
-    WebkitUserSelect: 'none',               // ป้องกัน select ข้อความ
-    userSelect: 'none',
-  };
-
 
   return (
-    <div style={{
-      padding: '1rem',
-      maxWidth: 980,
-      margin: '3rem auto',
-      background: 'linear-gradient(180deg,#ffffff,#fbfdff)',
-      borderRadius: 16,
-      boxShadow: '0 20px 60px rgba(2,6,23,0.08)'
-    }}>
-      <div style={{
-        display: 'flex',
-        flexWrap: 'wrap',
-        alignItems: 'stretch',
-      }}>
+    <div className="page-card" style={{ maxWidth: 980 }}>
+      <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'stretch' }}>
         {/* Sidebar Logo */}
         <div style={{
           flex: '1 1 360px',
@@ -122,11 +94,7 @@ const Login = () => {
         </div>
 
         {/* Login Form */}
-        <div style={{
-          flex: '1 1 420px',
-          minWidth: 300,
-          padding: '2.25rem',
-        }}>
+        <div style={{ flex: '1 1 420px', minWidth: 300, padding: '2.25rem' }}>
           <h2 style={{ color: '#0f172a', fontWeight: 800, marginBottom: 6 }}>เข้าสู่ระบบ</h2>
           <p style={{ color: '#6b7280', marginTop: 0, marginBottom: 18 }}>
             กรุณาเข้าสู่ระบบเพื่อจัดการการจองของคุณ
@@ -146,66 +114,44 @@ const Login = () => {
             )}
 
             {/* Username */}
-            <div style={{ position: 'relative' }}>
-              <div style={{
-                position: 'absolute',
-                left: 10,
-                top: '50%',
-                transform: 'translateY(-50%)'
-              }}>
+            <div className="form-group input-icon">
+              <div style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)' }}>
                 <Icon name="user" />
               </div>
               <input
+                className="nice-input"
                 name="username"
                 placeholder="ชื่อผู้ใช้ / Username"
                 value={form.username}
                 onChange={handleChange}
                 required
-                style={inputStyle}
+                autoComplete="username"
               />
             </div>
 
             {/* Password */}
-            <div style={{ position: 'relative' }}>
-              <div style={{
-                position: 'absolute',
-                left: 10,
-                top: '50%',
-                transform: 'translateY(-50%)'
-              }}>
+            <div className="form-group input-icon">
+              <div style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)' }}>
                 <Icon name="lock" />
               </div>
               <input
+                className="nice-input"
                 name="password"
-                
+                type="password"
                 placeholder="รหัสผ่าน / Password"
                 value={form.password}
                 onChange={handleChange}
                 required
-                style={inputStyle}
+                autoComplete="current-password"
               />
-              
             </div>
 
             {/* Submit */}
             <button
               type="submit"
+              className="btn-primary"
               disabled={!form.username || !form.password}
-              style={{
-                width: '100%',
-                padding: '12px',
-                background: (!form.username || !form.password)
-                  ? '#cbd5e1'
-                  : 'linear-gradient(90deg,#06b6d4,#4f46e5)',
-                color: '#fff',
-                border: 'none',
-                borderRadius: 10,
-                marginTop: 6,
-                fontWeight: 800,
-                boxShadow: '0 8px 24px rgba(79,70,229,0.12)',
-                cursor: (!form.username || !form.password) ? 'not-allowed' : 'pointer',
-                transition: '0.3s'
-              }}
+              style={{ marginTop: 6, opacity: (!form.username || !form.password) ? 0.75 : 1 }}
             >
               เข้าสู่ระบบ
             </button>

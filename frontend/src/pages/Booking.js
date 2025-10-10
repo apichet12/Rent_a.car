@@ -225,26 +225,19 @@ const DateRangeField = ({ label, name, value, onChange, ACCENT_COLOR, LIGHT_BG, 
 };
 
 const InputField = ({ label, name, value, onChange, placeholder, disabled = false, TEXT_COLOR, ACCENT_COLOR, required, fullWidth, gridSpan }) => (
-  <div style={{ marginBottom: '1rem', gridColumn: gridSpan ? `span ${gridSpan}` : 'auto' }}>
-    <label style={{ display: 'block', fontWeight: 600, marginBottom: 5, color: TEXT_COLOR, fontSize: 14 }}>
+  <div className="form-group" style={{ marginBottom: '1rem', gridColumn: gridSpan ? `span ${gridSpan}` : 'auto' }}>
+    <label style={{ display: 'block', fontWeight: 600, marginBottom: 6, color: TEXT_COLOR, fontSize: 14 }}>
       {label} {required && <span style={{ color: RED_COLOR }}>*</span>}
     </label>
     <input
+      className="nice-input"
       type="text"
       name={name}
       value={value}
       onChange={onChange}
       placeholder={placeholder}
       disabled={disabled}
-      style={{
-        width: '100%',
-        padding: '0.6rem 0.8rem',
-        borderRadius: 10,
-        border: `1px solid ${BORDER_COLOR}`,
-        fontSize: 14,
-        color: disabled ? SUB_TEXT_COLOR : TEXT_COLOR,
-        background: disabled ? LIGHT_BG : CARD_BG
-      }}
+      style={{ background: disabled ? LIGHT_BG : CARD_BG, color: disabled ? SUB_TEXT_COLOR : TEXT_COLOR }}
     />
   </div>
 );

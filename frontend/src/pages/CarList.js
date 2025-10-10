@@ -80,9 +80,9 @@ const CarList = () => {
 
       {/* Filters */}
       <div className="filters">
-        <input placeholder="ค้นหาชื่อหรือคำอธิบาย" value={q} onChange={e=>setQ(e.target.value)} />
-        <input placeholder="ราคาต่ำสุด" value={minPrice} onChange={e=>setMinPrice(e.target.value)} />
-        <input placeholder="ราคาสูงสุด" value={maxPrice} onChange={e=>setMaxPrice(e.target.value)} />
+        <input className="nice-input" placeholder="ค้นหาชื่อหรือคำอธิบาย" value={q} onChange={e=>setQ(e.target.value)} />
+        <input className="nice-input" placeholder="ราคาต่ำสุด" value={minPrice} onChange={e=>setMinPrice(e.target.value)} />
+        <input className="nice-input" placeholder="ราคาสูงสุด" value={maxPrice} onChange={e=>setMaxPrice(e.target.value)} />
         <select value={seatsFilter} onChange={e=>setSeatsFilter(e.target.value)}>
           <option value="">ทุกจำนวนที่นั่ง</option>
           <option value="2">2</option>

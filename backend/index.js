@@ -9,6 +9,10 @@ const PORT = process.env.PORT || 5000;
 const fs = require('fs');
 const usersFile = path.join(__dirname, 'users.json');
 
+const carsFile = path.join(__dirname, 'cars.json');
+const bookingsFile = path.join(__dirname, 'bookings.json');
+const notificationsFile = path.join(__dirname, 'notifications.json');
+
 // helper to read/write users
 const readUsers = () => {
   try {
@@ -29,6 +33,33 @@ const writeUsers = (users) => {
   }
 };
 
+const readJSON = (file, fallback = []) => {
+  try {
+    if (!fs.existsSync(file)) return fallback;
+    const txt = fs.readFileSync(file, 'utf8') || '[]';
+    return JSON.parse(txt);
+  } catch (err) {
+    console.error('readJSON error', file, err);
+    return fallback;
+  }
+};
+
+const writeJSON = (file, data) => {
+  try {
+    fs.writeFileSync(file, JSON.stringify(data, null, 2), 'utf8');
+  } catch (err) {
+    console.error('writeJSON error', file, err);
+  }
+};
+
+// helpers for domain data
+const readCars = () => readJSON(carsFile, []);
+const writeCars = (arr) => writeJSON(carsFile, arr);
+const readBookings = () => readJSON(bookingsFile, []);
+const writeBookings = (arr) => writeJSON(bookingsFile, arr);
+const readNotifications = () => readJSON(notificationsFile, []);
+const writeNotifications = (arr) => writeJSON(notificationsFile, arr);
+
 // =========================
 // Middleware
 // =========================
@@ -39,12 +70,117 @@ app.use(express.json());
 // API Routes
 // =========================
 app.get('/api/cars', (req, res) => {
-  const cars = [
-    { id: 1, name: "Toyota Camry", price: 1000, seats: 5, fuel: "เบนซิน", image: "/img/toyota.jpg", desc: "รถสวย นั่งสบาย", features: ["แอร์", "ABS"] },
-    { id: 2, name: "Honda Civic", price: 900, seats: 5, fuel: "เบนซิน", image: "/img/honda.jpg", desc: "ประหยัดน้ำมัน", features: ["GPS", "Bluetooth"] },
-    { id: 3, name: "Tesla Model 3", price: 2500, seats: 5, fuel: "ไฟฟ้า", image: "/img/tesla.jpg", desc: "รถไฟฟ้า ทันสมัย", features: ["Autopilot", "Touchscreen"] },
-  ];
+  const cars = readCars();
   res.json(cars);
+});
+
+// Admin: add a car (expects body { adminUsername, car: { name, price, seats, fuel, image, desc, features } })
+app.post('/api/admin/cars', (req, res) => {
+  const { adminUsername, car } = req.body || {};
+  if (!adminUsername) return res.status(400).json({ success: false, message: 'ต้องระบุ adminUsername' });
+
+  const users = readUsers();
+  const admin = users.find(u => u.username === adminUsername);
+  if (!admin || admin.role !== 'admin') return res.status(403).json({ success: false, message: 'ต้องเป็นผู้ดูแลระบบ' });
+
+  if (!car || !car.name) return res.status(400).json({ success: false, message: 'ข้อมูลรถไม่ถูกต้อง' });
+
+  const cars = readCars();
+  const id = cars.length ? Math.max(...cars.map(c => c.id)) + 1 : 1;
+  const newCar = { id, ...car };
+  cars.push(newCar);
+  writeCars(cars);
+
+  // notification to admin area (info)
+  const notifications = readNotifications();
+  notifications.push({ id: Date.now(), type: 'car-added', message: `เพิ่มรถใหม่: ${newCar.name}`, time: new Date().toISOString() });
+  writeNotifications(notifications);
+
+  res.json({ success: true, car: newCar });
+});
+
+// Admin: delete car
+app.delete('/api/admin/cars/:id', (req, res) => {
+  const { id } = req.params;
+  const { adminUsername } = req.body || {};
+  if (!adminUsername) return res.status(400).json({ success: false, message: 'ต้องระบุ adminUsername' });
+
+  const users = readUsers();
+  const admin = users.find(u => u.username === adminUsername);
+  if (!admin || admin.role !== 'admin') return res.status(403).json({ success: false, message: 'ต้องเป็นผู้ดูแลระบบ' });
+
+  let cars = readCars();
+  const before = cars.length;
+  cars = cars.filter(c => String(c.id) !== String(id));
+  writeCars(cars);
+  if (cars.length === before) return res.status(404).json({ success: false, message: 'ไม่พบรถ' });
+
+  const notifications = readNotifications();
+  notifications.push({ id: Date.now(), type: 'car-removed', message: `ลบรถ id=${id}`, time: new Date().toISOString() });
+  writeNotifications(notifications);
+
+  res.json({ success: true });
+});
+
+// Create booking (customer)
+app.post('/api/bookings', (req, res) => {
+  const { username, carId, startDate, endDate, total } = req.body || {};
+  if (!username || !carId || !startDate || !endDate) return res.status(400).json({ success: false, message: 'ข้อมูลการจองไม่ครบ' });
+
+  const bookings = readBookings();
+  const id = bookings.length ? Math.max(...bookings.map(b => b.id)) + 1 : 1;
+  const booking = { id, username, carId, startDate, endDate, total: total || 0, status: 'pending', createdAt: new Date().toISOString() };
+  bookings.push(booking);
+  writeBookings(bookings);
+
+  // notify admin about new booking
+  const notifications = readNotifications();
+  notifications.push({ id: Date.now(), type: 'new-booking', message: `มีการจองใหม่ โดย ${username} สำหรับรถ id=${carId}`, time: new Date().toISOString(), bookingId: id });
+  writeNotifications(notifications);
+
+  // schedule a simple reminder to customer 24h before endDate (best-effort in-memory timer)
+  try {
+    const end = new Date(endDate);
+    const remindAt = new Date(end.getTime() - 24 * 60 * 60 * 1000);
+    const delay = Math.max(0, remindAt.getTime() - Date.now());
+    if (delay > 0 && delay < 1000 * 60 * 60 * 24 * 30) { // only schedule reasonable timers
+      setTimeout(() => {
+        const notes = readNotifications();
+        notes.push({ id: Date.now(), type: 'rental-ending-soon', message: `เตือน: การเช่าของ ${username} สำหรับ booking=${id} จะหมดใน 24 ชั่วโมง`, time: new Date().toISOString(), username });
+        writeNotifications(notes);
+      }, delay);
+    }
+  } catch (e) {
+    console.error('schedule reminder error', e);
+  }
+
+  res.json({ success: true, booking });
+});
+
+// Mark booking as paid (simulate payment callback)
+app.post('/api/bookings/:id/pay', (req, res) => {
+  const { id } = req.params;
+  const { username } = req.body || {}; // who paid
+  const bookings = readBookings();
+  const booking = bookings.find(b => String(b.id) === String(id));
+  if (!booking) return res.status(404).json({ success: false, message: 'ไม่พบ booking' });
+  booking.status = 'paid';
+  booking.paidAt = new Date().toISOString();
+  writeBookings(bookings);
+
+  const notifications = readNotifications();
+  notifications.push({ id: Date.now(), type: 'payment', message: `ลูกค้า ${username || booking.username} ชำระเงินเรียบร้อยสำหรับ booking=${id}`, time: new Date().toISOString(), bookingId: id });
+  writeNotifications(notifications);
+
+  res.json({ success: true, booking });
+});
+
+// Get notifications (admin or user can filter)
+app.get('/api/notifications', (req, res) => {
+  const { forUser } = req.query; // optional filter
+  let notes = readNotifications();
+  if (forUser) notes = notes.filter(n => n.username === forUser || !n.username);
+  res.json(notes);
 });
 
 app.get('/api', (req, res) => {

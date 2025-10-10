@@ -258,13 +258,7 @@ const Home = () => {
       <div style={{ maxWidth: 1200, margin: '0 auto' }}>
         <h2 style={{ fontSize: 26, color: '#111827', marginBottom: 12 }}>รถแนะนำ / Featured Cars</h2>
         <p style={{ color: '#6b7280', marginBottom: 18 }}>เลือกดูรถยอดนิยม พร้อมสถานะการจองแบบเรียลไทม์</p>
-        <input
-          type="text"
-          placeholder="ค้นหารถ..."
-          value={search}
-          onChange={e => setSearch(e.target.value)}
-          style={{ padding: 10, width: '100%', borderRadius: 12, marginBottom: 16 }}
-        />
+        <input className="nice-input" type="text" placeholder="ค้นหารถ..." value={search} onChange={e => setSearch(e.target.value)} style={{ marginBottom: 16 }} />
         <FeaturedCars searchQuery={search} />
       </div>
 

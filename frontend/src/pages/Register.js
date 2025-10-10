@@ -27,7 +27,7 @@ const Register = () => {
 
     
   // Prefer configured API_URL, otherwise use relative path so it works with the same-origin backend
-const SERVER_URL = 'http://localhost:5000/api/register';
+const SERVER_URL = process.env.REACT_APP_BACKEND_URL + '/api/register';
 
     try {
       const res = await fetch(SERVER_URL, {
@@ -68,7 +68,7 @@ const SERVER_URL = 'http://localhost:5000/api/register';
   };
 
   return (
-    <div style={{ padding: '1rem', maxWidth: 960, margin: '3rem auto', background: 'linear-gradient(180deg,#ffffff,#f8fafc)', borderRadius: 16, boxShadow: '0 12px 48px rgba(2,6,23,0.08)' }}>
+    <div className="page-card" style={{ maxWidth: 960 }}>
       <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'stretch' }}>
         <div style={{ flex: '1 1 320px', minWidth: 280, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2rem', background: 'linear-gradient(90deg,#f0f9ff,#eef2ff)', borderRadius: 12 }}>
           <img src="/logo192.png" alt="RentWheels logo" style={{ width: '100%', height: '100%', objectFit: 'contain', maxWidth: 420, maxHeight: 320 }} />
@@ -78,13 +78,25 @@ const SERVER_URL = 'http://localhost:5000/api/register';
           <h2 style={{ color: '#06b6d4', fontWeight: 'bold', marginBottom: '1rem' }}>สมัครสมาชิก / Register</h2>
           {error && <div style={{ background: '#fee2e2', color: '#991b1b', padding: 10, borderRadius: 8, marginBottom: 12 }}>{error}</div>}
           <form onSubmit={handleSubmit}>
-            <input name="username" placeholder="ชื่อผู้ใช้ / Username" value={form.username} onChange={handleChange} required style={{ width: '100%', margin: '8px 0', padding: '12px', borderRadius: '8px', border: '1px solid #e6eefc' }} />
-            <input name="email" type="email" placeholder="อีเมล / Email" value={form.email} onChange={handleChange} required style={{ width: '100%', margin: '8px 0', padding: '12px', borderRadius: '8px', border: '1px solid #e6eefc' }} />
-            <input name="name" placeholder="ชื่อ-สกุล (ไม่บังคับ)" value={form.name} onChange={handleChange} style={{ width: '100%', margin: '8px 0', padding: '12px', borderRadius: '8px', border: '1px solid #e6eefc' }} />
-            <input name="phone" placeholder="โทรศัพท์ (ไม่บังคับ)" value={form.phone} onChange={handleChange} style={{ width: '100%', margin: '8px 0', padding: '12px', borderRadius: '8px', border: '1px solid #e6eefc' }} />
-            <input name="password" type="password" placeholder="รหัสผ่าน / Password" value={form.password} onChange={handleChange} required style={{ width: '100%', margin: '8px 0', padding: '12px', borderRadius: '8px', border: '1px solid #e6eefc' }} />
-            <input name="confirmPassword" type="password" placeholder="ยืนยันรหัสผ่าน / Confirm Password" value={form.confirmPassword} onChange={handleChange} required style={{ width: '100%', margin: '8px 0', padding: '12px', borderRadius: '8px', border: '1px solid #e6eefc' }} />
-            <button type="submit" style={{ width: '100%', padding: '12px', background: 'linear-gradient(90deg,#06b6d4,#4f46e5)', color: '#fff', border: 'none', borderRadius: '8px', marginTop: '16px', fontWeight: 'bold', fontSize: '1.05rem' }}>สมัครสมาชิก</button>
+            <div className="form-group">
+              <input className="nice-input" name="username" placeholder="ชื่อผู้ใช้ / Username" value={form.username} onChange={handleChange} required />
+            </div>
+            <div className="form-group">
+              <input className="nice-input" name="email" type="email" placeholder="อีเมล / Email" value={form.email} onChange={handleChange} required />
+            </div>
+            <div className="form-group">
+              <input className="nice-input" name="name" placeholder="ชื่อ-สกุล (ไม่บังคับ)" value={form.name} onChange={handleChange} />
+            </div>
+            <div className="form-group">
+              <input className="nice-input" name="phone" placeholder="โทรศัพท์ (ไม่บังคับ)" value={form.phone} onChange={handleChange} />
+            </div>
+            <div className="form-group">
+              <input className="nice-input" name="password" type="password" placeholder="รหัสผ่าน / Password" value={form.password} onChange={handleChange} required />
+            </div>
+            <div className="form-group">
+              <input className="nice-input" name="confirmPassword" type="password" placeholder="ยืนยันรหัสผ่าน / Confirm Password" value={form.confirmPassword} onChange={handleChange} required />
+            </div>
+            <button type="submit" className="btn-primary" style={{ width: '100%', marginTop: '16px', fontWeight: '700' }}>สมัครสมาชิก</button>
           </form>
           <div style={{ textAlign: 'center', marginTop: '1.25rem' }}>
             <span style={{ color: '#555' }}>มีบัญชีแล้ว?</span>

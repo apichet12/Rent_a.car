@@ -13,6 +13,10 @@ body {
   overflow-x: hidden; /* ป้องกัน scroll แนวนอน */
 }
 
+:root {
+  --tap-min: 48px;
+}
+
 /* --- Container --- */
 .container {
   padding: 1rem;
@@ -72,6 +76,11 @@ button, a {
   font-weight: 600;
   border: none;
   transition: all 0.2s ease;
+}
+
+/* ensure tappable controls meet recommended tap size on small screens */
+@media (max-width: 600px) {
+  button, a { min-height: var(--tap-min); }
 }
 button:disabled {
   cursor: not-allowed;
