@@ -8,7 +8,7 @@ export const CarProvider = ({ children }) => {
   const [favorites, setFavorites] = useState({});
 
   useEffect(() => {
-    // Load availability จาก localStorage
+    
     const storedAvailability = localStorage.getItem('cars_availability');
     const storedFavorites = localStorage.getItem('cars_favorites');
 
@@ -22,7 +22,7 @@ export const CarProvider = ({ children }) => {
     setCars(initialCars);
     setFavorites(storedFavorites ? JSON.parse(storedFavorites) : {});
 
-    // Save initial availability ถ้ายังไม่มี
+    
     if (!storedAvailability) {
       const map = {};
       initialCars.forEach(x => (map[x.id] = x.available));

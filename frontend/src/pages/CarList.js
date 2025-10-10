@@ -19,14 +19,13 @@ const CarList = () => {
   const [onlyAvailable, setOnlyAvailable] = useState(false);
   const [sortBy, setSortBy] = useState('recommended');
 
-  // Fetch cars from API
  useEffect(() => {
   const fetchCars = async () => {
     try {
-      const res = await fetch('/data/cars.json'); // fetch จาก public folder
+      const res = await fetch('/data/cars.json'); 
       const data = await res.json();
 
-      // โหลดสถานะ availability จาก localStorage
+      
       const stored = JSON.parse(localStorage.getItem('cars_availability') || '{}');
       const carsWithAvailability = data.map(c => ({
         ...c,
@@ -34,12 +33,10 @@ const CarList = () => {
       }));
       setCars(carsWithAvailability);
 
-      // สร้าง map availability ใน localStorage
       const map = {};
       carsWithAvailability.forEach(c => (map[c.id] = c.available));
       localStorage.setItem('cars_availability', JSON.stringify(map));
 
-      // โหลด favorites
       const storedFav = JSON.parse(localStorage.getItem('cars_favorites') || '{}');
       setFavorites(storedFav);
 
@@ -78,7 +75,7 @@ const CarList = () => {
     <div style={{padding:'2rem', maxWidth:'1200px', margin:'0 auto'}}>
       <h2 style={{textAlign:'center', fontSize:'2rem', fontWeight:700}}>เลือกรถ / Select Car</h2>
 
-      {/* Filters */}
+     
       <div className="filters">
         <input className="nice-input" placeholder="ค้นหาชื่อหรือคำอธิบาย" value={q} onChange={e=>setQ(e.target.value)} />
         <input className="nice-input" placeholder="ราคาต่ำสุด" value={minPrice} onChange={e=>setMinPrice(e.target.value)} />
@@ -107,7 +104,7 @@ const CarList = () => {
         <button onClick={()=>{setQ(''); setMinPrice(''); setMaxPrice(''); setSeatsFilter(''); setFuelFilter(''); setOnlyAvailable(false); setSortBy('recommended');}}>เคลียร์</button>
       </div>
 
-      {/* Car Cards */}
+      
       <div className="car-grid">
         {filteredCars.map(car => (
           <div key={car.id} className="car-card">
@@ -131,7 +128,7 @@ const CarList = () => {
         ))}
       </div>
 
-      {/* Modal */}
+      
       {selected && (
         <div className="car-modal-backdrop" onClick={()=>setSelected(null)}>
           <div className="car-modal" onClick={e=>e.stopPropagation()}>
@@ -147,7 +144,6 @@ const CarList = () => {
         </div>
       )}
 
-      {/* CSS */}
       <style>{`
         .filters {display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-bottom:18px;}
         .filters input, .filters select, .filters button, .filters label {padding:10px; border-radius:8px; border:1px solid #e6eefc; min-width:120px;}

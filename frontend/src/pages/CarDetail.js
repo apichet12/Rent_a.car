@@ -20,7 +20,7 @@ const CarDetail = () => {
         console.warn('Backend ไม่ตอบสนอง, ใช้ mock data แทน');
         const fallbackCar = carsData.find(c => String(c.id) === String(id));
         if (fallbackCar) {
-          setCar({ ...fallbackCar, available: Math.random() > 0.3 }); // เพิ่มสถานะ available แบบ random
+          setCar({ ...fallbackCar, available: Math.random() > 0.3 }); // 
         } else {
           setError('รถไม่พบ');
         }
@@ -77,7 +77,7 @@ const CarDetail = () => {
         </aside>
       </div>
 
-      {/* Responsive สำหรับมือถือ */}
+      {/* สำหรับมือถือ */}
       <style>
         {`
           @media (max-width: 768px) {
