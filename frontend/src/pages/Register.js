@@ -18,15 +18,14 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-
-    // ตรวจสอบ password confirm
+    
+    
     if (form.password !== form.confirmPassword) {
       setError('รหัสผ่านไม่ตรงกัน');
       return;
     }
 
     
-  // Prefer configured API_URL, otherwise use relative path so it works with the same-origin backend
 const SERVER_URL = process.env.REACT_APP_BACKEND_URL + '/api/register';
 
     try {
@@ -42,12 +41,11 @@ const SERVER_URL = process.env.REACT_APP_BACKEND_URL + '/api/register';
         })
       });
 
-      // รับ response เป็น text ก่อน
       const text = await res.text();
 
       let data;
       try {
-        data = JSON.parse(text); // พยายาม parse เป็น JSON
+        data = JSON.parse(text);
       } catch (err) {
         console.error('Response is not JSON:', text);
         setError('เกิดข้อผิดพลาดจาก server (ไม่ใช่ JSON)');
