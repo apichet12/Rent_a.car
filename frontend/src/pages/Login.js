@@ -72,93 +72,64 @@ const Login = () => {
   };
 
   return (
-    <div className="page-card" style={{ maxWidth: 980 }}>
-      <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'stretch' }}>
-        {/* Sidebar Logo */}
-        <div style={{
-          flex: '1 1 360px',
-          minWidth: 300,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          padding: '2.25rem',
-          background: 'linear-gradient(180deg,#eef8ff,#f3f8ff)',
-          borderRadius: 12,
-          marginBottom: 16,
-        }}>
-          <div style={{ textAlign: 'center' }}>
-            <img src="/logo192.png" alt="RentWheels" style={{ width: 220, marginBottom: 14 }} />
-            <div style={{ color: '#0f172a', fontWeight: 700, fontSize: 18 }}>RentWheels</div>
-            <div style={{ color: '#475569', fontSize: 13 }}>Your journey starts here</div>
+    <div style={{ display: 'flex', justifyContent: 'center', padding: 24 }}>
+      <div style={{ width: '100%', maxWidth: 1000 }}>
+        <div style={{ display: 'flex', gap: 18, flexWrap: 'wrap' }}>
+          {/* Left hero with logo and description */}
+          <div style={{ flex: '1 1 360px', minWidth: 300, padding: 28, borderRadius: 12, background: 'linear-gradient(180deg,#f0fbff,#eef6ff)', boxShadow: '0 8px 30px rgba(2,6,23,0.04)' }}>
+            <div style={{ textAlign: 'left' }}>
+              <img src="/logo192.png" alt="logo" style={{ width: 120, marginBottom: 12 }} />
+              <h1 style={{ margin: 0, marginTop: 6, fontSize: 26, color: '#07203a' }}>ยินดีต้อนรับสู่ Drivehub</h1>
+              <p style={{ color: '#475569', marginTop: 8 }}>เข้าสู่ระบบสมาชิกติดตามสถานะกับเราได้ง่ายกว่า</p>
+
+              <div style={{ marginTop: 20 }}>
+                <button className="btn-ghost" style={{ width: '100%', padding: 12, borderRadius: 8, marginBottom: 10 }} onClick={() => alert('Login via email not implemented')}>📧 อีเมล</button>
+                <button className="btn-ghost" style={{ width: '100%', padding: 12, borderRadius: 8, marginBottom: 10 }} onClick={() => alert('Login via phone not implemented')}>📞 เบอร์โทรศัพท์</button>
+                <button className="btn-ghost" style={{ width: '100%', padding: 12, borderRadius: 8, marginBottom: 10 }} onClick={async () => {
+                  try {
+                    const r = await fetch('/auth/facebook');
+                    const j = await r.json();
+                    alert(j.message || 'Facebook login not configured');
+                  } catch (e) { alert('Facebook login error'); }
+                }}>🔵 เข้าสู่ระบบด้วย Facebook</button>
+                <button className="btn-ghost" style={{ width: '100%', padding: 12, borderRadius: 8 }} onClick={async () => {
+                  try {
+                    const r = await fetch('/auth/google');
+                    const j = await r.json();
+                    alert(j.message || 'Google login not configured');
+                  } catch (e) { alert('Google login error'); }
+                }}>🔴 เข้าสู่ระบบด้วย Google</button>
+              </div>
+
+            </div>
           </div>
-        </div>
 
-        {/* Login Form */}
-        <div style={{ flex: '1 1 420px', minWidth: 300, padding: '2.25rem' }}>
-          <h2 style={{ color: '#0f172a', fontWeight: 800, marginBottom: 6 }}>เข้าสู่ระบบ</h2>
-          <p style={{ color: '#6b7280', marginTop: 0, marginBottom: 18 }}>
-            กรุณาเข้าสู่ระบบเพื่อจัดการการจองของคุณ
-          </p>
+          {/* Right: form */}
+          <div style={{ flex: '1 1 420px', minWidth: 300, padding: 28, background: '#fff', borderRadius: 12, boxShadow: '0 8px 30px rgba(2,6,23,0.04)' }}>
+            <h2 style={{ color: '#07203a', fontWeight: 800, marginBottom: 6 }}>เข้าสู่ระบบ</h2>
+            <p style={{ color: '#6b7280', marginTop: 0, marginBottom: 18 }}>กรุณาเข้าสู่ระบบเพื่อจัดการการจองหรือดูรายละเอียดรถ</p>
 
-          <form onSubmit={handleSubmit} style={{ display: 'grid', gap: 12 }}>
-            {error && (
-              <div style={{
-                background: '#fee2e2',
-                color: '#b91c1c',
-                padding: '10px 12px',
-                borderRadius: 8,
-                fontSize: 14
-              }}>
-                {error}
+            <form onSubmit={handleSubmit} style={{ display: 'grid', gap: 12 }}>
+              {error && (
+                <div style={{ background: '#fff1f2', color: '#991b1b', padding: '10px 12px', borderRadius: 8, fontSize: 14 }}>{error}</div>
+              )}
+
+              <div style={{ position: 'relative' }}>
+                <div style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)' }}><Icon name="user" /></div>
+                <input className="nice-input" name="username" placeholder="ชื่อผู้ใช้ / Username" value={form.username} onChange={handleChange} required autoComplete="username" style={{ paddingLeft: 40 }} />
               </div>
-            )}
 
-            {/* Username */}
-            <div className="form-group input-icon">
-              <div style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)' }}>
-                <Icon name="user" />
+              <div style={{ position: 'relative' }}>
+                <div style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)' }}><Icon name="lock" /></div>
+                <input className="nice-input" name="password" type="password" placeholder="รหัสผ่าน / Password" value={form.password} onChange={handleChange} required autoComplete="current-password" style={{ paddingLeft: 40 }} />
               </div>
-              <input
-                className="nice-input"
-                name="username"
-                placeholder="ชื่อผู้ใช้ / Username"
-                value={form.username}
-                onChange={handleChange}
-                required
-                autoComplete="username"
-              />
+
+              <button type="submit" className="btn-primary" disabled={!form.username || !form.password} style={{ marginTop: 6, fontWeight: 800 }}>เข้าสู่ระบบ</button>
+            </form>
+
+            <div style={{ textAlign: 'center', marginTop: 16, color: '#475569' }}>
+              ยังไม่มีบัญชี? <a href="/register" style={{ color: '#06b6d4', fontWeight: 700, textDecoration: 'none' }}>สมัครสมาชิกใหม่ฟรี!</a>
             </div>
-
-            {/* Password */}
-            <div className="form-group input-icon">
-              <div style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)' }}>
-                <Icon name="lock" />
-              </div>
-              <input
-                className="nice-input"
-                name="password"
-                type="password"
-                placeholder="รหัสผ่าน / Password"
-                value={form.password}
-                onChange={handleChange}
-                required
-                autoComplete="current-password"
-              />
-            </div>
-
-            {/* Submit */}
-            <button
-              type="submit"
-              className="btn-primary"
-              disabled={!form.username || !form.password}
-              style={{ marginTop: 6, opacity: (!form.username || !form.password) ? 0.75 : 1 }}
-            >
-              เข้าสู่ระบบ
-            </button>
-          </form>
-
-          <div style={{ textAlign: 'center', marginTop: 16, color: '#475569' }}>
-            ยังไม่มีบัญชี? <a href="/register" style={{ color: '#06b6d4', fontWeight: 700, textDecoration: 'none' }}>สมัครสมาชิก</a>
           </div>
         </div>
       </div>

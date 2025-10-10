@@ -8,19 +8,24 @@ const CarDetail = () => {
   const [car, setCar] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [reviews, setReviews] = useState([]);
 
   useEffect(() => {
     const fetchCar = async () => {
       try {
-        const res = await fetch(`https://rentacar-0kj9.onrender.com/cars/${id}`);
-        if (!res.ok) throw new Error('รถไม่พบ (Car not found)');
-        const data = await res.json();
-        setCar(data);
+        // try backend first (relative path)
+        const res = await fetch(`/api/cars/${id}`);
+        if (res.ok) {
+          const data = await res.json();
+          setCar({ ...data, features: data.features || [] });
+        } else {
+          throw new Error('รถไม่พบจาก backend');
+        }
       } catch (err) {
-        console.warn('Backend ไม่ตอบสนอง, ใช้ mock data แทน');
+        console.warn('Backend ไม่ตอบสนองหรือไม่พบรถ, ใช้ mock data แทน', err && err.message);
         const fallbackCar = carsData.find(c => String(c.id) === String(id));
         if (fallbackCar) {
-          setCar({ ...fallbackCar, available: Math.random() > 0.3 }); // 
+          setCar({ ...fallbackCar, available: Math.random() > 0.3, features: fallbackCar.features || [] });
         } else {
           setError('รถไม่พบ');
         }
@@ -29,6 +34,18 @@ const CarDetail = () => {
       }
     };
     fetchCar();
+  }, [id]);
+
+  useEffect(() => {
+    const fetchReviews = async () => {
+      try {
+        const res = await fetch(`/api/reviews`);
+        if (!res.ok) return;
+        const data = await res.json();
+        setReviews(data.filter(r => String(r.carId || '') === String(id) || !r.carId).slice(0,5));
+      } catch (e) { /* ignore */ }
+    };
+    fetchReviews();
   }, [id]);
 
   if (loading) return <div style={{ padding: 24 }}>กำลังโหลดข้อมูล...</div>;
@@ -56,6 +73,21 @@ const CarDetail = () => {
               </li>
             ))}
           </ul>
+
+          <h3 style={{ marginTop: 16 }}>รีวิวจากลูกค้า</h3>
+          {reviews.length === 0 ? (
+            <div style={{ color: '#6b7280' }}>ยังไม่มีรีวิวสำหรับรถคันนี้</div>
+          ) : (
+            <div style={{ display: 'grid', gap: 8, marginTop: 8 }}>
+              {reviews.map(r => (
+                <div key={r.id} style={{ background: '#fff', padding: 10, borderRadius: 8, boxShadow: '0 4px 16px rgba(2,6,23,0.03)' }}>
+                  <div style={{ fontWeight: 700 }}>{r.name}</div>
+                  <div style={{ color: '#6b7280', fontSize: 13 }}>{new Date(r.createdAt).toLocaleDateString('th-TH')}</div>
+                  <div style={{ marginTop: 8 }}>{r.comment}</div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         <aside style={{ background: '#fff', padding: 16, borderRadius: 12, boxShadow: '0 8px 32px rgba(2,6,23,0.06)' }}>

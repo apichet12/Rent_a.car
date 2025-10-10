@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
-const ACCENT_COLOR = '#007BFF';
+  const ACCENT_COLOR = '#0066FF';
 const ACCENT_LIGHT = '#EBF5FF';
 const LIGHT_BG = '#F7F9FC';
 const CARD_BG = '#FFFFFF';
@@ -327,26 +327,17 @@ const SummaryCard = ({ preCar, durationDays, totalPrice }) => {
       </div>
 
       {/* Total */}
-      <div
-        style={{
-          marginTop: 25,
-          paddingTop: 15,
-          borderTop: `2px solid ${ACCENT_COLOR}`,
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-        }}
-      >
-        <span style={{ fontWeight: 700, fontSize: 17, color: TEXT_COLOR }}>ยอดชำระรวม</span>
-        <span
-          style={{
-            fontWeight: 800,
-            fontSize: 22,
-            color: ACCENT_COLOR,
-          }}
-        >
-          {totalPrice.toLocaleString()} ฿
-        </span>
+      <div style={{ marginTop: 25, paddingTop: 15, borderTop: `2px solid ${ACCENT_COLOR}` }}>
+        <div style={{ display: 'grid', gap: 8 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: SUB_TEXT_COLOR }}>ยอดรวม</span><strong>{totalPrice.toLocaleString()} ฿</strong></div>
+          <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: SUB_TEXT_COLOR }}>มัดจำ (10%)</span><strong>{Math.ceil(totalPrice * 0.1).toLocaleString()} ฿</strong></div>
+          <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: SUB_TEXT_COLOR }}>ค่าธรรมเนียม/ภาษี (โดยประมาณ)</span><strong>{Math.ceil(totalPrice * 0.07).toLocaleString()} ฿</strong></div>
+        </div>
+
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 12 }}>
+          <span style={{ fontWeight: 700, fontSize: 17 }}>ยอดที่ต้องชำระทันที</span>
+          <span style={{ fontWeight: 800, fontSize: 22, color: ACCENT_COLOR }}>{(Math.ceil(totalPrice * 0.1) + Math.ceil(totalPrice * 0.07)).toLocaleString()} ฿</span>
+        </div>
       </div>
 
       {/* Note */}
