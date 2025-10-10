@@ -69,25 +69,41 @@ app.post('/api/register', async (req, res) => {
 const otpStore = new Map(); // phone -> code
 
 app.post('/api/otp/send', async (req, res) => {
-  const { phone } = req.body || {};
+  let { phone } = req.body || {};
   if (!phone) return res.status(400).json({ success: false, message: 'ต้องระบุหมายเลขโทรศัพท์' });
+  // normalize phone -> digits only (e.g. +66-8xx -> 668xx)
+  phone = ('' + phone).replace(/\D/g, '');
+  if (!phone) return res.status(400).json({ success: false, message: 'หมายเลขโทรศัพท์ไม่ถูกต้อง' });
   const code = Math.floor(100000 + Math.random() * 900000).toString();
-  otpStore.set(phone, { code, createdAt: Date.now() });
+  const createdAt = Date.now();
+  otpStore.set(phone, { code, createdAt });
   console.log(`OTP for ${phone}: ${code}`);
   // TODO: send via SMS provider
-  res.json({ success: true, message: 'ส่งรหัส OTP แล้ว (mock)', code: process.env.NODE_ENV === 'development' ? code : undefined });
+  const debugOtp = process.env.SHOW_OTP === 'true' || process.env.NODE_ENV === 'development';
+  res.json({ success: true, message: 'ส่งรหัส OTP แล้ว (mock)', code: debugOtp ? code : undefined, phone });
 });
 
 app.post('/api/otp/verify', async (req, res) => {
-  const { phone, code } = req.body || {};
+  let { phone, code } = req.body || {};
   if (!phone || !code) return res.status(400).json({ success: false, message: 'ข้อมูลไม่ครบ' });
+  phone = ('' + phone).replace(/\D/g, '');
+  if (process.env.SHOW_OTP === 'true' || process.env.NODE_ENV === 'development') {
+    console.log('OTP verify incoming', { rawPhone: req.body && req.body.phone, rawCode: req.body && req.body.code });
+  }
   const item = otpStore.get(phone);
-  if (!item) return res.status(400).json({ success: false, message: 'ไม่มีรหัส OTP' });
-  if (item.code !== String(code)) return res.status(400).json({ success: false, message: 'รหัสไม่ถูกต้อง' });
+  if (!item) return res.status(400).json({ success: false, message: 'ไม่มีรหัส OTP สำหรับหมายเลขนี้' });
+  // expiry 10 minutes
+  const now = Date.now();
+  if (now - item.createdAt > 1000 * 60 * 10) {
+    otpStore.delete(phone);
+    return res.status(400).json({ success: false, message: 'รหัส OTP หมดอายุ กรุณาขอรหัสใหม่' });
+  }
+  if (item.code !== String(code).trim()) return res.status(400).json({ success: false, message: 'รหัส OTP ไม่ถูกต้อง' });
   // OTP ok
   otpStore.delete(phone);
-  res.json({ success: true });
+  res.json({ success: true, phone });
 });
+
 
 // --- OAuth server-side skeleton (redirects) ---
 app.get('/auth/google/redirect', (req, res) => {
