@@ -8,6 +8,19 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// Serve React frontend build if present
+const path = require('path');
+const frontendBuildPath = path.join(__dirname, '../frontend/build');
+app.use(express.static(frontendBuildPath));
+
+// SPA fallback for non-API routes
+app.use((req, res, next) => {
+  if (req.path.startsWith('/api')) return next();
+  res.sendFile(path.join(frontendBuildPath, 'index.html'), err => {
+    if (err) return next();
+  });
+});
+
 // ===== MySQL connection pool =====
 const pool = mysql.createPool({
   host: process.env.DB_HOST || 'localhost',

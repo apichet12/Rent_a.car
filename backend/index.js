@@ -86,6 +86,27 @@ app.get('/api/cars', async (req, res) => {
   } catch (err) { console.error(err); res.status(500).json({ success: false, message: 'DB error' }); }
 });
 
+// Health check - basic
+app.get('/api/health', async (req, res) => {
+  try {
+    res.json({ ok: true, uptime: process.uptime() });
+  } catch (err) {
+    console.error('health error', err);
+    res.status(500).json({ ok: false, message: 'health check failed' });
+  }
+});
+
+// Debug DB connectivity - runs a lightweight query and returns result or error message
+app.get('/api/debug/db', async (req, res) => {
+  try {
+    const [rows] = await pool.query('SELECT 1 as ok');
+    res.json({ ok: true, db: rows });
+  } catch (err) {
+    console.error('DB debug error', err && err.message ? err.message : err);
+    res.status(500).json({ ok: false, message: err && err.message ? err.message : 'DB error' });
+  }
+});
+
 // Admin: add a car (expects body { adminUsername, car: { name, price, seats, fuel, image, desc, features } })
 app.post('/api/admin/cars', async (req, res) => {
   const { adminUsername, car } = req.body || {};
