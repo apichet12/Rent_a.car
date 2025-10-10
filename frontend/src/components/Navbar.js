@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import './Navbar.css';
@@ -10,6 +10,25 @@ const Navbar = () => {
   const [showMenu, setShowMenu] = useState(false);
   const [showAuth, setShowAuth] = useState(false);
   const { user, logout } = useContext(AuthContext);
+  const dropdownRef = useRef(null);
+  const linksRef = useRef(null);
+
+  useEffect(() => {
+    function handleClickOutside(e) {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setShowAuth(false);
+      }
+      if (linksRef.current && !linksRef.current.contains(e.target)) {
+        setShowMenu(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('touchstart', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('touchstart', handleClickOutside);
+    };
+  }, []);
 
   const toggleMenu = () => setShowMenu(prev => !prev);
 
@@ -22,12 +41,12 @@ const Navbar = () => {
         </div>
       </div>
 
-      <div className={`navbar-links ${showMenu ? 'show' : ''}`}>
+      <div ref={linksRef} className={`navbar-links ${showMenu ? 'show' : ''}`}>
             <div className="navbar-topmenu">
               <Link to="/cars" className="menu-item" onClick={() => setShowMenu(false)}>เช่ารถกับ Drivehub</Link>
               <Link to="/help" className="menu-item" onClick={() => setShowMenu(false)}>ความช่วยเหลือ</Link>
-              <div className="menu-item dropdown">
-                <button className="dropdown-toggle" onClick={() => setShowAuth(!showAuth)}>สมัครสมาชิก / ลงชื่อเข้าใช้ <span style={{ marginLeft: 6 }}>▾</span></button>
+              <div ref={dropdownRef} className="menu-item dropdown">
+                <button className="dropdown-toggle" onClick={(e) => { e.stopPropagation(); setShowAuth(!showAuth); }}>สมัครสมาชิก / ลงชื่อเข้าใช้ <span style={{ marginLeft: 6 }}>▾</span></button>
                 {showAuth && (
                   <div className="dropdown-menu">
                     <Link to="/login" className="dropdown-item" onClick={() => { setShowMenu(false); setShowAuth(false); }}>เข้าสู่ระบบ</Link>
