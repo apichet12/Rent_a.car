@@ -1,21 +1,15 @@
 import React, { useState, useContext } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import './Navbar.css';
 
-const navItems = [
-  { to: '/', label: 'หน้าแรก' },
-  { to: '/cars', label: 'เลือกรถ' },
-  { to: '/gallery', label: 'แกลเลอรี่' },
-  { to: '/booking', label: 'จองรถ' },
-  { to: '/review', label: 'รีวิว' },
-  { to: '/contact', label: 'ติดต่อ' },
-];
+// top-level menu is the Drivehub-style center menu; legacy nav items removed per design
 
 const Navbar = () => {
-  const location = useLocation();
+  // Keeping showMenu for mobile toggle
   const [showMenu, setShowMenu] = useState(false);
-    const { user, logout } = useContext(AuthContext);
+  const [showAuth, setShowAuth] = useState(false);
+  const { user, logout } = useContext(AuthContext);
 
   const toggleMenu = () => setShowMenu(prev => !prev);
 
@@ -27,26 +21,20 @@ const Navbar = () => {
       </div>
 
       <div className={`navbar-links ${showMenu ? 'show' : ''}`}>
-        <div className="navbar-topmenu">
-          <div className="menu-item">เช่ารถกับ Drivehub ▾</div>
-          <div className="menu-item">ความช่วยเหลือ</div>
-          <div className="menu-item">สมัครสมาชิก/ลงชื่อเข้าใช้ ▾</div>
-        </div>
-        {navItems.map(item => (
-          <Link
-            key={item.to}
-            to={item.to}
-            className={`navbar-link ${location.pathname === item.to ? 'active' : ''}`}
-            onClick={() => setShowMenu(false)}
-          >
-            {item.label}
-          </Link>
-        ))}
-
-        {/* Admin link only visible to admin role */}
-        {user && user.role === 'admin' && (
-          <Link to="/admin" className={`navbar-link ${location.pathname === '/admin' ? 'active' : ''}`} onClick={() => setShowMenu(false)}>Admin</Link>
-        )}
+            <div className="navbar-topmenu">
+              <Link to="/cars" className="menu-item" onClick={() => setShowMenu(false)}>เช่ารถกับ Drivehub</Link>
+              <Link to="/help" className="menu-item" onClick={() => setShowMenu(false)}>ความช่วยเหลือ</Link>
+              <div className="menu-item dropdown">
+                <button className="dropdown-toggle" onClick={() => setShowAuth(!showAuth)}>สมัครสมาชิก / ลงชื่อเข้าใช้ <span style={{ marginLeft: 6 }}>▾</span></button>
+                {showAuth && (
+                  <div className="dropdown-menu">
+                    <Link to="/login" className="dropdown-item" onClick={() => { setShowMenu(false); setShowAuth(false); }}>เข้าสู่ระบบ</Link>
+                    <Link to="/register" className="dropdown-item" onClick={() => { setShowMenu(false); setShowAuth(false); }}>สมัครสมาชิก</Link>
+                  </div>
+                )}
+              </div>
+            </div>
+        {/* legacy nav removed - only center topmenu + contact remain */}
 
         {/* Auth actions */}
         <div className="navbar-contact" style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
@@ -58,17 +46,17 @@ const Navbar = () => {
               <button className="navbar-link" onClick={() => { logout(); setShowMenu(false); }} style={{ background: 'transparent', border: 'none', padding: 0 }}>ออกจากระบบ</button>
             </>
           ) : (
-            <Link to="/login" className={`navbar-link ${location.pathname === '/login' ? 'active' : ''}`} onClick={() => setShowMenu(false)}>เข้าสู่ระบบ</Link>
+            <Link to="/login" className={`navbar-link`} onClick={() => setShowMenu(false)}>เข้าสู่ระบบ</Link>
           )}
         </div>
       </div>
 
       {/* Hamburger */}
-      <div className="navbar-toggle" onClick={toggleMenu}>
-        <span></span>
-        <span></span>
-        <span></span>
-      </div>
+          <div className="navbar-toggle" onClick={toggleMenu} aria-label="Toggle menu">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
     </nav>
   );
 };
