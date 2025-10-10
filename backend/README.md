@@ -23,4 +23,7 @@
 4. (ไม่บังคับ) รัน `node seed_data.js` เพื่อใส่ข้อมูลเริ่มต้น
 5. สร้าง frontend build ด้วย `cd ../frontend && npm install --legacy-peer-deps && npm run build` แล้วสตาร์ทเซิร์ฟเวอร์ด้วย `npm start` ในโฟลเดอร์ backend
 
+## Social login / OAuth
+
+ไฟล์นี้รวม placeholder endpoints `/auth/google` และ `/auth/facebook` หากต้องการเปิดใช้ social login ให้ตั้งค่า client id/secret ใน environment (ดู `.env.example`) และ implement OAuth callback flow ใน `server.js` หรือแยกไฟล์ controller แยกต่างหาก
 หมายเหตุ: เซิร์ฟเวอร์จะเสิร์ฟไฟล์ build ของ React จาก `../frontend/build` และ expose API ที่ `/api/*`.

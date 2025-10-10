@@ -143,6 +143,17 @@ app.post('/api/reviews', async (req, res) => {
   }
 });
 
+// --- OAuth placeholders (optional) ---
+// These endpoints are placeholders to wire the frontend social buttons to.
+// Implement real OAuth flow (exchange code, validate token) if you enable social login.
+app.get('/auth/google', (req, res) => {
+  res.json({ success: false, message: 'Google OAuth not configured. Set GOOGLE_CLIENT_ID/SECRET in env and implement callback.' });
+});
+
+app.get('/auth/facebook', (req, res) => {
+  res.json({ success: false, message: 'Facebook OAuth not configured. Set FACEBOOK_CLIENT_ID/SECRET in env and implement callback.' });
+});
+
 // ===== Start server =====
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
