@@ -46,6 +46,76 @@
   cursor: pointer;
 }
 
+/* Dropdown */
+.dropdown {
+  position: relative;
+}
+.dropdown-toggle {
+  background: transparent;
+  border: none;
+  font-size: 14px;
+  color: #0f172a;
+  cursor: pointer;
+  padding: 6px 8px;
+}
+.dropdown-menu {
+  position: absolute;
+  top: 34px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #ffffff;
+  min-width: 220px;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(31,41,55,0.08);
+  padding: 12px 8px;
+  z-index: 40;
+}
+.dropdown-menu::before {
+  content: '';
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 16px;
+  height: 16px;
+  background: #ffffff;
+  transform: translateX(-50%) rotate(45deg);
+  box-shadow: -3px -3px 6px rgba(31,41,55,0.02);
+}
+.dropdown-item {
+  display: block;
+  padding: 10px 12px;
+  color: #0f172a;
+  text-decoration: none;
+  border-radius: 8px;
+}
+.dropdown-item:hover {
+  background: #f8fafc;
+}
+
+/* Auth CTA inside dropdown */
+.dropdown .cta { 
+  display: block;
+  width: 100%;
+  text-align: center;
+  margin: 8px 0;
+}
+.btn-primary {
+  background: #0ea5e9;
+  color: #fff;
+  border: none;
+  padding: 10px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.btn-outline {
+  background: transparent;
+  border: 1px solid #0ea5e9;
+  color: #0ea5e9;
+  padding: 8px 12px;
+  border-radius: 8px;
+}
+
 .navbar-contact {
   display: flex;
   align-items: center;

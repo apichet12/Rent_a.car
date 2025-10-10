@@ -16,8 +16,10 @@ const Navbar = () => {
   return (
     <nav className="navbar">
       <div className="navbar-left" style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-        <img src="/logo192.png" alt="Drivehub" style={{ width: 36, height: 36 }} />
-        <span className="navbar-brand">DRIVEHUB</span>
+        <img src="/logo192.png" alt="Rent a car logo" style={{ width: 40, height: 40 }} />
+        <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1 }}>
+          <span className="navbar-brand">Rent a car with Catty Pa Plearn</span>
+        </div>
       </div>
 
       <div className={`navbar-links ${showMenu ? 'show' : ''}`}>
