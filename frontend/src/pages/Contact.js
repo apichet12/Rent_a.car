@@ -5,7 +5,6 @@ const Contact = () => {
   const handleChange = e => setForm({ ...form, [e.target.name]: e.target.value });
   const handleSubmit = e => {
     e.preventDefault();
-    // TODO: ส่งข้อความไป backend
     alert('ส่งข้อความสำเร็จ!');
     setForm({ name: '', email: '', message: '' });
   };

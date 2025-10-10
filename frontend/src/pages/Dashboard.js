@@ -15,7 +15,6 @@ const Dashboard = () => {
     <div style={{ padding: '1.5rem', maxWidth: 1200, margin: '0 auto' }}>
       <h2 style={{ marginBottom: '1.5rem', color: '#0f172a' }}>Dashboard (Admin)</h2>
 
-      {/* Cards */}
       <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
         {[
           { title: 'ยอดจองวันนี้', value: '12', color: '#06b6d4' },
@@ -41,7 +40,6 @@ const Dashboard = () => {
         ))}
       </div>
 
-      {/* Mock Graph */}
       <div style={{ marginTop: '2rem' }}>
         <h3 style={{ marginBottom: '0.5rem' }}>กราฟยอดจอง (Mockup)</h3>
         <div

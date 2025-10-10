@@ -254,7 +254,6 @@ const Home = () => {
         </div>
       </section>
 
-      {/* FEATURED CARS */}
       <div style={{ maxWidth: 1200, margin: '0 auto' }}>
         <h2 style={{ fontSize: 26, color: '#111827', marginBottom: 12 }}>รถแนะนำ / Featured Cars</h2>
         <p style={{ color: '#6b7280', marginBottom: 18 }}>เลือกดูรถยอดนิยม พร้อมสถานะการจองแบบเรียลไทม์</p>
@@ -262,7 +261,6 @@ const Home = () => {
         <FeaturedCars searchQuery={search} />
       </div>
 
-      {/* CERTIFICATES */}
       <section style={{ maxWidth: 1200, margin: '2rem auto', padding: '1.25rem' }}>
         <h3 style={{ margin: '0 0 0.5rem 0', color: '#0b74a6' }}>ใบรับรองและรางวัล</h3>
         <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', justifyContent: 'center' }}>
