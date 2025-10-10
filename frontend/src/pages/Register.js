@@ -74,26 +74,34 @@ const Register = () => {
 
   const handleSendOtp = async () => {
     setError('');
-    if (!form.phone) return setError('กรุณาระบุหมายเลขโทรศัพท์');
+    const phone = (form.phone || '').toString().trim();
+    if (!phone) return setError('กรุณาระบุหมายเลขโทรศัพท์');
     try {
       const res = await fetch('/api/otp/send', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ phone: form.phone }) });
       const data = await res.json();
-      if (data.success) {
+      if (res.ok && data.success) {
         setOtpSent(true);
         if (data.code) alert('OTP (dev): ' + data.code);
-      } else setError(data.message || 'ไม่สามารถส่ง OTP ได้');
+      } else {
+        setError(data.message || `ส่ง OTP ล้มเหลว (status ${res.status})`);
+      }
     } catch (e) { setError('เกิดข้อผิดพลาดในการส่ง OTP'); }
   };
 
   const handleVerifyOtp = async () => {
     setError('');
+    const phone = (form.phone || '').toString().trim();
+    const code = (otpCode || '').toString().trim();
+    if (!phone || !code) return setError('กรุณากรอกหมายเลขและรหัส OTP');
     try {
-      const res = await fetch('/api/otp/verify', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ phone: form.phone, code: otpCode }) });
+      const res = await fetch('/api/otp/verify', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ phone, code }) });
       const data = await res.json();
-      if (data.success) {
-        setVerifiedPhone(form.phone);
+      if (res.ok && data.success) {
+        setVerifiedPhone(phone);
         alert('ยืนยันหมายเลขเรียบร้อย');
-      } else setError(data.message || 'รหัส OTP ไม่ถูกต้อง');
+      } else {
+        setError(data.message || `การยืนยันล้มเหลว (status ${res.status})`);
+      }
     } catch (e) { setError('เกิดข้อผิดพลาดในการยืนยัน OTP'); }
   };
 
