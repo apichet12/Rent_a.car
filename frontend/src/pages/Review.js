@@ -1,22 +1,47 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
+// Clean Review component — no embedded sample reviews
 const Review = () => {
-  const [reviews, setReviews] = useState([
-    { name: 'สมชาย', comment: 'รถใหม่ สะอาดมาก!', rating: 5 },
-    { name: 'John', comment: 'บริการดีมาก', rating: 4 },
-    { name: 'Jane', comment: 'จองง่าย สะดวกมาก', rating: 5 },
-    { name: 'ปิ่น', comment: 'พนักงานสุภาพ', rating: 5 },
-    { name: 'Alex', comment: 'รถหลากหลายดี', rating: 4 },
-    { name: 'นัท', comment: 'ราคาดี มีโปรฯ', rating: 5 },
-    { name: 'Somsri', comment: 'ชอบระบบจองออนไลน์', rating: 5 },
-    { name: 'Mike', comment: 'แนะนำเพื่อนต่อแน่นอน', rating: 5 },
-  ]);
-
+  const [reviews, setReviews] = useState([]);
   const [form, setForm] = useState({ name: '', comment: '', rating: 5 });
-  const handleChange = e => setForm({ ...form, [e.target.name]: e.target.value });
-  const handleSubmit = e => {
+
+  useEffect(() => {
+    let mounted = true;
+    const load = async () => {
+      try {
+        const res = await fetch('/api/reviews');
+        if (!res.ok) return;
+        const data = await res.json();
+        if (mounted) setReviews(Array.isArray(data) ? data : []);
+      } catch (err) {
+        console.error('Failed to load reviews', err);
+      }
+    };
+    load();
+    return () => { mounted = false; };
+  }, []);
+
+  const handleChange = e => setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
+
+  const handleSubmit = async e => {
     e.preventDefault();
-    setReviews([...reviews, { ...form, rating: Number(form.rating) }]);
+    try {
+      const res = await fetch('/api/reviews', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...form, rating: Number(form.rating) })
+      });
+      if (res.ok) {
+        const saved = await res.json();
+        setReviews(prev => [...prev, saved]);
+        setForm({ name: '', comment: '', rating: 5 });
+        return;
+      }
+    } catch (err) {
+      console.warn('POST /api/reviews failed, falling back to local state', err);
+    }
+
+    setReviews(prev => [...prev, { ...form, rating: Number(form.rating) }]);
     setForm({ name: '', comment: '', rating: 5 });
   };
 
@@ -26,7 +51,6 @@ const Review = () => {
         รีวิวลูกค้า / Customer Reviews
       </h2>
 
-      {/* Review Form */}
       <form onSubmit={handleSubmit} style={{
         background: '#fff', padding: '2rem', borderRadius: '16px', boxShadow: '0 8px 24px rgba(0,0,0,0.08)',
         marginBottom: '2rem', display: 'flex', flexDirection: 'column', gap: '1rem'
@@ -37,7 +61,7 @@ const Review = () => {
           <span>คะแนน: </span>
           {[1, 2, 3, 4, 5].map(star => (
             <label key={star} style={{ cursor: 'pointer' }}>
-              <input type="radio" name="rating" value={star} checked={form.rating === star} onChange={handleChange} style={{ display: 'none' }} />
+              <input type="radio" name="rating" value={star} checked={Number(form.rating) === star} onChange={handleChange} style={{ display: 'none' }} />
               <span style={{ color: star <= form.rating ? '#fbbf24' : '#ddd', fontSize: '1.5rem' }}>★</span>
             </label>
           ))}
@@ -45,7 +69,6 @@ const Review = () => {
         <button type="submit" className="btn-primary">ส่งรีวิว</button>
       </form>
 
-      {/* Reviews Grid */}
       <div style={{
         display: 'grid',
         gridTemplateColumns: 'repeat(auto-fit,minmax(240px,1fr))',
@@ -59,7 +82,7 @@ const Review = () => {
             <div>
               <strong style={{ color: '#4f46e5', fontSize: '1.2rem' }}>{r.name}</strong>
               <div style={{ margin: '6px 0' }}>
-                {[...Array(r.rating)].map((_, i) => (
+                {[...Array(Number(r.rating) || 0)].map((_, i) => (
                   <span key={i} style={{ color: '#fbbf24', fontSize: '1.3rem' }}>★</span>
                 ))}
               </div>
@@ -69,7 +92,6 @@ const Review = () => {
         ))}
       </div>
 
-      {/* Responsive */}
       <style>
         {`
           @media (max-width: 768px) {
