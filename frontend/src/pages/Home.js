@@ -2,6 +2,8 @@ import React, { useRef, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import carsData from '../data/cars';
+import './Home.css';
+import LoadingOverlay from '../components/LoadingOverlay';
 
 /* ---------------- CERTIFICATE CARD ---------------- */
 function CertificateCard({ cert }) {
@@ -235,20 +237,32 @@ const Home = () => {
     { name: 'Best Car Rental 2024', img: '/images/2ee5f421-8d2b.jpg', desc: 'รางวัลยอดเยี่ยมแห่งปี' },
   ];
 
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+
+  const simulateSearchAndNavigate = (path = '/cars') => {
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+      navigate(path);
+    }, 5000);
+  };
+
   return (
     <div style={{ padding: 0, background: 'linear-gradient(120deg,#f8fafc 60%,#e0e7ff 100%)', minHeight: '100vh', fontFamily: 'Segoe UI, sans-serif' }}>
+      <LoadingOverlay visible={loading} />
       {/* HERO */}
       <section style={{ background: 'linear-gradient(90deg,#06b6d4,#4f46e5)', color: '#fff', padding: '3rem 2rem', borderRadius: '0 0 28px 28px', boxShadow: '0 12px 48px #3336', marginBottom: '2rem' }}>
         <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: '2rem', maxWidth: 1200, margin: 'auto' }}>
           <div style={{ flex: '1 1 100%', maxWidth: 480, textAlign: 'center' }}>
             <h1 style={{ fontSize: '2.5rem', margin: 0, lineHeight: 1.05 }}>ระบบเช่ารถออนไลน์และปลอดภัย</h1>
             <p style={{ fontSize: '1.1rem', opacity: 0.95, marginTop: '1rem' }}>รถใหม่ สะอาด ปลอดภัย พร้อมบริการครบวงจร — จองง่าย สะดวกทั้งมือถือและเดสก์ท็อป</p>
-            <div style={{ marginTop: '1.5rem', display: 'flex', gap: '12px', justifyContent:'center', flexWrap:'wrap'}}>
-              <a href="/cars" style={{ background: '#fff', color: '#06b6d4', padding: '10px 18px', borderRadius: 10, fontWeight: 700, textDecoration: 'none' }}>เลือกรถ</a>
-              <a href="/booking" style={{ background: 'rgba(255,255,255,0.12)', color: '#fff', padding: '10px 18px', borderRadius: 10, border: '1px solid rgba(255,255,255,0.08)', textDecoration: 'none' }}>จองรถ</a>
+            <div className="hero-ctas">
+              <button className="btn btn-primary" onClick={() => simulateSearchAndNavigate('/cars')}>เลือกรถ</button>
+              <button className="btn btn-ghost" onClick={() => simulateSearchAndNavigate('/booking')}>จองรถ</button>
             </div>
           </div>
-          <div style={{ flex: '1 1 100%', maxWidth: 420, textAlign:'center', marginTop: '1rem' }}>
+          <div className="hero-media">
             <AutoPlayVideo src="https://www.w3schools.com/html/mov_bbb.mp4" poster={heroImages[0]} />
           </div>
         </div>
@@ -257,7 +271,7 @@ const Home = () => {
       <div style={{ maxWidth: 1200, margin: '0 auto' }}>
         <h2 style={{ fontSize: 26, color: '#111827', marginBottom: 12 }}>รถแนะนำ / Featured Cars</h2>
         <p style={{ color: '#6b7280', marginBottom: 18 }}>เลือกดูรถยอดนิยม พร้อมสถานะการจองแบบเรียลไทม์</p>
-        <input className="nice-input" type="text" placeholder="ค้นหารถ..." value={search} onChange={e => setSearch(e.target.value)} style={{ marginBottom: 16 }} />
+  <input className="nice-input" type="text" placeholder="ค้นหารถ..." value={search} onChange={e => setSearch(e.target.value)} />
         <FeaturedCars searchQuery={search} />
       </div>
 
@@ -279,19 +293,13 @@ const Home = () => {
       </section>
 
       {/* CALL TO ACTION */}
-      <section style={{ textAlign: 'center', padding: '2rem 1rem', marginTop: '1.5rem' }}>
-        <a href="/booking" style={{ background: '#06b6d4', color: '#fff', padding: '12px 28px', borderRadius: 12, fontWeight: 700, textDecoration: 'none', boxShadow: '0 8px 32px rgba(6,182,212,0.12)' }}>จองเลย — รับส่วนลดพิเศษ</a>
+      <section className="cta-section">
+        <a href="/booking" className="btn btn-primary btn-lg">จองเลย — รับส่วนลดพิเศษ</a>
       </section>
 
       {/* FOOTER */}
 <footer style={{ background: '#eef2ff', padding: '2rem 1rem', marginTop: '2rem' }}>
-  <div style={{
-    maxWidth: 1200,
-    margin: 'auto',
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit,minmax(220px,1fr))',
-    gap: 16
-  }}>
+  <div className="footer-grid">
     <div>
       <h4 style={{ color: '#0b74a6' }}>บริการลูกค้า</h4>
       <ul style={{ color: '#334155', listStyle: 'none', padding: 0 }}>
@@ -310,7 +318,7 @@ const Home = () => {
     </div>
     <div>
       <h4 style={{ color: '#0b74a6' }}>ช่องทางติดต่อ</h4>
-      <div style={{ color: '#334155' }}>โทร 02-123-4567 • Line: @rentwheels • Email: contact@rentwheels.com</div>
+      <div style={{ color: '#334155' }}>โทร 02-038-5222 • Line: @drivehub • Email: contact@drivehub.com</div>
     </div>
     {/* APP DOWNLOAD */}
     <div>
@@ -335,8 +343,8 @@ const Home = () => {
     </div>
   </div>
 
-  <div style={{ textAlign: 'center', color: '#64748b', marginTop: 16, fontSize: 13 }}>
-    © {new Date().getFullYear()} RentWheels — All rights reserved
+    <div style={{ textAlign: 'center', color: '#64748b', marginTop: 16, fontSize: 13 }}>
+    © {new Date().getFullYear()} Rent a car with Catty Pa Plearn — All rights reserved
   </div>
 </footer>
 
