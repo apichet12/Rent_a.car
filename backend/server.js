@@ -53,8 +53,8 @@ app.post('/api/register', async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     await pool.query(
-      'INSERT INTO users (username, passwordHash, name, role) VALUES (?,?,?,?)',
-      [username, hashedPassword, name || null, 'user']
+      'INSERT INTO users (username, passwordHash, name, email, phone, role) VALUES (?,?,?,?,?,?)',
+      [username, hashedPassword, name || null, email || null, phone || null, 'user']
     );
 
     res.json({ success: true, message: 'สมัครสมาชิกสำเร็จ' });
@@ -62,6 +62,45 @@ app.post('/api/register', async (req, res) => {
     console.error('Register error', err && err.message ? err.message : err);
     res.status(500).json({ success: false, message: 'เกิดข้อผิดพลาดใน server' });
   }
+});
+
+// --- Phone OTP (mock) ---
+// Note: This is a simple mock implementation. For production use integrate with SMS provider.
+const otpStore = new Map(); // phone -> code
+
+app.post('/api/otp/send', async (req, res) => {
+  const { phone } = req.body || {};
+  if (!phone) return res.status(400).json({ success: false, message: 'ต้องระบุหมายเลขโทรศัพท์' });
+  const code = Math.floor(100000 + Math.random() * 900000).toString();
+  otpStore.set(phone, { code, createdAt: Date.now() });
+  console.log(`OTP for ${phone}: ${code}`);
+  // TODO: send via SMS provider
+  res.json({ success: true, message: 'ส่งรหัส OTP แล้ว (mock)', code: process.env.NODE_ENV === 'development' ? code : undefined });
+});
+
+app.post('/api/otp/verify', async (req, res) => {
+  const { phone, code } = req.body || {};
+  if (!phone || !code) return res.status(400).json({ success: false, message: 'ข้อมูลไม่ครบ' });
+  const item = otpStore.get(phone);
+  if (!item) return res.status(400).json({ success: false, message: 'ไม่มีรหัส OTP' });
+  if (item.code !== String(code)) return res.status(400).json({ success: false, message: 'รหัสไม่ถูกต้อง' });
+  // OTP ok
+  otpStore.delete(phone);
+  res.json({ success: true });
+});
+
+// --- OAuth server-side skeleton (redirects) ---
+app.get('/auth/google/redirect', (req, res) => {
+  const client = process.env.GOOGLE_CLIENT_ID;
+  if (!client) return res.status(400).send('Google not configured');
+  // Implement full OAuth flow here using client id/secret
+  res.send('Google redirect endpoint - implement exchange here');
+});
+
+app.get('/auth/facebook/redirect', (req, res) => {
+  const client = process.env.FACEBOOK_CLIENT_ID;
+  if (!client) return res.status(400).send('Facebook not configured');
+  res.send('Facebook redirect endpoint - implement exchange here');
 });
 
 // --- Login ---

@@ -9,9 +9,19 @@ async function init() {
         username VARCHAR(191) NOT NULL UNIQUE,
         passwordHash VARCHAR(255) NOT NULL,
         name VARCHAR(255),
+        email VARCHAR(255),
+        phone VARCHAR(64),
         role VARCHAR(50) DEFAULT 'user'
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     `);
+
+    // Ensure email and phone columns exist for older deployments
+    try {
+      await conn.query('ALTER TABLE users ADD COLUMN IF NOT EXISTS email VARCHAR(255) NULL');
+    } catch (e) { /* ignore */ }
+    try {
+      await conn.query('ALTER TABLE users ADD COLUMN IF NOT EXISTS phone VARCHAR(64) NULL');
+    } catch (e) { /* ignore */ }
 
     await conn.query(`
       CREATE TABLE IF NOT EXISTS cars (

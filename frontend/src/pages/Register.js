@@ -11,6 +11,10 @@ const Register = () => {
     name: '',
     phone: ''
   });
+  const [usePhone, setUsePhone] = useState(false);
+  const [otpSent, setOtpSent] = useState(false);
+  const [otpCode, setOtpCode] = useState('');
+  const [verifiedPhone, setVerifiedPhone] = useState('');
   const [error, setError] = useState('');
 
   const handleChange = e => setForm({ ...form, [e.target.name]: e.target.value });
@@ -27,6 +31,11 @@ const Register = () => {
 
     
     try {
+      // If using phone flow, ensure phone verified
+      if (usePhone && !verifiedPhone) {
+        setError('กรุณายืนยันหมายเลขโทรศัพท์ด้วย OTP ก่อนสมัคร');
+        return;
+      }
       const res = await fetch('/api/register', {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -63,6 +72,31 @@ const Register = () => {
     }
   };
 
+  const handleSendOtp = async () => {
+    setError('');
+    if (!form.phone) return setError('กรุณาระบุหมายเลขโทรศัพท์');
+    try {
+      const res = await fetch('/api/otp/send', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ phone: form.phone }) });
+      const data = await res.json();
+      if (data.success) {
+        setOtpSent(true);
+        if (data.code) alert('OTP (dev): ' + data.code);
+      } else setError(data.message || 'ไม่สามารถส่ง OTP ได้');
+    } catch (e) { setError('เกิดข้อผิดพลาดในการส่ง OTP'); }
+  };
+
+  const handleVerifyOtp = async () => {
+    setError('');
+    try {
+      const res = await fetch('/api/otp/verify', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ phone: form.phone, code: otpCode }) });
+      const data = await res.json();
+      if (data.success) {
+        setVerifiedPhone(form.phone);
+        alert('ยืนยันหมายเลขเรียบร้อย');
+      } else setError(data.message || 'รหัส OTP ไม่ถูกต้อง');
+    } catch (e) { setError('เกิดข้อผิดพลาดในการยืนยัน OTP'); }
+  };
+
   return (
     <div style={{ display: 'flex', justifyContent: 'center', padding: 24 }}>
       <div style={{ width: '100%', maxWidth: 980 }}>
@@ -86,15 +120,35 @@ const Register = () => {
           <div style={{ flex: '1 1 360px', minWidth: 300, padding: 28, background: '#fff', borderRadius: 12, boxShadow: '0 8px 30px rgba(2,6,23,0.04)' }}>
             <h2 style={{ color: '#07203a', marginBottom: 12 }}>แบบฟอร์มสมัครสมาชิก</h2>
             {error && <div style={{ background: '#fff1f2', color: '#991b1b', padding: 10, borderRadius: 8, marginBottom: 12 }}>{error}</div>}
-            <form onSubmit={handleSubmit}>
-              <div className="form-group"><input className="nice-input" name="username" placeholder="ชื่อผู้ใช้ / Username" value={form.username} onChange={handleChange} required /></div>
-              <div className="form-group"><input className="nice-input" name="email" type="email" placeholder="อีเมล / Email" value={form.email} onChange={handleChange} required /></div>
-              <div className="form-group"><input className="nice-input" name="name" placeholder="ชื่อ-สกุล (ไม่บังคับ)" value={form.name} onChange={handleChange} /></div>
-              <div className="form-group"><input className="nice-input" name="phone" placeholder="โทรศัพท์ (ไม่บังคับ)" value={form.phone} onChange={handleChange} /></div>
-              <div className="form-group"><input className="nice-input" name="password" type="password" placeholder="รหัสผ่าน" value={form.password} onChange={handleChange} required /></div>
-              <div className="form-group"><input className="nice-input" name="confirmPassword" type="password" placeholder="ยืนยันรหัสผ่าน" value={form.confirmPassword} onChange={handleChange} required /></div>
-              <button type="submit" className="btn-primary" style={{ width: '100%', marginTop: 16, fontWeight: 700 }}>สมัครสมาชิก</button>
-            </form>
+            <div style={{ display: 'grid', gap: 8 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <strong>สมัครด้วย {usePhone ? 'เบอร์โทรศัพท์' : 'อีเมล'}</strong>
+                <button className="btn-link" onClick={() => setUsePhone(p => !p)}>{usePhone ? 'ใช้แบบอีเมล' : 'ใช้แบบเบอร์โทร'}</button>
+              </div>
+
+              <form onSubmit={handleSubmit}>
+                <div className="form-group"><input className="nice-input" name="username" placeholder="ชื่อผู้ใช้ / Username" value={form.username} onChange={handleChange} required /></div>
+                {!usePhone && <div className="form-group"><input className="nice-input" name="email" type="email" placeholder="อีเมล / Email" value={form.email} onChange={handleChange} required /></div>}
+                <div className="form-group"><input className="nice-input" name="name" placeholder="ชื่อ-สกุล (ไม่บังคับ)" value={form.name} onChange={handleChange} /></div>
+                <div className="form-group" style={{ display: 'flex', gap: 8 }}>
+                  <input className="nice-input" name="phone" placeholder="โทรศัพท์" value={form.phone} onChange={handleChange} required={usePhone} />
+                  {usePhone && <div style={{ display: 'flex', gap: 8 }}>
+                    {!otpSent ? (
+                      <button type="button" className="btn-outline" onClick={handleSendOtp}>ส่ง OTP</button>
+                    ) : (
+                      <>
+                        <input className="nice-input" placeholder="รหัส OTP" value={otpCode} onChange={e => setOtpCode(e.target.value)} />
+                        <button type="button" className="btn-outline" onClick={handleVerifyOtp}>ยืนยัน OTP</button>
+                      </>
+                    )}
+                  </div>}
+                </div>
+
+                <div className="form-group"><input className="nice-input" name="password" type="password" placeholder="รหัสผ่าน" value={form.password} onChange={handleChange} required /></div>
+                <div className="form-group"><input className="nice-input" name="confirmPassword" type="password" placeholder="ยืนยันรหัสผ่าน" value={form.confirmPassword} onChange={handleChange} required /></div>
+                <button type="submit" className="btn-primary" style={{ width: '100%', marginTop: 16, fontWeight: 700 }}>สมัครสมาชิก</button>
+              </form>
+            </div>
             <div style={{ textAlign: 'center', marginTop: 12 }}>
               มีบัญชีแล้ว? <a href="/login" style={{ color: '#06b6d4', fontWeight: 700 }}>เข้าสู่ระบบ</a>
             </div>
