@@ -2,9 +2,15 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path');
 require('dotenv').config();
+const crypto = require('crypto');
+const bcrypt = require('bcrypt');
+const db = require('./db');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+
+// initialize DB (async, best-effort)
+db.init().catch(err => console.error('DB init error', err));
 
 const fs = require('fs');
 const usersFile = path.join(__dirname, 'users.json');
@@ -69,7 +75,15 @@ app.use(express.json());
 // =========================
 // API Routes
 // =========================
-app.get('/api/cars', (req, res) => {
+app.get('/api/cars', async (req, res) => {
+  if (db.isReady()) {
+    try {
+      const rows = await db.getCars();
+      return res.json(rows);
+    } catch (e) {
+      console.error('db.getCars error', e);
+    }
+  }
   const cars = readCars();
   res.json(cars);
 });
@@ -84,6 +98,20 @@ app.post('/api/admin/cars', (req, res) => {
   if (!admin || admin.role !== 'admin') return res.status(403).json({ success: false, message: 'ต้องเป็นผู้ดูแลระบบ' });
 
   if (!car || !car.name) return res.status(400).json({ success: false, message: 'ข้อมูลรถไม่ถูกต้อง' });
+  // If DB available, persist there
+  if (db.isReady()) {
+    (async () => {
+      try {
+        const added = await db.addCar(car);
+        await db.addNotification({ type: 'car-added', message: `เพิ่มรถใหม่: ${car.name}`, time: new Date().toISOString() });
+        return res.json({ success: true, car: added });
+      } catch (e) {
+        console.error('db.addCar error', e);
+        return res.status(500).json({ success: false, message: 'DB error' });
+      }
+    })();
+    return;
+  }
 
   const cars = readCars();
   const id = cars.length ? Math.max(...cars.map(c => c.id)) + 1 : 1;
@@ -109,6 +137,20 @@ app.delete('/api/admin/cars/:id', (req, res) => {
   const admin = users.find(u => u.username === adminUsername);
   if (!admin || admin.role !== 'admin') return res.status(403).json({ success: false, message: 'ต้องเป็นผู้ดูแลระบบ' });
 
+  if (db.isReady()) {
+    (async () => {
+      try {
+        await db.removeCar(id);
+        await db.addNotification({ type: 'car-removed', message: `ลบรถ id=${id}`, time: new Date().toISOString() });
+        return res.json({ success: true });
+      } catch (e) {
+        console.error('db.removeCar error', e);
+        return res.status(500).json({ success: false, message: 'DB error' });
+      }
+    })();
+    return;
+  }
+
   let cars = readCars();
   const before = cars.length;
   cars = cars.filter(c => String(c.id) !== String(id));
@@ -120,6 +162,35 @@ app.delete('/api/admin/cars/:id', (req, res) => {
   writeNotifications(notifications);
 
   res.json({ success: true });
+});
+
+// Register (DB preferred, fallback to JSON users)
+app.post('/api/register', async (req, res) => {
+  const { username, email, password, name, phone } = req.body || {};
+  if (!username || !email || !password) return res.status(400).json({ success: false, message: 'username, email and password are required' });
+
+  if (db.isReady()) {
+    try {
+      const existing = await db.query('SELECT * FROM users WHERE username=? OR email=?', [username, email]);
+      if (existing.length > 0) return res.status(400).json({ success: false, message: 'Username or Email already exists' });
+      const hash = await bcrypt.hash(password, 10);
+      const u = await db.createUser({ username, email, passwordHash: hash, name, phone });
+      return res.json({ success: true, message: 'Registered', user: u });
+    } catch (e) {
+      console.error('register db error', e);
+      return res.status(500).json({ success: false, message: 'DB error' });
+    }
+  }
+
+  // fallback to file-based users
+  const users = readUsers();
+  if (users.find(u => u.username === username || u.email === email)) return res.status(400).json({ success: false, message: 'Username or Email already exists' });
+  const hash = crypto.createHash('sha256').update(password).digest('hex');
+  const id = users.length ? Math.max(...users.map(u => u.id)) + 1 : 1;
+  const newUser = { id, username, email, passwordHash: hash, name, phone, role: 'user' };
+  users.push(newUser);
+  writeUsers(users);
+  res.json({ success: true, message: 'Registered (fallback)', user: { id: newUser.id, username: newUser.username } });
 });
 
 // Create booking (customer)
@@ -194,25 +265,29 @@ app.post('/api/login', (req, res) => {
   if (!username || !password) {
     return res.status(400).json({ success: false, message: 'กรุณากรอก username และ password' });
   }
+  (async () => {
+    if (db.isReady()) {
+      try {
+        const rows = await db.query('SELECT * FROM users WHERE username=?', [username]);
+        if (rows.length === 0) return res.status(401).json({ success: false, message: 'ไม่พบผู้ใช้' });
+        const user = rows[0];
+        const match = await bcrypt.compare(password, user.passwordHash || user.password);
+        if (!match) return res.status(401).json({ success: false, message: 'รหัสผ่านไม่ถูกต้อง' });
+        return res.json({ success: true, user: { id: user.id, username: user.username, name: user.name, role: user.role } });
+      } catch (e) {
+        console.error('login db error', e);
+        return res.status(500).json({ success: false, message: 'DB error' });
+      }
+    }
 
-  const users = readUsers();
-  const user = users.find(u => u.username === username);
-  if (!user) {
-    return res.status(401).json({ success: false, message: 'ไม่พบผู้ใช้' });
-  }
-
-  
-  const hash = crypto.createHash('sha256').update(password).digest('hex');
-
-  if (hash !== user.passwordHash) {
-    return res.status(401).json({ success: false, message: 'รหัสผ่านไม่ถูกต้อง' });
-  }
-
-  // Login สำเร็จ
-  res.json({
-    success: true,
-    user: { id: user.id, username: user.username, name: user.name }
-  });
+    // fallback to file users
+    const users = readUsers();
+    const user = users.find(u => u.username === username);
+    if (!user) return res.status(401).json({ success: false, message: 'ไม่พบผู้ใช้' });
+    const hash = crypto.createHash('sha256').update(password).digest('hex');
+    if (hash !== user.passwordHash) return res.status(401).json({ success: false, message: 'รหัสผ่านไม่ถูกต้อง' });
+    return res.json({ success: true, user: { id: user.id, username: user.username, name: user.name } });
+  })();
 });
 // =========================
 // Serve React Frontend
@@ -234,18 +309,4 @@ app.listen(PORT, () => {
 });
 
 
-app.post('/api/login', (req, res) => {
-  const { username, password } = req.body || {};
-  if (!username || !password)
-    return res.status(400).json({ success: false, message: 'username และ password ต้องระบุ' });
-
-  const users = readUsers();
-  const user = users.find(u => u.username === username);
-  if (!user) return res.status(401).json({ success: false, message: 'ไม่พบผู้ใช้' });
-
-  const hash = crypto.createHash('sha256').update(password).digest('hex');
-  if (hash !== user.passwordHash)
-    return res.status(401).json({ success: false, message: 'รหัสผ่านไม่ถูกต้อง' });
-
-  res.json({ success: true, user: { username: user.username, name: user.name, id: user.id } });
-});
+// (duplicate login handler removed - consolidated above)
