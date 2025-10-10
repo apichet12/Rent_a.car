@@ -22,8 +22,8 @@ const CarList = () => {
  useEffect(() => {
   const fetchCars = async () => {
     try {
-      const res = await fetch('/data/cars.json'); 
-      const data = await res.json();
+  const res = await fetch('/api/cars');
+  const data = await res.json();
 
       
       const stored = JSON.parse(localStorage.getItem('cars_availability') || '{}');
