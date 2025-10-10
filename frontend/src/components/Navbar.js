@@ -10,8 +10,6 @@ const navItems = [
   { to: '/booking', label: 'จองรถ' },
   { to: '/review', label: 'รีวิว' },
   { to: '/contact', label: 'ติดต่อ' },
-  { to: '/dashboard', label: 'Dashboard' },
-  { to: '/customer', label: 'Customer' },
 ];
 
 const Navbar = () => {
@@ -23,9 +21,17 @@ const Navbar = () => {
 
   return (
     <nav className="navbar">
-      <span className="navbar-brand">ระบบเช่ารถออนไลน์</span>
+      <div className="navbar-left" style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+        <img src="/logo192.png" alt="Drivehub" style={{ width: 36, height: 36 }} />
+        <span className="navbar-brand">DRIVEHUB</span>
+      </div>
 
       <div className={`navbar-links ${showMenu ? 'show' : ''}`}>
+        <div className="navbar-topmenu">
+          <div className="menu-item">เช่ารถกับ Drivehub ▾</div>
+          <div className="menu-item">ความช่วยเหลือ</div>
+          <div className="menu-item">สมัครสมาชิก/ลงชื่อเข้าใช้ ▾</div>
+        </div>
         {navItems.map(item => (
           <Link
             key={item.to}
@@ -43,14 +49,18 @@ const Navbar = () => {
         )}
 
         {/* Auth actions */}
-        {user ? (
-          <>
-            <span className="navbar-link" style={{ cursor: 'default' }}>{user.username}</span>
-            <button className="navbar-link" onClick={() => { logout(); setShowMenu(false); }} style={{ background: 'transparent', border: 'none', padding: 0 }}>ออกจากระบบ</button>
-          </>
-        ) : (
-          <Link to="/login" className={`navbar-link ${location.pathname === '/login' ? 'active' : ''}`} onClick={() => setShowMenu(false)}>เข้าสู่ระบบ</Link>
-        )}
+        <div className="navbar-contact" style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <div style={{ fontSize: 14, color: '#0f172a' }}>@drivehub</div>
+          <div style={{ fontSize: 14, color: '#0f172a' }}>02-038-5222</div>
+          {user ? (
+            <>
+              <span className="navbar-link" style={{ cursor: 'default' }}>{user.username}</span>
+              <button className="navbar-link" onClick={() => { logout(); setShowMenu(false); }} style={{ background: 'transparent', border: 'none', padding: 0 }}>ออกจากระบบ</button>
+            </>
+          ) : (
+            <Link to="/login" className={`navbar-link ${location.pathname === '/login' ? 'active' : ''}`} onClick={() => setShowMenu(false)}>เข้าสู่ระบบ</Link>
+          )}
+        </div>
       </div>
 
       {/* Hamburger */}
