@@ -166,6 +166,19 @@ app.get('/api', (req, res) => {
 
 // Simple registration endpoint for demo purposes
 
+// --- Register ---
+app.post('/api/register', async (req, res) => {
+  const { username, password, name } = req.body || {};
+  if (!username || !password) return res.status(400).json({ success: false, message: 'กรุณากรอก username และ password' });
+  try {
+    const existing = await findUserByUsername(username);
+    if (existing) return res.status(400).json({ success: false, message: 'Username มีอยู่แล้ว' });
+    const passwordHash = crypto.createHash('sha256').update(password).digest('hex');
+    await pool.query('INSERT INTO users (username, passwordHash, name, role) VALUES (?,?,?,?)', [username, passwordHash, name || null, 'user']);
+    res.json({ success: true, message: 'สมัครสมาชิกสำเร็จ' });
+  } catch (err) { console.error(err); res.status(500).json({ success: false, message: 'DB error' }); }
+});
+
 app.post('/api/login', async (req, res) => {
   const { username, password } = req.body || {};
   if (!username || !password) return res.status(400).json({ success: false, message: 'กรุณากรอก username และ password' });

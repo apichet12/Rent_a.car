@@ -82,6 +82,44 @@ app.post('/api/login', async (req, res) => {
   }
 });
 
+// --- Cars: GET list ---
+app.get('/api/cars', async (req, res) => {
+  try {
+    const [rows] = await pool.query('SELECT * FROM cars ORDER BY id');
+    // parse features JSON if present
+    const cars = rows.map(r => ({ ...r, features: r.features ? JSON.parse(r.features) : [] }));
+    res.json(cars);
+  } catch (err) {
+    console.error('GET /api/cars error', err);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+// --- Reviews: GET list ---
+app.get('/api/reviews', async (req, res) => {
+  try {
+    const [rows] = await pool.query('SELECT * FROM reviews ORDER BY createdAt DESC LIMIT 100');
+    res.json(rows);
+  } catch (err) {
+    console.error('GET /api/reviews error', err);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+// --- Reviews: POST new review ---
+app.post('/api/reviews', async (req, res) => {
+  const { name, comment, rating } = req.body;
+  if (!name || !comment) return res.status(400).json({ success: false, message: 'Missing fields' });
+  try {
+    const [result] = await pool.query('INSERT INTO reviews (name, comment, rating) VALUES (?,?,?)', [name, comment, rating || 5]);
+    const [rows] = await pool.query('SELECT * FROM reviews WHERE id=?', [result.insertId]);
+    res.status(201).json(rows[0]);
+  } catch (err) {
+    console.error('POST /api/reviews error', err);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
 // ===== Start server =====
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
