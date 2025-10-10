@@ -43,9 +43,9 @@
 
 /* tiny icons for social buttons */
 .social-btn::before { content: ''; display: inline-block; width: 28px; height: 28px; margin-right: 8px; vertical-align: middle }
-.social-btn.phone::before { background: url('/icons/phone.svg') center/contain no-repeat }
-.social-btn.fb::before { background: url('/icons/facebook.svg') center/contain no-repeat }
-.social-btn.google::before { background: url('/icons/google.svg') center/contain no-repeat }
+.social-btn.phone::before { background: url('../assets/icons/phone.svg') center/contain no-repeat }
+.social-btn.fb::before { background: url('../assets/icons/facebook.svg') center/contain no-repeat }
+.social-btn.google::before { background: url('../assets/icons/google.svg') center/contain no-repeat }
 
 .terms { color: #94a3b8; font-size: 12px; text-align:center; margin-top: 12px }
 
