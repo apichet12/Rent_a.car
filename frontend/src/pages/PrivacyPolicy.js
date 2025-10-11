@@ -45,7 +45,11 @@ const PrivacyPolicy = () => {
 
       <div style={{ marginTop: 24, fontSize: 13, color: '#475569' }}>
         <div>มีคำถามหรือข้อร้องเรียน? ติดต่อเรา: contact@drivehub.com</div>
-        <div style={{ marginTop: 8 }}><Link to="/">กลับสู่หน้าหลัก</Link></div>
+        <div style={{ marginTop: 8 }}>
+          <Link to="/">กลับสู่หน้าหลัก</Link>
+          <span style={{ margin: '0 8px', color: '#94a3b8' }}>•</span>
+          <Link to="/data-deletion" style={{ color: '#0b74a6' }}>ขอให้ลบข้อมูลส่วนบุคคล</Link>
+        </div>
       </div>
     </div>
   );

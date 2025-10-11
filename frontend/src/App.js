@@ -24,6 +24,7 @@ import InsuranceHelp from './pages/help/InsuranceHelp';
 import MoreHelp from './pages/help/MoreHelp';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import Terms from './pages/Terms';
+import DataDeletionRequest from './pages/DataDeletionRequest';
 import './App.css';
 import './i18n';
 import './responsive.css';
@@ -68,6 +69,7 @@ function App() {
           <Route path="/help/more" element={<MoreHelp />} />
           <Route path="/privacy" element={<PrivacyPolicy />} />
           <Route path="/terms" element={<Terms />} />
+          <Route path="/data-deletion" element={<DataDeletionRequest />} />
         </Routes>
       </div>
     </Router>
