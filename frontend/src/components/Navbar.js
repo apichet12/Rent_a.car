@@ -1,85 +1,79 @@
-import React, { useState, useContext, useRef, useEffect } from 'react';
+import React, { useContext, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import './Navbar.css';
 
-// top-level menu is the Drivehub-style center menu; legacy nav items removed per design
-
-const Navbar = () => {
-  // Keeping showMenu for mobile toggle
-  const [showMenu, setShowMenu] = useState(false);
-  const [showAuth, setShowAuth] = useState(false);
+const NavbarLogin = () => {
   const { user, logout } = useContext(AuthContext);
-  const dropdownRef = useRef(null);
-  const linksRef = useRef(null);
-
-  useEffect(() => {
-    function handleClickOutside(e) {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
-        setShowAuth(false);
-      }
-      if (linksRef.current && !linksRef.current.contains(e.target)) {
-        setShowMenu(false);
-      }
-    }
-    document.addEventListener('mousedown', handleClickOutside);
-    document.addEventListener('touchstart', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-      document.removeEventListener('touchstart', handleClickOutside);
-    };
-  }, []);
-
-  const toggleMenu = () => setShowMenu(prev => !prev);
+  const [showDrivehub, setShowDrivehub] = useState(false);
+  const [showHelpMenu, setShowHelpMenu] = useState(false);
 
   return (
     <nav className="navbar">
-      <div className="navbar-left" style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-        <img src="/logo192.png" alt="Rent a car logo" style={{ width: 40, height: 40 }} />
-        <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1 }}>
-          <span className="navbar-brand">Rent a car with Catty Pa Plearn</span>
-        </div>
+      {/* Logo */}
+      <div className="navbar-left">
+        <Link to="/" className="navbar-brand">
+          <img src="/logo192.png" alt="Logo" style={{ width: 40, height: 40 }} />
+          <span>Klick Drive</span>
+        </Link>
       </div>
 
-      <div ref={linksRef} className={`navbar-links ${showMenu ? 'show' : ''}`}>
-            <div className="navbar-topmenu">
-              <Link to="/cars" className="menu-item" onClick={() => setShowMenu(false)}>เช่ารถกับ Drivehub</Link>
-              <Link to="/help" className="menu-item" onClick={() => setShowMenu(false)}>ความช่วยเหลือ</Link>
-              <div ref={dropdownRef} className="menu-item dropdown">
-                <button className="dropdown-toggle" onClick={(e) => { e.stopPropagation(); setShowAuth(!showAuth); }}>สมัครสมาชิก / ลงชื่อเข้าใช้ <span style={{ marginLeft: 6 }}>▾</span></button>
-                {showAuth && (
-                  <div className="dropdown-menu">
-                    <Link to="/login" className="dropdown-item" onClick={() => { setShowMenu(false); setShowAuth(false); }}>เข้าสู่ระบบ</Link>
-                    <Link to="/register" className="dropdown-item" onClick={() => { setShowMenu(false); setShowAuth(false); }}>สมัครสมาชิก</Link>
-                  </div>
-                )}
-              </div>
+      {/* Links */}
+      <div className="navbar-links">
+        <div className="navbar-topmenu">
+          {/* Drivehub Dropdown */}
+          <div 
+            className="menu-item dropdown hover-dropdown"
+            onMouseEnter={() => setShowDrivehub(true)}
+            onMouseLeave={() => setShowDrivehub(false)}
+          >
+            <button className="dropdown-toggle">เช่ารถกับ Drivehub ▾</button>
+            <div className={`dropdown-menu ${showDrivehub ? 'show' : ''}`}>
+              <Link className="dropdown-item" to="/cars?type=short">
+                <div className="title">เช่ารถระยะสั้น 🚗</div>
+                <div className="desc">เหมาะสำหรับใช้เป็นรายวันหรือทริปสั้น ๆ</div>
+              </Link>
+              <Link className="dropdown-item" to="/cars?type=long">
+                <div className="title">เช่ารถระยะยาว 📅</div>
+                <div className="desc">โปรแกรมเช่ารายสัปดาห์หรือรายเดือน พร้อมส่วนลดพิเศษ</div>
+              </Link>
             </div>
-        {/* legacy nav removed - only center topmenu + contact remain */}
+          </div>
 
-        {/* Auth actions */}
-        <div className="navbar-contact" style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <div style={{ fontSize: 14, color: '#0f172a' }}>@drivehub</div>
-          <div style={{ fontSize: 14, color: '#0f172a' }}>02-038-5222</div>
-          {user ? (
-            <>
-              <span className="navbar-link" style={{ cursor: 'default' }}>{user.username}</span>
-              <button className="navbar-link" onClick={() => { logout(); setShowMenu(false); }} style={{ background: 'transparent', border: 'none', padding: 0 }}>ออกจากระบบ</button>
-            </>
-          ) : (
-            <Link to="/login" className={`navbar-link`} onClick={() => setShowMenu(false)}>เข้าสู่ระบบ</Link>
-          )}
+          {/* Help Dropdown */}
+          <div 
+            className="menu-item dropdown hover-dropdown"
+            onMouseEnter={() => setShowHelpMenu(true)}
+            onMouseLeave={() => setShowHelpMenu(false)}
+          >
+            <button className="dropdown-toggle">ความช่วยเหลือ ▾</button>
+            <div className={`dropdown-menu ${showHelpMenu ? 'show' : ''}`}>
+              <Link className="dropdown-item" to="/help/booking">
+                <div className="title">วิธีการจองรถ 📖</div>
+                <div className="desc">ขั้นตอนการค้นหา เลือกรถ และยืนยันการจอง</div>
+              </Link>
+              <Link className="dropdown-item" to="/help/docs">
+                <div className="title">เอกสารการเช่ารถ 📄</div>
+                <div className="desc">เอกสารที่ต้องเตรียม เช่น บัตรประชาชนและใบขับขี่</div>
+              </Link>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Hamburger */}
-          <div className="navbar-toggle" onClick={toggleMenu} aria-label="Toggle menu">
-            <span></span>
-            <span></span>
-            <span></span>
-          </div>
+      {/* Right side login */}
+      <div className="navbar-contact" style={{ marginLeft: 'auto' }}>
+        {user ? (
+          <>
+            <span>{user.username}</span>
+            <button className="navbar-link" onClick={logout}>ออกจากระบบ</button>
+          </>
+        ) : (
+          <Link to="/login" className="navbar-link">เข้าสู่ระบบ 🔑</Link>
+        )}
+      </div>
     </nav>
   );
 };
 
-export default Navbar;
+export default NavbarLogin;

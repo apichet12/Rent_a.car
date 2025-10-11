@@ -18,6 +18,12 @@ import Review from './pages/Review';
 import Contact from './pages/Contact';
 import CarDetail from './pages/CarDetail';
 import Notifications from './pages/Notifications';
+import BookingHelp from './pages/help/BookingHelp';
+import DocsHelp from './pages/help/DocsHelp';
+import InsuranceHelp from './pages/help/InsuranceHelp';
+import MoreHelp from './pages/help/MoreHelp';
+import PrivacyPolicy from './pages/PrivacyPolicy';
+import Terms from './pages/Terms';
 import './App.css';
 import './i18n';
 import './responsive.css';
@@ -56,6 +62,12 @@ function App() {
           <Route path="/review" element={<Review />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/notifications" element={<Notifications />} />
+          <Route path="/help/booking" element={<BookingHelp />} />
+          <Route path="/help/docs" element={<DocsHelp />} />
+          <Route path="/help/insurance" element={<InsuranceHelp />} />
+          <Route path="/help/more" element={<MoreHelp />} />
+          <Route path="/privacy" element={<PrivacyPolicy />} />
+          <Route path="/terms" element={<Terms />} />
         </Routes>
       </div>
     </Router>

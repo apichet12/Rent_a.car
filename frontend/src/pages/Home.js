@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import carsData from '../data/cars';
 import './Home.css';
@@ -36,26 +36,28 @@ function CertificateCard({ cert }) {
     <div
       ref={cardRef}
       style={{
-        background: '#fff',
-        borderRadius: 18,
-        boxShadow: '0 8px 32px rgba(0,0,0,0.12)',
-        minWidth: 200,
-        height: 300,
-        textAlign: 'center',
-        transition: 'transform 0.2s',
-        perspective: 600,
-        margin: '0 1rem',
-        overflow: 'hidden',
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'flex-start',
+          background: '#fff',
+          borderRadius: 18,
+          boxShadow: '0 8px 32px rgba(0,0,0,0.12)',
+          minWidth: 200,
+          height: 300,
+          textAlign: 'center',
+          transition: 'transform 0.2s',
+          perspective: 600,
+          margin: '0 1rem',
+          overflow: 'hidden',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'flex-start',
       }}
     >
-      <img
-        src={cert.img}
-        alt={cert.name}
-        style={{ width: '100%', height: 180, objectFit: 'cover' }}
-      />
+        <Link to="/">
+          <img
+            src={cert.img}
+            alt={cert.name}
+            style={{ width: '100%', height: 180, objectFit: 'cover', cursor: 'pointer' }}
+          />
+        </Link>
       <h3 style={{ color: '#4f46e5', margin: '2.2rem 0 0.25rem 0' }}>
         {cert.name}
       </h3>
@@ -245,7 +247,7 @@ const Home = () => {
     setTimeout(() => {
       setLoading(false);
       navigate(path);
-    }, 5000);
+    }, 3000);
   };
 
   return (
@@ -344,7 +346,11 @@ const Home = () => {
   </div>
 
     <div style={{ textAlign: 'center', color: '#64748b', marginTop: 16, fontSize: 13 }}>
-    © {new Date().getFullYear()} Rent a car with Catty Pa Plearn — All rights reserved
+  © {new Date().getFullYear()} Klick Drive — All rights reserved
+  <div style={{ marginTop: 6, fontSize: 12 }}>
+    <Link to="/privacy" style={{ color: '#64748b', marginRight: 12, textDecoration: 'underline dotted' }}>นโยบายความเป็นส่วนตัว</Link>
+    <Link to="/terms" style={{ color: '#64748b', textDecoration: 'underline dotted' }}>ข้อกำหนดการให้บริการ</Link>
+  </div>
   </div>
 </footer>
 
