@@ -1,6 +1,7 @@
 // CarList.jsx
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import './CarList.css';
 
 const CarList = () => {
   const [selected, setSelected] = useState(null);
@@ -65,14 +66,16 @@ const CarList = () => {
   }, [cars, q, minPrice, maxPrice, seatsFilter, fuelFilter, onlyAvailable, sortBy]);
 
   return (
-    <div style={{padding:'2rem', maxWidth:'1200px', margin:'0 auto'}}>
-      <h2 style={{textAlign:'center', fontSize:'2rem', fontWeight:700, marginBottom:18}}>เลือกรถ / Select Car</h2>
+    <div className="carlist-page">
+      <div className="carlist-hero">
+        <h2 style={{fontSize: '2rem', fontWeight:700}}>เลือกรถ / Select Car</h2>
+      </div>
 
-      <div style={{display:'flex', gap:20}}>
-        <aside style={{width:320}}>
-          <div style={{background:'#fff', padding:16, borderRadius:12, boxShadow:'0 8px 24px rgba(2,6,23,0.06)'}}>
-            <h3 style={{margin:0, marginBottom:12}}>ตัวช่วยค้นหา</h3>
-            <div style={{display:'flex', flexDirection:'column', gap:8}}>
+      <div className="carlist-wrap">
+        <aside className="carlist-aside">
+          <div className="panel">
+            <h3>ตัวช่วยค้นหา</h3>
+            <div className="filters">
               <input className="nice-input" placeholder="ค้นหาชื่อหรือคำอธิบาย" value={q} onChange={e=>setQ(e.target.value)} />
               <div style={{display:'flex', gap:8}}>
                 <input className="nice-input" placeholder="ราคาต่ำสุด" value={minPrice} onChange={e=>setMinPrice(e.target.value)} />
@@ -100,11 +103,11 @@ const CarList = () => {
           </div>
         </aside>
 
-        <main style={{flex:1}}>
-          <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:12}}>
+        <main className="carlist-main">
+          <div className="carlist-head">
             <div>
               <h3 style={{margin:0, fontSize:20}}>ผลการค้นหา</h3>
-              <div style={{color:'#6b7280'}}>พบรถว่าง {filteredCars.length} คัน</div>
+              <div className="car-count">พบรถว่าง {filteredCars.length} คัน</div>
             </div>
             <div>
               <select value={sortBy} onChange={e=>setSortBy(e.target.value)} style={{padding:8, borderRadius:8}}>
@@ -119,30 +122,28 @@ const CarList = () => {
           <div className="car-grid">
             {filteredCars.map(car => (
               <div key={car.id} className="car-card">
-                <div style={{width:'100%'}}>
-                  <div style={{position:'relative'}}>
-                    <img src={car.image} alt={car.name} style={{width:'100%', height:160, objectFit:'cover', borderRadius:12}} onClick={()=>setSelected(car)} />
-                    <span className={car.available ? 'badge-available' : 'badge-unavailable'} style={{position:'absolute', top:10, left:10}}>
-                      {car.available ? 'ว่าง' : 'ไม่ว่าง'}
-                    </span>
+                <div className="thumb">
+                  <img src={car.image} alt={car.name} onClick={()=>setSelected(car)} />
+                  <span className={car.available ? 'badge-available' : 'badge-unavailable'}>
+                    {car.available ? 'ว่าง' : 'ไม่ว่าง'}
+                  </span>
+                </div>
+                <div className="body">
+                  <div className="meta">
+                    <div>
+                      <h4>{car.name}</h4>
+                      <div className="desc">{car.desc}</div>
+                      <div className="specs">ปี {car.year} • {car.seats} ที่นั่ง • {car.fuel}</div>
+                    </div>
+                    <div className="price">
+                      <div>{car.price.toLocaleString()} ฿</div>
+                      <div style={{color:'#6b7280', fontSize:12}}>โดยประมาณ</div>
+                    </div>
                   </div>
-                  <div style={{padding:12}}>
-                    <div style={{display:'flex', justifyContent:'space-between', alignItems:'start'}}>
-                      <div>
-                        <h4 style={{margin:0}}>{car.name}</h4>
-                        <div style={{color:'#6b7280', marginTop:6}}>{car.desc}</div>
-                        <div style={{marginTop:8, color:'#475569', fontSize:13}}>ปี {car.year} • {car.seats} ที่นั่ง • {car.fuel}</div>
-                      </div>
-                      <div style={{textAlign:'right'}}>
-                        <div style={{fontWeight:800, fontSize:18, color:'#0f172a'}}>{car.price.toLocaleString()} ฿</div>
-                        <div style={{color:'#6b7280', fontSize:12}}>โดยประมาณ</div>
-                      </div>
-                    </div>
 
-                    <div style={{display:'flex', gap:8, marginTop:12}}>
-                      <button disabled={!car.available} onClick={()=>navigate('/booking',{state:{car}})} className="btn-primary">รายละเอียดรถเช่า</button>
-                      <button onClick={()=>toggleFavorite(car.id)} style={{background:'transparent', border:'none', fontSize:18, color: favorites[car.id] ? 'red' : '#333'}}>❤</button>
-                    </div>
+                  <div className="actions">
+                    <button disabled={!car.available} onClick={()=>navigate('/booking',{state:{car}})} className="btn-primary">รายละเอียดรถเช่า</button>
+                    <button onClick={()=>toggleFavorite(car.id)} className={"fav-btn" + (favorites[car.id] ? ' active' : '')}>❤</button>
                   </div>
                 </div>
               </div>
