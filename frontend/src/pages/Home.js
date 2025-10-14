@@ -17,15 +17,14 @@ function CertificateCard({ cert }) {
       const rect = card.getBoundingClientRect();
       const x = e.clientX - rect.left;
       const y = e.clientY - rect.top;
-      const rotateY = (x / rect.width - 0.5) * 12;
-      const rotateX = (0.5 - y / rect.height) * 8;
+      const rotateY = (x / rect.width - 0.5) * 8;
+      const rotateX = (0.5 - y / rect.height) * 6;
       card.style.transform = `rotateY(${rotateY}deg) rotateX(${rotateX}deg)`;
     };
     const reset = () => (card.style.transform = 'rotateY(0deg) rotateX(0deg)');
 
     card.addEventListener('mousemove', handleMove);
     card.addEventListener('mouseleave', reset);
-
     return () => {
       card.removeEventListener('mousemove', handleMove);
       card.removeEventListener('mouseleave', reset);
@@ -36,72 +35,48 @@ function CertificateCard({ cert }) {
     <div
       ref={cardRef}
       style={{
-          background: '#fff',
-          borderRadius: 18,
-          boxShadow: '0 8px 32px rgba(0,0,0,0.12)',
-          minWidth: 200,
-          height: 300,
-          textAlign: 'center',
-          transition: 'transform 0.2s',
-          perspective: 600,
-          margin: '0 1rem',
-          overflow: 'hidden',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'flex-start',
+        background: '#fff',
+        borderRadius: 14,
+        boxShadow: '0 8px 24px rgba(2,6,23,0.06)',
+        width: 240,
+        height: 300,
+        overflow: 'hidden',
+        transition: 'transform 0.18s ease',
+        display: 'flex',
+        flexDirection: 'column'
       }}
     >
-        <Link to="/">
-          <img
-            src={cert.img}
-            alt={cert.name}
-            style={{ width: '100%', height: 180, objectFit: 'cover', cursor: 'pointer' }}
-          />
-        </Link>
-      <h3 style={{ color: '#4f46e5', margin: '2.2rem 0 0.25rem 0' }}>
-        {cert.name}
-      </h3>
-      <p style={{ color: '#555', fontSize: 14, padding: '0 0.8rem' }}>
-        {cert.desc}
-      </p>
+      <img src={cert.img} alt={cert.name} style={{ width: '100%', height: 140, objectFit: 'cover' }} />
+      <div style={{ padding: 12, textAlign: 'center', flex: 1 }}>
+        <div style={{ color: '#4f46e5', fontWeight: 700, marginBottom: 6 }}>{cert.name}</div>
+        <div style={{ color: '#64748b', fontSize: 13 }}>{cert.desc}</div>
+      </div>
     </div>
   );
 }
 
-/* ---------------- AUTO PLAY VIDEO ---------------- */
+/* ---------------- AUTOPLAY VIDEO ---------------- */
 const AutoPlayVideo = ({ src, poster }) => {
   const videoRef = useRef();
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          video.play().catch(() => {});
-        } else {
-          video.pause();
-        }
-      },
-      { threshold: 0.5 }
-    );
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) video.play().catch(() => {});
+      else video.pause();
+    });
     observer.observe(video);
-    return () => observer.unobserve(video);
+    return () => observer.disconnect();
   }, []);
-
   return (
     <video
       ref={videoRef}
       src={src}
       poster={poster}
       muted
-      controls
+      loop
       playsInline
-      style={{
-        width: '100%',
-        height: 'auto',
-        borderRadius: 16,
-        boxShadow: '0 8px 32px rgba(0,0,0,0.25)',
-      }}
+      style={{ width: '100%', height: '100%', borderRadius: 12, objectFit: 'cover' }}
     />
   );
 };
@@ -146,9 +121,9 @@ const FeaturedCars = ({ searchQuery }) => {
         <div key={car.id} style={{
           background: '#fff', padding: 12, borderRadius: 12,
           boxShadow: '0 6px 20px rgba(2,6,23,0.06)', display: 'flex',
-          flexDirection: 'column', transition: 'transform .2s'
+          flexDirection: 'column', transition: 'transform .18s ease'
         }}
-          onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-4px)'}
+          onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-6px)'}
           onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
         >
           <img src={car.image} alt={car.name} loading="lazy" style={{ width: '100%', height: 140, objectFit: 'cover', borderRadius: 8 }} />
@@ -192,7 +167,7 @@ const FAQItem = ({ q, a }) => {
       }}>
         {q} <span>{open ? '-' : '+'}</span>
       </div>
-      {open && <div style={{ marginTop: 4, color: '#334155', fontSize: 14 }}>{a}</div>}
+      {open && <div style={{ marginTop: 6, color: '#334155', fontSize: 14 }}>{a}</div>}
     </div>
   );
 };
@@ -201,23 +176,20 @@ const FAQItem = ({ q, a }) => {
 const ScrollToTopButton = () => {
   const [visible, setVisible] = useState(false);
   useEffect(() => {
-    const toggleVisible = () => setVisible(window.scrollY > 100);
-    window.addEventListener("scroll", toggleVisible);
-    return () => window.removeEventListener("scroll", toggleVisible);
+    const toggleVisible = () => setVisible(window.scrollY > 160);
+    window.addEventListener('scroll', toggleVisible);
+    return () => window.removeEventListener('scroll', toggleVisible);
   }, []);
-  const scrollToTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
-  return visible && (
+  const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
+  if (!visible) return null;
+  return (
     <button onClick={scrollToTop} style={{
-      position: "fixed", bottom: 20, right: 20, width: 50, height: 50,
-      background: "linear-gradient(90deg,#06b6d4,#4f46e5)",
-      color: "#fff", border: "none", borderRadius: "50%", cursor: "pointer",
-      boxShadow: "0 4px 12px rgba(0,0,0,0.3)",
-      display: "flex", justifyContent: "center", alignItems: "center", zIndex: 1000
-    }}>
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-        fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <polyline points="18 15 12 9 6 15"></polyline>
-      </svg>
+      position: 'fixed', bottom: 20, right: 20, width: 52, height: 52,
+      background: 'linear-gradient(90deg,#06b6d4,#4f46e5)',
+      color: '#fff', border: 'none', borderRadius: '50%', cursor: 'pointer',
+      boxShadow: '0 6px 18px rgba(0,0,0,0.18)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1200
+    }} aria-label="Scroll to top">
+      ▲
     </button>
   );
 };
@@ -226,6 +198,37 @@ const ScrollToTopButton = () => {
 const Home = () => {
   useTranslation();
   const [search, setSearch] = useState('');
+  const [typeText, setTypeText] = useState('');
+  const typePhrasesRef = React.useRef(['ค้นหารถที่ถูกใจ...', 'รถยนต์', 'มอเตอร์ไชค์', 'บริการเรียนพิเศษ']);
+
+  useEffect(() => {
+    let phraseIndex = 0;
+    let charIndex = 0;
+    let forward = true;
+    let timeoutId;
+    const tick = () => {
+      const current = typePhrasesRef.current[phraseIndex];
+      if (forward) {
+        charIndex++;
+        setTypeText(current.slice(0, charIndex));
+        if (charIndex === current.length) {
+          forward = false;
+          timeoutId = setTimeout(tick, 900);
+          return;
+        }
+      } else {
+        charIndex--;
+        setTypeText(current.slice(0, charIndex));
+        if (charIndex === 0) {
+          forward = true;
+          phraseIndex = (phraseIndex + 1) % typePhrasesRef.current.length;
+        }
+      }
+      timeoutId = setTimeout(tick, forward ? 80 : 40);
+    };
+    timeoutId = setTimeout(tick, 400);
+    return () => clearTimeout(timeoutId);
+  }, []);
 
   const heroImages = [
     'https://images.unsplash.com/photo-1511918984145-48de785d4c4e',
@@ -235,7 +238,7 @@ const Home = () => {
 
   const certificates = [
     { name: 'ISO 9001', img: '/images/iso9001.png', desc: 'มาตรฐานคุณภาพสากล' },
-    { name: 'Thailand Trusted Quality', img: '/images/633db849-5816-477f-8c09-b0bac0df786f.jpg', desc: 'รับรองโดยกระทรวงพาณิชย์' },
+    { name: 'Thailand Trusted Quality', img: '/images/633db849-5816-477f-8c09-b0bac0df786f.jpg', desc: 'รับรองโดยหน่วยงานที่เกี่ยวข้อง' },
     { name: 'Best Car Rental 2024', img: '/images/2ee5f421-8d2b.jpg', desc: 'รางวัลยอดเยี่ยมแห่งปี' },
   ];
 
@@ -247,114 +250,228 @@ const Home = () => {
     setTimeout(() => {
       setLoading(false);
       navigate(path);
-    }, 3000);
+    }, 700);
+  };
+
+  const popular = ['รถครอบครัว', 'รถสปอร์ต', 'บริการรับสนามบิน', 'เช่าขับเอง', 'เช่าระยะยาว', 'ติวคณิต', 'ภาษาอังกฤษ'];
+
+  // reveal-on-scroll for subcategory sections
+  useEffect(() => {
+    const els = Array.from(document.querySelectorAll('.reveal-section'));
+    if (!els.length) return;
+    const obs = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.12 });
+    els.forEach(el => obs.observe(el));
+    return () => obs.disconnect();
+  }, []);
+
+  // show minimal header-only view on first visit in this session
+  const [introActive, setIntroActive] = useState(() => !sessionStorage.getItem('home_intro_seen'));
+
+  useEffect(() => {
+    if (!introActive) return;
+    const onScroll = () => {
+      if (window.scrollY > 30) {
+        sessionStorage.setItem('home_intro_seen', '1');
+        setIntroActive(false);
+      }
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, [introActive]);
+
+  const dismissIntro = () => {
+    sessionStorage.setItem('home_intro_seen', '1');
+    setIntroActive(false);
   };
 
   return (
-    <div style={{ padding: 0, background: 'linear-gradient(120deg,#f8fafc 60%,#e0e7ff 100%)', minHeight: '100vh', fontFamily: 'Segoe UI, sans-serif' }}>
+    <div className={`home-root ${introActive ? 'intro-active' : ''}`} style={{ padding: 0, background: 'linear-gradient(120deg,#f8fafc 60%,#e0e7ff 100%)', minHeight: '100vh', fontFamily: 'Segoe UI, sans-serif' }}>
       <LoadingOverlay visible={loading} />
-      {/* HERO */}
-      <section style={{ background: 'linear-gradient(90deg,#06b6d4,#4f46e5)', color: '#fff', padding: '3rem 2rem', borderRadius: '0 0 28px 28px', boxShadow: '0 12px 48px #3336', marginBottom: '2rem' }}>
-        <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: '2rem', maxWidth: 1200, margin: 'auto' }}>
-          <div style={{ flex: '1 1 100%', maxWidth: 480, textAlign: 'center' }}>
-            <h1 style={{ fontSize: '2.5rem', margin: 0, lineHeight: 1.05 }}>ระบบเช่ารถออนไลน์และปลอดภัย</h1>
-            <p style={{ fontSize: '1.1rem', opacity: 0.95, marginTop: '1rem' }}>รถใหม่ สะอาด ปลอดภัย พร้อมบริการครบวงจร — จองง่าย สะดวกทั้งมือถือและเดสก์ท็อป</p>
-            <div className="hero-ctas">
-              <button className="btn btn-primary" onClick={() => simulateSearchAndNavigate('/cars')}>เลือกรถ</button>
-              <button className="btn btn-ghost" onClick={() => simulateSearchAndNavigate('/booking')}>จองรถ</button>
+      {/* Intro overlay: when introActive is true we keep header visible and hide the page body */}
+      {introActive && (
+        <div className="intro-banner">
+          <div className="intro-inner">
+            <div className="logo-only">
+              <img src="/images/logo.png" alt="logo" style={{ height: 34 }} onError={(e)=>{e.currentTarget.style.display='none'}} />
+            </div>
+            <div className="intro-actions">
+              <button className="btn btn-outline" onClick={() => { dismissIntro(); navigate('/login'); }}>เข้าสู่ระบบ</button>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* HERO */}
+      <section className="hero-outer">
+        <div className="hero-inner">
+          <div className="hero-left">
+            <h1>Klick Drive — เช่ารถ ง่ายและปลอดภัย</h1>
+            <p>รถใหม่ สะอาด พร้อมบริการครบวงจร — จองง่าย สะดวกทั้งมือถือและเดสก์ท็อป</p>
+            <div className="hero-actions">
+              <button className="btn btn-primary" onClick={() => simulateSearchAndNavigate('/cars')}>เลือกรถ</button>
+              <button className="btn btn-ghost" onClick={() => navigate('/booking')}>จองรถ</button>
+            </div>
+          </div>
+
           <div className="hero-media">
             <AutoPlayVideo src="https://www.w3schools.com/html/mov_bbb.mp4" poster={heroImages[0]} />
           </div>
+
+          {/* centered pill search */}
+          <div className="hero-search-pill search-pill">
+            <div className="pill-content">
+              <div className="search-icon">✨</div>
+              <input type="text" className="pill-input" placeholder={typeText || 'ออกแบบโลโก้ร้านอาหารสไตล์...'} value={search} onChange={e => setSearch(e.target.value)} />
+              <button className="pill-go" onClick={() => navigate(`/cars?q=${encodeURIComponent(search)}`)}>AI Search 🔍</button>
+            </div>
+          </div>
         </div>
       </section>
 
-      <div style={{ maxWidth: 1200, margin: '0 auto' }}>
-        <h2 style={{ fontSize: 26, color: '#111827', marginBottom: 12 }}>รถแนะนำ / Featured Cars</h2>
-        <p style={{ color: '#6b7280', marginBottom: 18 }}>เลือกดูรถยอดนิยม พร้อมสถานะการจองแบบเรียลไทม์</p>
-  <input className="nice-input" type="text" placeholder="ค้นหารถ..." value={search} onChange={e => setSearch(e.target.value)} />
-        <FeaturedCars searchQuery={search} />
-      </div>
+      <main style={{ maxWidth: 1200, margin: '0 auto', padding: '0 12px 40px' }}>
+        {/* Category panel: clean text-only grid + many subcategory sections (reveal on scroll) */}
+        <div style={{ marginTop: -28, padding: '0 12px' }}>
+          <div className="category-card">
+            <div className="category-header">
+              <div>
+                <h3 style={{ margin: 0 }}>บริการยอดนิยม</h3>
+                <div style={{ color: '#6b7280', marginTop: 6 }}>เลือกหมวดหมู่ที่คุณสนใจ — กดเพื่อเลื่อนไปยังหัวข้อย่อย</div>
+              </div>
+              <div>
+                <button className="btn-outline" onClick={() => navigate('/cars')}>ดูทั้งหมด</button>
+              </div>
+            </div>
 
-      <section style={{ maxWidth: 1200, margin: '2rem auto', padding: '1.25rem' }}>
-        <h3 style={{ margin: '0 0 0.5rem 0', color: '#0b74a6' }}>ใบรับรองและรางวัล</h3>
-        <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', justifyContent: 'center' }}>
-          {certificates.map((c, i) => <CertificateCard key={i} cert={c} />)}
+            <div className="category-grid">
+              {[
+                'เช่ารถยนต์','เช่ามอเตอร์ไชค์','เรียนพิเศษ','เช่ารถตู้','เช่าระยะสั้น','เช่าระยะยาว','งานช่าง','บริการรับ-ส่ง','บริการสำหรับองค์กร','เช่ารถพรีเมียม','รถครอบครัว','รถสปอร์ต','รถไฟฟ้า','บริการเดลิเวอรี่','ไกด์ท่องเที่ยว','บริการสนามบิน','เช่าแบบมีคนขับ','เช่าขับเอง','บริการทำความสะอาด','งานแต่งงาน'
+              ].map((c, i) => (
+                <button key={c} className="category-btn" onClick={() => {
+                  const el = document.getElementById(`section-${i}`);
+                  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }}>{c}</button>
+              ))}
+            </div>
+
+            <div style={{ marginTop: 14 }}>
+              <div style={{ fontWeight: 700, marginBottom: 8 }}>คำค้นหายอดนิยม</div>
+              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                {popular.map((s, i) => (
+                  <button key={i} onClick={() => navigate(`/cars?q=${encodeURIComponent(s)}`)} className="btn-outline">{s}</button>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Subcategory sections - many items, reveal on scroll */}
+          <div style={{ marginTop: 18 }}>
+            {[{
+              title: 'เช่ารถยนต์', items: ['เช่ารายวัน','เช่ารายเดือน','เช่าพร้อมคนขับ','เช่าสำหรับท่องเที่ยว','เช่าสำหรับธุรกิจ','เช่าตามจังหวัด','เช่าแบบระยะยาว']
+            },{
+              title: 'เช่ามอเตอร์ไชค์', items: ['มอเตอร์ไชค์รายวัน','มอเตอร์ไชค์ท่องเที่ยว','สกู๊ตเตอร์ไฟฟ้า','มอเตอร์ไชค์พรีเมียม']
+            },{
+              title: 'เรียนพิเศษ', items: ['ติวคณิตศาสตร์','ติวภาษาอังกฤษ','ติววิทยาศาสตร์','ติวสอบเข้ามัธยม','เรียนออนไลน์']
+            },{
+              title: 'บริการสำหรับองค์กร', items: ['เช่ารถองค์กร','แพ็กเกจพนักงาน','เช่าสำหรับอีเวนท์','สัญญารายปี']
+            },{
+              title: 'งานช่าง & บริการ', items: ['ช่างไฟฟ้า','ช่างประปา','ช่างซ่อมทั่วไป','ติดตั้งเครื่องใช้ไฟฟ้า','แม่บ้าน/ทำความสะอาด']
+            },{
+              title: 'บริการพิเศษ', items: ['บริการส่งของ','บริการผู้ช่วยส่วนตัว','บริการไกด์','บริการสนามบิน']
+            }].map((sec, idx) => (
+              <section key={sec.title} id={`section-${idx}`} className="reveal-section" data-index={idx}>
+                <h4>{sec.title}</h4>
+                <div className="sub-list">
+                  {sec.items.map((it, j) => <button key={j} className="sub-btn" onClick={() => navigate(`/cars?q=${encodeURIComponent(it)}`)}>{it}</button>)}
+                </div>
+              </section>
+            ))}
+          </div>
         </div>
-      </section>
 
-      {/* FAQ */}
-      <section style={{ maxWidth: 900, margin: '1.25rem auto', background: '#fff', padding: '1.25rem', borderRadius: 12, boxShadow: '0 6px 24px rgba(15,23,42,0.04)' }}>
-        <h3 style={{ color: '#0b74a6' }}>คำถามที่พบบ่อย</h3>
-        <FAQItem q="จองรถเช่าอย่างไร?" a="สามารถเลือกจากรถที่ว่าง กดปุ่ม 'จอง' และกรอกข้อมูลการเช่าได้เลย" />
-        <FAQItem q="ต้องใช้เอกสารอะไรบ้าง?" a="บัตรประชาชนและใบขับขี่ของผู้เช่า" />
-        <FAQItem q="สามารถยกเลิกการจองได้หรือไม่?" a="สามารถยกเลิกได้ฟรีภายใน 24 ชั่วโมงก่อนถึงเวลารับรถ" />
-        <FAQItem q="มีบริการรับรถที่สนามบินหรือไม่?" a="มีบริการรับรถที่สนามบินทุกสาขาหลัก" />
-        <FAQItem q="มีประกันภัยรถเช่าหรือไม่?" a="ทุกรถมีประกันภัยชั้น 1 ครอบคลุม" />
-      </section>
+        {/* Featured */}
+        <section style={{ marginTop: 22 }}>
+          <h2 style={{ fontSize: 22, color: '#111827' }}>รถแนะนำ / Featured Cars</h2>
+          <p style={{ color: '#6b7280' }}>เลือกดูรถยอดนิยม พร้อมสถานะการจองแบบเรียลไทม์</p>
+          <FeaturedCars searchQuery={search} />
+        </section>
 
-      {/* CALL TO ACTION */}
-      <section className="cta-section">
-        <a href="/booking" className="btn btn-primary btn-lg">จองเลย — รับส่วนลดพิเศษ</a>
-      </section>
+       
+        {/* Certificates */}
+        <section style={{ marginTop: 28 }}>
+          <h3 style={{ color: '#0b74a6' }}>ใบรับรองและรางวัล</h3>
+          <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginTop: 12 }}>
+            {certificates.map((c, i) => <CertificateCard key={i} cert={c} />)}
+          </div>
+        </section>
+
+        {/* FAQ */}
+        <section style={{ marginTop: 26, background: '#fff', padding: 16, borderRadius: 12, boxShadow: '0 6px 24px rgba(15,23,42,0.04)' }}>
+          <h3 style={{ color: '#0b74a6' }}>คำถามที่พบบ่อย</h3>
+          <FAQItem q="จองรถเช่าอย่างไร?" a="สามารถเลือกจากรถที่ว่าง กดปุ่ม 'จอง' และกรอกข้อมูลการเช่าได้เลย" />
+          <FAQItem q="ต้องใช้เอกสารอะไรบ้าง?" a="บัตรประชาชนและใบขับขี่ของผู้เช่า" />
+          <FAQItem q="สามารถยกเลิกการจองได้หรือไม่?" a="สามารถยกเลิกได้ฟรีภายใน 24 ชั่วโมงก่อนถึงเวลารับรถ" />
+          <FAQItem q="มีบริการรับรถที่สนามบินหรือไม่?" a="มีบริการรับรถที่สนามบินทุกสาขาหลัก" />
+          <FAQItem q="มีประกันภัยรถเช่าหรือไม่?" a="ทุกรถมีประกันภัยชั้น 1 ครอบคลุม" />
+        </section>
+
+        {/* CTA */}
+        <section style={{ marginTop: 20, textAlign: 'center' }}>
+          <a href="/booking" className="btn btn-primary btn-lg">จองเลย — รับส่วนลดพิเศษ</a>
+        </section>
+
+      </main>
 
       {/* FOOTER */}
-<footer style={{ background: '#eef2ff', padding: '2rem 1rem', marginTop: '2rem' }}>
-  <div className="footer-grid">
-    <div>
-      <h4 style={{ color: '#0b74a6' }}>บริการลูกค้า</h4>
-      <ul style={{ color: '#334155', listStyle: 'none', padding: 0 }}>
-        <li>การรับประกันบริการ</li>
-        <li>ข้อมูลบริการเพิ่มเติม</li>
-        <li>ติดต่อเรา</li>
-      </ul>
-    </div>
-    <div>
-      <h4 style={{ color: '#0b74a6' }}>เกี่ยวกับ</h4>
-      <ul style={{ color: '#334155', listStyle: 'none', padding: 0 }}>
-        <li>เกี่ยวกับ RentWheels</li>
-        <li>ร่วมงานกับเรา</li>
-        <li>ข้อกำหนดและเงื่อนไข</li>
-      </ul>
-    </div>
-    <div>
-      <h4 style={{ color: '#0b74a6' }}>ช่องทางติดต่อ</h4>
-      <div style={{ color: '#334155' }}>โทร 02-038-5222 • Line: @drivehub • Email: contact@drivehub.com</div>
-    </div>
-    {/* APP DOWNLOAD */}
-    <div>
-      <h4 style={{ color: '#0b74a6' }}>ดาวน์โหลดแอพ</h4>
-      <p style={{ color: '#334155', fontSize: 14, marginBottom: 8 }}>เช่ารถสะดวกยิ่งขึ้นด้วยมือถือ</p>
-      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-        <a href="https://www.apple.com/app-store/" target="_blank" rel="noopener noreferrer"
-           style={{
-             display: 'inline-flex', alignItems: 'center', gap: 6,
-             padding: '6px 12px', background: '#000', borderRadius: 6, color: '#fff', textDecoration: 'none', fontWeight: 600
-           }}>
-          <img src="/images/apple-logo.png" alt="App Store" style={{ width: 20, height: 20 }} /> App Store
-        </a>
-        <a href="https://play.google.com/store" target="_blank" rel="noopener noreferrer"
-           style={{
-             display: 'inline-flex', alignItems: 'center', gap: 6,
-             padding: '6px 12px', background: '#34A853', borderRadius: 6, color: '#fff', textDecoration: 'none', fontWeight: 600
-           }}>
-          <img src="/images/google-play-logo.png" alt="Google Play" style={{ width: 20, height: 20 }} /> Google Play
-        </a>
-      </div>
-    </div>
-  </div>
+      <footer style={{ background: '#eef2ff', padding: '2rem 1rem', marginTop: 28 }}>
+        <div style={{ maxWidth: 1200, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(200px,1fr))', gap: 18 }}>
+          <div>
+            <h4 style={{ color: '#0b74a6' }}>บริการลูกค้า</h4>
+            <ul style={{ color: '#334155', listStyle: 'none', padding: 0 }}>
+              <li>การรับประกันบริการ</li>
+              <li>ข้อมูลบริการเพิ่มเติม</li>
+              <li>ติดต่อเรา</li>
+            </ul>
+          </div>
+          <div>
+            <h4 style={{ color: '#0b74a6' }}>เกี่ยวกับ</h4>
+            <ul style={{ color: '#334155', listStyle: 'none', padding: 0 }}>
+              <li>เกี่ยวกับ Klick Drive</li>
+              <li>ร่วมงานกับเรา</li>
+              <li><Link to="/terms">ข้อกำหนดและเงื่อนไข</Link></li>
+            </ul>
+          </div>
+          <div>
+            <h4 style={{ color: '#0b74a6' }}>ช่องทางติดต่อ</h4>
+            <div style={{ color: '#334155' }}>โทร 02-038-5222 • Line: @drivehub • Email: contact@drivehub.com</div>
+          </div>
+          <div>
+            <h4 style={{ color: '#0b74a6' }}>ดาวน์โหลดแอพ</h4>
+            <p style={{ color: '#334155', fontSize: 14, marginBottom: 8 }}>เช่ารถสะดวกยิ่งขึ้นด้วยมือถือ</p>
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+              <a href="https://www.apple.com/app-store/" target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '6px 12px', background: '#000', borderRadius: 6, color: '#fff', textDecoration: 'none', fontWeight: 600 }}>
+                <img src="/images/apple-logo.png" alt="App Store" style={{ width: 20, height: 20 }} /> App Store
+              </a>
+              <a href="https://play.google.com/store" target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '6px 12px', background: '#34A853', borderRadius: 6, color: '#fff', textDecoration: 'none', fontWeight: 600 }}>
+                <img src="/images/google-play-logo.png" alt="Google Play" style={{ width: 20, height: 20 }} /> Google Play
+              </a>
+            </div>
+          </div>
+        </div>
+        <div style={{ textAlign: 'center', color: '#64748b', marginTop: 16, fontSize: 13 }}>
+          © {new Date().getFullYear()} Klick Drive — All rights reserved
+          <div style={{ marginTop: 6, fontSize: 12 }}>
+            <Link to="/privacy" style={{ color: '#64748b', marginRight: 12, textDecoration: 'underline dotted' }}>นโยบายความเป็นส่วนตัว</Link>
+            <Link to="/terms" style={{ color: '#64748b', textDecoration: 'underline dotted' }}>ข้อกำหนดการให้บริการ</Link>
+          </div>
+        </div>
+      </footer>
 
-    <div style={{ textAlign: 'center', color: '#64748b', marginTop: 16, fontSize: 13 }}>
-  © {new Date().getFullYear()} Klick Drive — All rights reserved
-  <div style={{ marginTop: 6, fontSize: 12 }}>
-    <Link to="/privacy" style={{ color: '#64748b', marginRight: 12, textDecoration: 'underline dotted' }}>นโยบายความเป็นส่วนตัว</Link>
-    <Link to="/terms" style={{ color: '#64748b', textDecoration: 'underline dotted' }}>ข้อกำหนดการให้บริการ</Link>
-  </div>
-  </div>
-</footer>
-
-      {/* SCROLL TO TOP */}
       <ScrollToTopButton />
     </div>
   );

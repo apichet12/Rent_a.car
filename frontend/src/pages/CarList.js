@@ -16,6 +16,7 @@ const CarList = () => {
   const [fuelFilter, setFuelFilter] = useState('');
   const [onlyAvailable, setOnlyAvailable] = useState(false);
   const [sortBy, setSortBy] = useState('recommended');
+  const [vehicleType, setVehicleType] = useState('all'); // all | car | bike | special
 
   useEffect(() => {
     const fetchCars = async () => {
@@ -54,6 +55,7 @@ const CarList = () => {
   const filteredCars = useMemo(() => {
     let list = cars.slice();
     if (q) list = list.filter(c => (c.name || '').toLowerCase().includes(q.toLowerCase()) || (c.desc || '').toLowerCase().includes(q.toLowerCase()));
+    if (vehicleType && vehicleType !== 'all') list = list.filter(c => (c.type || 'car') === vehicleType);
     if (minPrice) list = list.filter(c => c.price >= Number(minPrice));
     if (maxPrice) list = list.filter(c => c.price <= Number(maxPrice));
     if (seatsFilter) list = list.filter(c => String(c.seats) === String(seatsFilter));
@@ -63,7 +65,7 @@ const CarList = () => {
     if (sortBy === 'price_desc') list.sort((a,b)=>b.price-a.price);
     if (sortBy === 'name') list.sort((a,b)=>a.name.localeCompare(b.name));
     return list;
-  }, [cars, q, minPrice, maxPrice, seatsFilter, fuelFilter, onlyAvailable, sortBy]);
+  }, [cars, q, minPrice, maxPrice, seatsFilter, fuelFilter, onlyAvailable, sortBy, vehicleType]);
 
   return (
     <div className="carlist-page">
@@ -89,6 +91,12 @@ const CarList = () => {
                 <option value="7">7</option>
                 <option value="12">12</option>
               </select>
+              <div style={{ display: 'flex', gap: 8, marginTop: 6, flexWrap: 'wrap' }}>
+                <button type="button" onClick={() => setVehicleType('all')} className={"btn-outline" + (vehicleType==='all' ? ' active' : '')}>ทั้งหมด</button>
+                <button type="button" onClick={() => setVehicleType('car')} className={"btn-outline" + (vehicleType==='car' ? ' active' : '')}>รถยนต์</button>
+                <button type="button" onClick={() => setVehicleType('bike')} className={"btn-outline" + (vehicleType==='bike' ? ' active' : '')}>มอเตอร์ไชค์</button>
+                <button type="button" onClick={() => setVehicleType('special')} className={"btn-outline" + (vehicleType==='special' ? ' active' : '')}>เรียนพิเศษ</button>
+              </div>
               <select value={fuelFilter} onChange={e=>setFuelFilter(e.target.value)}>
                 <option value="">ทุกเชื้อเพลิง</option>
                 <option value="เบนซิน">เบนซิน</option>

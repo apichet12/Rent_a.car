@@ -1,0 +1,225 @@
+/* ==================================== */
+/* 1. LAYOUT & STRUCTURE */
+/* ==================================== */
+
+.auth-wrapper {
+    /* จัดกึ่งกลางและเพิ่มพื้นที่ว่างรอบด้าน */
+    display: flex;
+    justify-content: center;
+    padding: 40px 20px; /* เพิ่ม padding ด้านบน/ล่าง */
+    min-height: 100vh; /* ยืดให้เต็มความสูงของหน้าจอ */
+    background-color: #f8fafc; /* สีพื้นหลังอ่อนๆ */
+    font-family: 'Inter', sans-serif;
+}
+
+.auth-card {
+    /* Container หลักของหน้าจอ Login/Register */
+    width: 100%;
+    max-width: 1024px; /* ขยายความกว้างสูงสุดเล็กน้อย */
+    display: flex;
+    gap: 30px; /* เพิ่มช่องว่างระหว่างส่วนซ้าย-ขวา */
+    flex-wrap: wrap;
+    box-shadow: 0 10px 25px rgba(10, 20, 30, 0.05); /* เพิ่มเงาเบาๆ */
+    border-radius: 16px;
+    overflow: hidden; /* เพื่อให้มุมโค้งแสดงผลดี */
+    background-color: #ffffff; /* พื้นหลังการ์ดเป็นสีขาว */
+}
+
+/* ------------------------------------ */
+/* Responsive Layout */
+/* ------------------------------------ */
+
+@media (max-width: 900px) {
+    .auth-left, .auth-right {
+        /* เมื่อหน้าจอแคบลง ให้แต่ละส่วนเต็มความกว้าง */
+        min-width: 100%;
+        padding: 24px; /* ปรับลด padding บนมือถือ */
+    }
+    .auth-card {
+        gap: 0;
+        box-shadow: none; /* ลบเงาบนมือถือ */
+        border-radius: 0;
+    }
+}
+
+
+/* ==================================== */
+/* 2. LEFT SECTION (ADVANTAGES) */
+/* ==================================== */
+
+.auth-left {
+    flex: 1 1 360px; /* ปรับ flex basis ให้เหมาะสม */
+    min-width: 300px;
+    padding: 36px;
+    /* การไล่ระดับสีที่ดูสงบและเป็นมืออาชีพ */
+    background: linear-gradient(135deg, #eef7ff, #dbe9fc);
+    color: #07203a;
+    border-radius: 16px 0 0 16px; /* มุมโค้งซ้าย */
+}
+
+.advantages {
+    display: flex;
+    flex-direction: column;
+    gap: 15px; /* เพิ่มช่องว่างระหว่างข้อดี */
+    margin-top: 20px;
+}
+
+.adv-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 12px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.6); /* พื้นหลังโปร่งใสเล็กน้อย */
+    border-left: 4px solid #4f46e5; /* เน้นด้วยเส้นสี */
+}
+
+.adv-icon {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: #4f46e5; /* ใช้สีหลักของแบรนด์ */
+    color: #ffffff;
+    font-size: 20px;
+    box-shadow: 0 2px 5px rgba(79, 70, 229, 0.2);
+}
+
+
+/* ==================================== */
+/* 3. RIGHT SECTION (FORM) */
+/* ==================================== */
+
+.auth-right {
+    flex: 1 1 400px; /* ปรับ flex basis ให้กว้างขึ้นเล็กน้อย */
+    min-width: 320px;
+    padding: 36px;
+    background-color: #ffffff; /* ชัดเจนว่าส่วนนี้คือฟอร์ม */
+    border-radius: 0 16px 16px 0; /* มุมโค้งขวา */
+}
+
+/* Input Fields */
+.nice-input {
+    width: 100%;
+    padding: 12px 14px; /* เพิ่มความสูงของ Input */
+    border-radius: 8px;
+    border: 1px solid #e2e8f0; /* ใช้สีเส้นขอบที่ดูดีขึ้น */
+    background: #ffffff;
+    font-size: 16px;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.nice-input:focus {
+    border-color: #4f46e5; /* เน้นสีเมื่อ Focus */
+    box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.1);
+    outline: none;
+}
+
+/* Primary Button */
+.btn-primary {
+    padding: 12px 20px;
+    border-radius: 10px;
+    border: none;
+    background: linear-gradient(90deg, #06b6d4, #4f46e5);
+    color: #fff;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 16px;
+    transition: opacity 0.3s, transform 0.1s;
+}
+
+.btn-primary:hover {
+    opacity: 0.9;
+    box-shadow: 0 4px 10px rgba(79, 70, 229, 0.3);
+}
+
+.btn-primary:disabled {
+    background: #cbd5e1;
+    cursor: not-allowed;
+}
+
+/* Social Button */
+.social-btn {
+    width: 100%;
+    padding: 12px;
+    border-radius: 10px;
+    background: #eef2ff; /* สีพื้นหลังอ่อนๆ */
+    border: 1px solid #d1d5db;
+    color: #1f2937;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 16px;
+    transition: background-color 0.3s;
+}
+
+.social-btn:hover {
+    background: #e0e7ff;
+}
+
+.facebook-btn {
+    background: #1877f2 !important;
+    color: white !important;
+    border: none !important;
+}
+.facebook-btn:hover {
+    background: #1562c2 !important;
+}
+
+/* Auxiliary / Links */
+.small-link {
+    color: #4f46e5; /* ใช้สีหลักของแบรนด์ */
+    font-weight: 700;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.small-link:hover {
+    color: #3b82f6;
+    text-decoration: underline;
+}
+
+.auth-aux {
+    text-align: center;
+    margin-top: 24px;
+    color: #4b5563;
+    font-size: 15px;
+}
+
+
+/* ==================================== */
+/* 4. TOGGLE COMPONENTS (Circle Check) */
+/* ==================================== */
+
+.toggle-circle {
+    /* รูปแบบวงกลมเริ่มต้น */
+    width: 20px;
+    height: 20px;
+    min-width: 20px; /* สำคัญสำหรับการจัดเรียง */
+    border-radius: 50%;
+    border: 2px solid #94a3b8;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    margin-right: 8px;
+    font-size: 14px;
+    transition: all 0.2s;
+}
+
+.toggle-circle.on {
+    /* รูปแบบเมื่อเปิดใช้งาน */
+    background: #4f46e5; /* ใช้สีน้ำเงินเข้ม */
+    color: #fff;
+    border-color: #4f46e5;
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+}
+
+/* สำหรับข้อความ Checkbox/Toggle */
+.auth-checkbox {
+    /* ปรับปรุง style ให้ดูดีขึ้นเมื่อใช้กับ Toggle Circle */
+    font-size: 15px;
+    color: #374151;
+    line-height: 1.5;
+}
