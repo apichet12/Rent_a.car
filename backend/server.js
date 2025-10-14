@@ -81,6 +81,7 @@ app.post('/api/login', async (req, res) => {
     const user = rows[0];
     const stored = user.password || user.passwordHash || '';
 
+    // ตรวจสอบรหัสผ่าน
     let match = await bcrypt.compare(password, stored);
     if (!match && stored.length === 64) {
       const sha = crypto.createHash('sha256').update(password).digest('hex');
@@ -90,15 +91,23 @@ app.post('/api/login', async (req, res) => {
     if (!match)
       return res.status(401).json({ success: false, message: 'รหัสผ่านไม่ถูกต้อง' });
 
+    // ✅ แปลง role เป็น lowercase ก่อนส่ง
+    const role = (user.role || 'user').toLowerCase();
+
     res.json({
       success: true,
-      user: { username: user.username, role: user.role, name: user.name }
+      user: {
+        username: user.username,
+        role,      // <<< สำคัญมาก สำหรับ frontend ตรวจสอบ isAdmin()
+        name: user.name
+      }
     });
   } catch (err) {
     console.error('Login error:', err.sqlMessage || err.message || err);
     res.status(500).json({ success: false, message: 'เกิดข้อผิดพลาดใน server' });
   }
 });
+
 
 // --- Cars List ---
 app.get('/api/cars', async (req, res) => {
