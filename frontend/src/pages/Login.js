@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useContext } from 'react';
+// Login.js
+import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../contexts/AuthContext';
 import './Auth.css';
@@ -13,7 +14,7 @@ const advantagesWithIcons = [
 
 const Login = () => {
   const navigate = useNavigate();
-  const { login } = useContext(AuthContext); // ใช้ Context
+  const { login } = useContext(AuthContext);
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -55,9 +56,8 @@ const Login = () => {
       }
 
       if (res.ok && data && data.success) {
-        // รองรับ backend ทั้งสองแบบ: มี user object หรือไม่มี
-        const u = data.user || data;
-        login(u.username, u.role);
+        // ✅ ใช้ response ตรง ๆ (รองรับ backend ปัจจุบัน)
+        login(data.username, data.role);
         navigate('/dashboard');
       } else {
         setError((data && data.message) || 'เข้าสู่ระบบไม่สำเร็จ กรุณาตรวจสอบข้อมูล');

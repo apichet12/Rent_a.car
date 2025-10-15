@@ -31,8 +31,8 @@ export const AuthProvider = ({ children }) => {
   const isAdmin = user && user.role === 'admin';
   // ตรวจสอบว่าเป็นยูสเซอร์ทั่วไปหรือไม่
   const isUser = user && user.role === 'user';
-  // ตรวจสอบว่าเข้าสู่ระบบหรือไม่
-  const isLoggedIn = !!user;
+  // ตรวจสอบว่าเข้าสู่ระบบหรือไม่         
+  const isLoggedIn = !!user; //
 
   return (
     <AuthContext.Provider value={{ user, login, logout, isAdmin, isUser, isLoggedIn, loading }}>
