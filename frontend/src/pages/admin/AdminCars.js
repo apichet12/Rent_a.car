@@ -1,6 +1,6 @@
-
 import React, { useState, useEffect, useContext } from 'react';
 import { AuthContext } from '../../contexts/AuthContext';
+import { PlusCircle, Trash2 } from 'lucide-react';
 
 const AdminCars = () => {
   const { user } = useContext(AuthContext);
@@ -10,7 +10,7 @@ const AdminCars = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
-  // Fetch cars from backend
+  // --- Fetch cars ---
   const fetchCars = async () => {
     setLoading(true);
     try {
@@ -27,105 +27,136 @@ const AdminCars = () => {
 
   useEffect(() => { fetchCars(); }, []);
 
-  // Add a new car
+  // --- Add a new car ---
   const handleAdd = async () => {
     setError('');
     setSuccess('');
-    if (!user || user.role !== 'admin') {
-      setError('ต้องเป็นผู้ดูแลระบบเพื่อเพิ่มรถ');
-      return;
-    }
-    if (!form.name || !form.price) {
-      setError('กรุณากรอกชื่อและราคา');
-      return;
-    }
+    if (!user || user.role !== 'admin') return setError('ต้องเป็นผู้ดูแลระบบเพื่อเพิ่มรถ');
+    if (!form.name || !form.price) return setError('กรุณากรอกชื่อและราคา');
+
     try {
       const res = await fetch('/api/admin/cars', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ adminUsername: user.username, car: { ...form, price: Number(form.price) } })
+        body: JSON.stringify({
+          adminUsername: user.username,
+          car: { ...form, price: Number(form.price) },
+        }),
       });
-      if (!res.ok) {
-        const text = await res.text();
-        throw new Error(text || `HTTP error ${res.status}`);
-      }
       const data = await res.json();
       if (data.success) {
         setForm({ name: '', price: '', seats: 4, fuel: 'เบนซิน', desc: '' });
-        setSuccess('เพิ่มรถสำเร็จ!');
+        setSuccess('✅ เพิ่มรถสำเร็จ!');
         fetchCars();
-      } else {
-        setError(data.message || 'ไม่สามารถเพิ่มรถได้');
-      }
+      } else setError(data.message || 'ไม่สามารถเพิ่มรถได้');
     } catch (e) {
       setError(`เกิดข้อผิดพลาด: ${e.message}`);
     }
   };
 
-  // Delete a car
+  // --- Delete car ---
   const handleDelete = async (id) => {
-    setError('');
-    setSuccess('');
     if (!user || user.role !== 'admin') return;
     if (!window.confirm('ต้องการลบรถคันนี้ใช่หรือไม่?')) return;
+    setError('');
+    setSuccess('');
     try {
       const res = await fetch(`/api/admin/cars/${id}`, {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ adminUsername: user.username })
+        body: JSON.stringify({ adminUsername: user.username }),
       });
-      if (!res.ok) {
-        const text = await res.text();
-        throw new Error(text || `HTTP error ${res.status}`);
-      }
       const data = await res.json();
       if (data.success) {
-        setSuccess('ลบรถสำเร็จ!');
+        setSuccess('🚗 ลบรถสำเร็จ!');
         fetchCars();
-      } else {
-        setError(data.message || 'ไม่สามารถลบได้');
-      }
+      } else setError(data.message || 'ไม่สามารถลบได้');
     } catch (e) {
       setError(`เกิดข้อผิดพลาด: ${e.message}`);
     }
   };
 
   return (
-    <div className="page-card" style={{ maxWidth: 600, margin: '0 auto', background: 'linear-gradient(135deg,#f8fafc 60%,#e0e7ef 100%)', boxShadow: '0 4px 24px #e0e7ef', borderRadius: 18, padding: 32 }}>
-      <h2 style={{ color: '#1e293b', marginBottom: 0 }}>🚗 จัดการรถ (Admin)</h2>
-      <p style={{ color: '#64748b', marginTop: 4, marginBottom: 24 }}>เพิ่ม/ลบรถ ดูรายการรถทั้งหมด</p>
+    <div className="max-w-2xl mx-auto px-4 py-8">
+      {/* Header */}
+      <div className="text-center mb-8">
+        <h2 className="text-2xl font-bold text-slate-800">🚗 จัดการรถ (Admin)</h2>
+        <p className="text-slate-500 text-sm">เพิ่ม / ลบรถ ดูรายการรถทั้งหมด</p>
+      </div>
 
-      <div style={{ marginBottom: 24, background: '#fff', borderRadius: 12, padding: 20, boxShadow: '0 2px 8px #f1f5f9' }}>
-        <div style={{ display: 'grid', gap: 12 }}>
-          {error && <div style={{ color: '#ef4444', fontWeight: 500 }}>{error}</div>}
-          {success && <div style={{ color: '#22c55e', fontWeight: 500 }}>{success}</div>}
-          <input className="nice-input" style={{ fontSize: 16 }} placeholder="ชื่อรุ่นรถ *" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} />
-          <input className="nice-input" style={{ fontSize: 16 }} placeholder="ราคา (บาท/วัน) *" type="number" min="0" value={form.price} onChange={e => setForm({ ...form, price: e.target.value })} />
-          <input className="nice-input" style={{ fontSize: 16 }} placeholder="คำอธิบาย" value={form.desc} onChange={e => setForm({ ...form, desc: e.target.value })} />
-          <div style={{ display: 'flex', gap: 10, marginTop: 4 }}>
-            <button className="btn-primary" style={{ flex: 1, fontSize: 16, padding: '10px 0' }} onClick={handleAdd}>➕ เพิ่มรถ</button>
-            <button className="btn-ghost" style={{ flex: 1, fontSize: 16, padding: '10px 0' }} onClick={() => setForm({ name: '', price: '', seats: 4, fuel: 'เบนซิน', desc: '' })}>รีเซ็ต</button>
-          </div>
+      {/* Form Card */}
+      <div className="bg-white rounded-2xl shadow-lg p-6 space-y-4">
+        {error && <div className="text-red-500 font-medium">{error}</div>}
+        {success && <div className="text-green-600 font-medium">{success}</div>}
+
+        <input
+          type="text"
+          placeholder="ชื่อรุ่นรถ *"
+          className="w-full border border-slate-300 rounded-lg p-3 text-base focus:ring-2 focus:ring-sky-400 outline-none"
+          value={form.name}
+          onChange={(e) => setForm({ ...form, name: e.target.value })}
+        />
+        <input
+          type="number"
+          min="0"
+          placeholder="ราคา (บาท/วัน) *"
+          className="w-full border border-slate-300 rounded-lg p-3 text-base focus:ring-2 focus:ring-sky-400 outline-none"
+          value={form.price}
+          onChange={(e) => setForm({ ...form, price: e.target.value })}
+        />
+        <input
+          type="text"
+          placeholder="คำอธิบายเพิ่มเติม"
+          className="w-full border border-slate-300 rounded-lg p-3 text-base focus:ring-2 focus:ring-sky-400 outline-none"
+          value={form.desc}
+          onChange={(e) => setForm({ ...form, desc: e.target.value })}
+        />
+
+        <div className="flex flex-col sm:flex-row gap-3 pt-2">
+          <button
+            onClick={handleAdd}
+            className="flex items-center justify-center gap-2 bg-sky-600 hover:bg-sky-700 text-white font-semibold rounded-lg py-2.5 transition-all"
+          >
+            <PlusCircle className="w-5 h-5" />
+            เพิ่มรถ
+          </button>
+          <button
+            onClick={() => setForm({ name: '', price: '', seats: 4, fuel: 'เบนซิน', desc: '' })}
+            className="flex items-center justify-center gap-2 border border-slate-300 hover:bg-slate-100 rounded-lg py-2.5 transition-all"
+          >
+            รีเซ็ต
+          </button>
         </div>
       </div>
 
-      <div style={{ marginTop: 8 }}>
-        {loading ? <div style={{ color: '#64748b', textAlign: 'center', fontSize: 18 }}>⏳ กำลังโหลด...</div> : (
-          cars.length ? (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-              {cars.map(c => (
-                <div key={c.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#fff', padding: 18, borderRadius: 12, boxShadow: '0 2px 8px #f1f5f9', transition: 'box-shadow .2s', gap: 16 }}>
-                  <div>
-                    <div style={{ fontWeight: 700, fontSize: 18, color: '#0f172a' }}>{c.name}</div>
-                    <div style={{ color: '#64748b', fontSize: 15 }}>{c.desc || '-'} <span style={{ color: '#0ea5e9', fontWeight: 500 }}> {c.price} ฿/วัน</span></div>
-                  </div>
-                  <button className="btn-ghost" style={{ color: '#ef4444', fontWeight: 600, fontSize: 16, border: '1px solid #ef4444', borderRadius: 8, padding: '6px 18px', background: 'none', cursor: 'pointer', transition: 'background .2s' }} onClick={() => handleDelete(c.id)}>
-                    ลบ
-                  </button>
+      {/* Car List */}
+      <div className="mt-8">
+        {loading ? (
+          <p className="text-center text-slate-500 text-lg">⏳ กำลังโหลด...</p>
+        ) : cars.length ? (
+          <div className="space-y-4">
+            {cars.map((c) => (
+              <div
+                key={c.id}
+                className="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-white rounded-xl shadow-md p-5 hover:shadow-lg transition-all"
+              >
+                <div className="flex-1">
+                  <h3 className="font-bold text-lg text-slate-800">{c.name}</h3>
+                  <p className="text-slate-500 text-sm">{c.desc || '-'}</p>
+                  <p className="text-sky-600 font-semibold mt-1">{c.price} ฿/วัน</p>
                 </div>
-              ))}
-            </div>
-          ) : <div style={{ color: '#64748b', textAlign: 'center', fontSize: 18 }}>ยังไม่มีรถในระบบ</div>
+                <button
+                  onClick={() => handleDelete(c.id)}
+                  className="flex items-center gap-1 mt-3 sm:mt-0 border border-red-500 text-red-500 px-3 py-2 rounded-lg hover:bg-red-50 transition-all"
+                >
+                  <Trash2 className="w-4 h-4" />
+                  ลบ
+                </button>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-center text-slate-500 text-lg">ยังไม่มีรถในระบบ</p>
         )}
       </div>
     </div>
