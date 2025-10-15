@@ -71,15 +71,20 @@ app.post('/api/register', async (req, res) => {
 app.post('/api/login', async (req, res) => {
   try {
     const { username, password } = req.body;
+    console.log('Login attempt for:', username);   // <-- log
+
     if (!username || !password)
       return res.status(400).json({ success: false, message: 'กรุณากรอก username และ password' });
 
     const { rows } = await pool.query('SELECT * FROM users WHERE username=$1', [username]);
+    console.log('DB rows:', rows);   // <-- log
+
     if (rows.length === 0)
       return res.status(401).json({ success: false, message: 'ไม่พบผู้ใช้' });
 
     const user = rows[0];
     const stored = user.password_hash || '';
+    console.log('Stored password:', stored);  // <-- log
     let match = false;
 
     if (stored.startsWith('$2b$') || stored.startsWith('$2a$')) {
@@ -103,10 +108,11 @@ app.post('/api/login', async (req, res) => {
       },
     });
   } catch (err) {
-    console.error('Login error:', err.message || err);
+    console.error('Login error:', err);   // <-- log ทั้ง object
     res.status(500).json({ success: false, message: 'เกิดข้อผิดพลาดใน server', error: err.message });
   }
 });
+
 
 // --- Cars List ---
 app.get('/api/cars', async (req, res) => {
