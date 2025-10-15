@@ -1,10 +1,13 @@
-require('dotenv').config();
+// =======================
+// Setup & Imports
+// =======================
+const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '.env') });
 const express = require('express');
 const cors = require('cors');
 const mysql = require('mysql2/promise');
 const bcrypt = require('bcrypt');
 const crypto = require('crypto');
-const path = require('path');
 
 const app = express();
 app.use(cors());
@@ -20,7 +23,7 @@ const pool = mysql.createPool({
   database: process.env.DB_NAME || 'carrental',
   waitForConnections: true,
   connectionLimit: 10,
-  queueLimit: 0
+  queueLimit: 0,
 });
 
 // =======================
@@ -53,7 +56,6 @@ app.post('/api/register', async (req, res) => {
     }
 
     const passwordHash = await bcrypt.hash(password, 10);
-
     const sql = 'INSERT INTO users (username, email, name, phone, passwordHash) VALUES (?, ?, ?, ?, ?)';
     await pool.query(sql, [username, email || null, name || null, phone || null, passwordHash]);
 
@@ -76,16 +78,12 @@ app.post('/api/login', async (req, res) => {
       return res.status(401).json({ success: false, message: 'ไม่พบผู้ใช้' });
 
     const user = rows[0];
-    const stored = user.passwordHash || ''; // ใช้ field passwordHash
-
+    const stored = user.passwordHash || '';
     let match = false;
 
-    // 1️⃣ ตรวจสอบ bcrypt hash (user ใหม่)
     if (stored.startsWith('$2b$') || stored.startsWith('$2a$')) {
       match = await bcrypt.compare(password, stored);
-    }
-    // 2️⃣ ตรวจสอบ SHA256 (user เก่า)
-    else if (stored.length === 64) {
+    } else if (stored.length === 64) {
       const sha = crypto.createHash('sha256').update(password).digest('hex');
       match = sha === stored;
     }
@@ -100,8 +98,8 @@ app.post('/api/login', async (req, res) => {
       user: {
         username: user.username,
         role,
-        name: user.name
-      }
+        name: user.name,
+      },
     });
   } catch (err) {
     console.error('Login error:', err.sqlMessage || err.message || err);
@@ -109,14 +107,13 @@ app.post('/api/login', async (req, res) => {
   }
 });
 
-
 // --- Cars List ---
 app.get('/api/cars', async (req, res) => {
   try {
     const [rows] = await pool.query('SELECT * FROM cars ORDER BY id');
     const cars = rows.map(r => ({
       ...r,
-      features: r.features ? JSON.parse(r.features) : []
+      features: r.features ? JSON.parse(r.features) : [],
     }));
     res.json(cars);
   } catch (err) {
@@ -125,11 +122,11 @@ app.get('/api/cars', async (req, res) => {
   }
 });
 
-// --- Debug GET สำหรับ Register ---
+// --- Debug Register Test ---
 app.get('/api/debug/register-test', (req, res) => {
   res.json({
     ok: true,
-    message: 'Register endpoint works (GET test). ใช้ POST สำหรับสมัครจริง'
+    message: 'Register endpoint works (GET test). ใช้ POST สำหรับสมัครจริง',
   });
 });
 
@@ -139,12 +136,58 @@ app.get('/api/debug/register-test', (req, res) => {
 const frontendBuildPath = path.join(__dirname, '../frontend/build');
 app.use(express.static(frontendBuildPath));
 
-// API requests จะไปที่ backend
 app.use((req, res, next) => {
   if (req.path.startsWith('/api')) return next();
   res.sendFile(path.join(frontendBuildPath, 'index.html'), err => {
     if (err) return next(err);
   });
+});
+
+// --- Admin Add Car ---
+app.post('/api/admin/cars', async (req, res) => {
+  const { adminUsername, car } = req.body;
+  if (!adminUsername || !car)
+    return res.status(400).json({ success: false, message: 'ข้อมูลไม่ครบ' });
+
+  try {
+    const [users] = await pool.query('SELECT role FROM users WHERE username=?', [adminUsername]);
+    if (!users.length || users[0].role !== 'admin') {
+      return res.status(403).json({ success: false, message: 'ต้องเป็นผู้ดูแลระบบ' });
+    }
+
+    const { name, price, seats, fuel, desc } = car;
+    if (!name || !price)
+      return res.status(400).json({ success: false, message: 'กรุณากรอกชื่อและราคา' });
+
+    const sql = 'INSERT INTO cars (name, price, seats, fuel, description) VALUES (?, ?, ?, ?, ?)';
+    await pool.query(sql, [name, price, seats || 4, fuel || 'เบนซิน', desc || '']);
+    res.json({ success: true, message: 'เพิ่มรถสำเร็จ' });
+  } catch (err) {
+    console.error('POST /api/admin/cars error:', err.sqlMessage || err.message || err);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+// --- Admin Delete Car ---
+app.delete('/api/admin/cars/:id', async (req, res) => {
+  const { adminUsername } = req.body;
+  const { id } = req.params;
+
+  if (!adminUsername)
+    return res.status(400).json({ success: false, message: 'ต้องระบุผู้ดูแลระบบ' });
+
+  try {
+    const [users] = await pool.query('SELECT role FROM users WHERE username=?', [adminUsername]);
+    if (!users.length || users[0].role !== 'admin') {
+      return res.status(403).json({ success: false, message: 'ต้องเป็นผู้ดูแลระบบ' });
+    }
+
+    await pool.query('DELETE FROM cars WHERE id=?', [id]);
+    res.json({ success: true, message: 'ลบรถสำเร็จ' });
+  } catch (err) {
+    console.error('DELETE /api/admin/cars/:id error:', err.sqlMessage || err.message || err);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
 });
 
 // =======================

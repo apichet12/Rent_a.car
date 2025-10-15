@@ -1,6 +1,6 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { AuthContext } from '../context/AuthContext';
+import { AuthContext } from '../contexts/AuthContext';
 import './Navbar.css';
 
 // Constants for the typing effect
@@ -106,7 +106,7 @@ const NavbarLogin = () => {
                         <div className="search-icon">✨</div>
                         <input
                             className="pill-input navbar-search-input"
-                            placeholder={displayedPlaceholder || PLACEHOLDERS[0]} /* Use dynamic placeholder */
+                            placeholder={displayedPlaceholder || PLACEHOLDERS[0]}
                             value={query}
                             onChange={e => setQuery(e.target.value)}
                             onKeyDown={e => e.key === 'Enter' && doSearch()}
@@ -147,6 +147,17 @@ const NavbarLogin = () => {
                                 </div>
                             </div>
                         ))}
+                        {/* Admin menu: only show if user is admin */}
+                        {user && user.role === 'admin' && (
+                            <div className="menu-item dropdown hover-dropdown admin-menu">
+                                <button className="dropdown-toggle">เมนูแอดมิน ▾</button>
+                                <div className="dropdown-menu multi-col">
+                                    <Link className="dropdown-item" to="/admin/cars">จัดการรถ</Link>
+                                    <Link className="dropdown-item" to="/admin/bookings">จัดการการจอง</Link>
+                                    <Link className="dropdown-item" to="/admin/users">จัดการผู้ใช้งาน</Link>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </div>
 

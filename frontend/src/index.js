@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
-import { AuthProvider } from './context/AuthContext'; // ✅ นำ AuthProvider เข้ามา
+import { AuthProvider } from './contexts/AuthContext'; // ✅ นำ AuthProvider เข้ามา (แก้ path ให้ถูกต้อง)
 import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 import reportWebVitals from './reportWebVitals';
 
