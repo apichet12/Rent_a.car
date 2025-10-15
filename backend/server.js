@@ -99,14 +99,14 @@ app.post('/api/login', async (req, res) => {
 
     const role = (user.role || 'user').toLowerCase();
 
-    res.json({
-      success: true,
-      user: {
-        username: user.username,
-        role,
-        name: user.name,
-      },
-    });
+   res.json({
+  success: true,
+  username: user.username,
+  role,               // ส่ง role ตรง ๆ
+  name: user.name,
+  message: 'Login successful',
+});
+
   } catch (err) {
     console.error('Login error:', err);   // <-- log ทั้ง object
     res.status(500).json({ success: false, message: 'เกิดข้อผิดพลาดใน server', error: err.message });

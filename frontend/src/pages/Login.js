@@ -61,9 +61,9 @@ const Login = () => {
       }
 
       if (res.ok && data && data.success) {
-        // ✅ บันทึก user + role ลง Context และ localStorage
-        login(data.user.username, data.user.role);
-        navigate('/dashboard');
+  const u = data.user || data; // รองรับได้ทั้ง 2 แบบ
+  login(u.username, u.role);
+  navigate('/dashboard');
       } else {
         setError((data && data.message) || 'เข้าสู่ระบบไม่สำเร็จ กรุณาตรวจสอบข้อมูล');
       }
