@@ -47,22 +47,19 @@ app.post('/api/register', async (req, res) => {
       return res.status(400).json({ success: false, message: 'กรุณากรอก username และ password' });
     }
 
-    // ตรวจสอบ username ซ้ำ
     const [existing] = await pool.query('SELECT * FROM users WHERE username=?', [username]);
     if (existing.length > 0) {
       return res.status(400).json({ success: false, message: 'Username มีคนใช้แล้ว' });
     }
 
-    // hash password
     const passwordHash = await bcrypt.hash(password, 10);
 
-    // insert ลงฐานข้อมูล
     const sql = 'INSERT INTO users (username, email, name, phone, passwordHash) VALUES (?, ?, ?, ?, ?)';
     await pool.query(sql, [username, email || null, name || null, phone || null, passwordHash]);
 
     res.json({ success: true, message: 'สมัครสมาชิกสำเร็จ' });
   } catch (err) {
-    console.error('Register error:', err);
+    console.error('Register error:', err.sqlMessage || err.message || err);
     res.status(500).json({ success: false, message: 'Server error', error: err.message });
   }
 });
@@ -79,11 +76,16 @@ app.post('/api/login', async (req, res) => {
       return res.status(401).json({ success: false, message: 'ไม่พบผู้ใช้' });
 
     const user = rows[0];
-    const stored = user.password || user.passwordHash || '';
+    const stored = user.passwordHash || ''; // ใช้ field passwordHash
 
-    // ตรวจสอบรหัสผ่าน
-    let match = await bcrypt.compare(password, stored);
-    if (!match && stored.length === 64) {
+    let match = false;
+
+    // 1️⃣ ตรวจสอบ bcrypt hash (user ใหม่)
+    if (stored.startsWith('$2b$') || stored.startsWith('$2a$')) {
+      match = await bcrypt.compare(password, stored);
+    }
+    // 2️⃣ ตรวจสอบ SHA256 (user เก่า)
+    else if (stored.length === 64) {
       const sha = crypto.createHash('sha256').update(password).digest('hex');
       match = sha === stored;
     }
@@ -91,14 +93,13 @@ app.post('/api/login', async (req, res) => {
     if (!match)
       return res.status(401).json({ success: false, message: 'รหัสผ่านไม่ถูกต้อง' });
 
-    // ✅ แปลง role เป็น lowercase ก่อนส่ง
     const role = (user.role || 'user').toLowerCase();
 
     res.json({
       success: true,
       user: {
         username: user.username,
-        role,      // <<< สำคัญมาก สำหรับ frontend ตรวจสอบ isAdmin()
+        role,
         name: user.name
       }
     });
@@ -124,7 +125,7 @@ app.get('/api/cars', async (req, res) => {
   }
 });
 
-// --- Debug GET สำหรับทดสอบ Register ---
+// --- Debug GET สำหรับ Register ---
 app.get('/api/debug/register-test', (req, res) => {
   res.json({
     ok: true,
@@ -138,6 +139,7 @@ app.get('/api/debug/register-test', (req, res) => {
 const frontendBuildPath = path.join(__dirname, '../frontend/build');
 app.use(express.static(frontendBuildPath));
 
+// API requests จะไปที่ backend
 app.use((req, res, next) => {
   if (req.path.startsWith('/api')) return next();
   res.sendFile(path.join(frontendBuildPath, 'index.html'), err => {

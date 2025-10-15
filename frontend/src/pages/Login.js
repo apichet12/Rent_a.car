@@ -43,14 +43,29 @@ const Login = () => {
         body: JSON.stringify({ username: email, password })
       });
 
-      const data = await res.json();
+      // Some errors (like the CRA dev proxy failing to reach the backend)
+      // return HTML/text instead of JSON which causes `res.json()` to throw.
+      // Detect content-type and handle non-JSON responses gracefully.
+      const contentType = res.headers.get('content-type') || '';
+      let data = null;
 
-      if (res.ok && data.success) {
+      if (contentType.includes('application/json')) {
+        data = await res.json();
+      } else {
+        // fallback: read as text and show a readable message
+        const text = await res.text();
+        console.error('Login API non-JSON response:', text);
+        setError(text || 'เซิร์ฟเวอร์ตอบกลับไม่ถูกต้อง');
+        setLoading(false);
+        return;
+      }
+
+      if (res.ok && data && data.success) {
         // ✅ บันทึก user + role ลง Context และ localStorage
-        login(data.user.username, data.user.role); 
+        login(data.user.username, data.user.role);
         navigate('/dashboard');
       } else {
-        setError(data.message || 'เข้าสู่ระบบไม่สำเร็จ กรุณาตรวจสอบข้อมูล');
+        setError((data && data.message) || 'เข้าสู่ระบบไม่สำเร็จ กรุณาตรวจสอบข้อมูล');
       }
     } catch (err) {
       console.error("Login API Error:", err);

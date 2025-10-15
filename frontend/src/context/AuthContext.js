@@ -12,13 +12,16 @@ export const AuthProvider = ({ children }) => {
     if (stored) setUser(JSON.parse(stored));
   }, []);
 
+  // login: บันทึก user + role
   const login = (username, role) => {
     const data = { username, role };
+    console.log('[AuthContext] login:', data);
     setUser(data);
     localStorage.setItem('user', JSON.stringify(data));
   };
 
   const logout = () => {
+    console.log('[AuthContext] logout');
     setUser(null);
     localStorage.removeItem('user');
   };
