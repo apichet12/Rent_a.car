@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
+// i18n removed
 import carsData from '../data/cars';
 import './Home.css';
 import LoadingOverlay from '../components/LoadingOverlay';
@@ -196,10 +196,14 @@ const ScrollToTopButton = () => {
 
 /* ---------------- HOME PAGE ---------------- */
 const Home = () => {
-  useTranslation();
   const [search, setSearch] = useState('');
   const [typeText, setTypeText] = useState('');
-  const typePhrasesRef = React.useRef(['ค้นหารถที่ถูกใจ...', 'รถยนต์', 'มอเตอร์ไชค์', 'บริการเรียนพิเศษ']);
+  const typePhrasesRef = React.useRef([
+    'ไอเดียโลโก้ร้านอาหารที่ดีที่สุด...',
+  'เปรียบเทียบราคาการเช่า SUV 7 ที่นั่ง...',
+  'ติวคณิตศาสตร์สำหรับนักเรียนมัธยม...',
+  'ค้นหาบริการเช่ามอเตอร์ไซค์...'
+  ]);
 
   useEffect(() => {
     let phraseIndex = 0;
@@ -253,7 +257,7 @@ const Home = () => {
     }, 700);
   };
 
-  const popular = ['รถครอบครัว', 'รถสปอร์ต', 'บริการรับสนามบิน', 'เช่าขับเอง', 'เช่าระยะยาว', 'ติวคณิต', 'ภาษาอังกฤษ'];
+  const popular = ['Family cars', 'Sports cars', 'Airport pickup', 'Self-drive', 'Long term', 'Math tuition', 'English'];
 
   // reveal-on-scroll for subcategory sections
   useEffect(() => {

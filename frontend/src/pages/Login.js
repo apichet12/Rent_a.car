@@ -3,6 +3,7 @@ import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../contexts/AuthContext';
 import './Auth.css';
+// i18n removed
 
 const advantagesWithIcons = [
   { icon: '💰', text: 'รับประกันเงินจ้าง' },
@@ -15,6 +16,17 @@ const advantagesWithIcons = [
 const Login = () => {
   const navigate = useNavigate();
   const { login } = useContext(AuthContext);
+  // Inline static UI strings (i18n removed)
+  const LOGIN_TITLE = 'Sign in';
+  const PLEASE_FILL_ALL = 'Please fill all required fields';
+  const LOADING_TEXT = 'Loading...';
+  const EMAIL_PLACEHOLDER = 'Email or username';
+  const PASSWORD_PLACEHOLDER = 'Password';
+  const AGREE_TERMS_PREFIX = 'I have read and agree to';
+  const TERMS_LINK = 'Terms of Service*';
+  const PRIVACY_LINK = 'Privacy Policy*';
+  const SIGNUP_PROMPT = "Don't have an account?";
+  const SIGNUP_LINK = 'Sign up';
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -30,9 +42,9 @@ const Login = () => {
     e.preventDefault();
     setError('');
 
-    if (!email || !password || !agreeTerms || !agreePrivacy) {
-      return setError('กรุณากรอกข้อมูลให้ครบและยอมรับเงื่อนไขที่บังคับทั้งหมด');
-    }
+      if (!email || !password || !agreeTerms || !agreePrivacy) {
+        return setError(PLEASE_FILL_ALL);
+      }
 
     setLoading(true);
     try {
@@ -60,7 +72,7 @@ const Login = () => {
         login(data.username, data.role);
         navigate('/dashboard');
       } else {
-        setError((data && data.message) || 'เข้าสู่ระบบไม่สำเร็จ กรุณาตรวจสอบข้อมูล');
+        setError((data && data.message) || 'Login failed. Please check your credentials.');
       }
     } catch (err) {
       console.error("Login API Error:", err);
@@ -87,13 +99,13 @@ const Login = () => {
         </div>
 
         <div className="auth-right">
-          <h2 style={{ color: '#07203a', marginBottom: 16 }}>เข้าสู่ระบบ</h2>
+          <h2 style={{ color: '#07203a', marginBottom: 16 }}>{LOGIN_TITLE}</h2>
           {error && <div style={{ background: '#fff1f2', color: '#991b1b', padding: 10, borderRadius: 8, marginBottom: 12 }}>{error}</div>}
 
           <form onSubmit={doLogin} style={{ display: 'grid', gap: 12 }}>
             <input 
               className="nice-input" 
-              placeholder="อีเมลหรือชื่อผู้ใช้" 
+              placeholder={EMAIL_PLACEHOLDER} 
               value={email} 
               onChange={(e) => setEmail(e.target.value)} 
               required 
@@ -101,7 +113,7 @@ const Login = () => {
             <input 
               className="nice-input" 
               type="password" 
-              placeholder="รหัสผ่าน" 
+              placeholder={PASSWORD_PLACEHOLDER} 
               value={password} 
               onChange={(e) => setPassword(e.target.value)} 
               required 
@@ -114,7 +126,7 @@ const Login = () => {
                 onClick={() => setAgreeTerms(v => !v)}
               >
                 <div role="button" tabIndex={0} className={`toggle-circle ${agreeTerms ? 'on' : ''}`}>{agreeTerms ? '✓' : ''}</div>
-                ฉันได้อ่านและยอมรับ <a href="/terms" target="_blank" rel="noopener noreferrer" style={{ color: '#10b981', fontWeight: 500 }}>เงื่อนไขข้อกำหนดการใช้บริการ*</a>
+                {AGREE_TERMS_PREFIX} <a href="/terms" target="_blank" rel="noopener noreferrer" style={{ color: '#10b981', fontWeight: 500 }}>{TERMS_LINK}</a>
               </div>
 
               <div 
@@ -123,7 +135,7 @@ const Login = () => {
                 onClick={() => setAgreePrivacy(v => !v)}
               >
                 <div role="button" tabIndex={0} className={`toggle-circle ${agreePrivacy ? 'on' : ''}`}>{agreePrivacy ? '✓' : ''}</div>
-                ฉันได้อ่านและยอมรับ <a href="/privacy" target="_blank" rel="noopener noreferrer" style={{ color: '#10b981', fontWeight: 500 }}>นโยบายคุ้มครองความเป็นส่วนตัว*</a>
+                {AGREE_TERMS_PREFIX} <a href="/privacy" target="_blank" rel="noopener noreferrer" style={{ color: '#10b981', fontWeight: 500 }}>{PRIVACY_LINK}</a>
               </div>
             </div>
 
@@ -138,12 +150,12 @@ const Login = () => {
               }}
               disabled={isLoginButtonDisabled}
             >
-              {loading ? 'กำลังเข้าสู่ระบบ...' : 'เข้าสู่ระบบ'}
+              {loading ? LOADING_TEXT : LOGIN_TITLE}
             </button>
           </form>
 
           <div style={{ marginTop: 20, textAlign: 'center' }}>
-            ยังไม่มีบัญชี? <a href="/register" className="small-link" style={{ color: '#10b981', fontWeight: 600 }}>สมัครสมาชิก</a>
+            {SIGNUP_PROMPT} <a href="/register" className="small-link" style={{ color: '#10b981', fontWeight: 600 }}>{SIGNUP_LINK}</a>
           </div>
         </div>
       </div>

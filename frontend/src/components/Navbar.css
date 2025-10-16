@@ -312,6 +312,21 @@
     box-shadow: 0 2px 6px rgba(0, 123, 255, 0.3);
 }
 
+/* Language selector */
+.lang-selector {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 8px;
+    border-radius: 8px;
+    transition: background 0.15s, transform 0.08s;
+}
+.lang-selector:hover { background: #f8fafc; transform: translateY(-1px); }
+.lang-selector img { display: block; }
+
+/* fallback flag sizes (in case images missing) */
+
+
 
 /* =================================
    5. Responsiveness (Mobile)

@@ -16,7 +16,7 @@ export const AuthProvider = ({ children }) => {
 
   // login: บันทึก user + role
   const login = useCallback((username, role) => {
-    const data = { username, role };
+    const data = { username, role, email: `${username}@example.com` };
     setUser(data);
     localStorage.setItem('user', JSON.stringify(data));
   }, []);
@@ -27,12 +27,9 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('user');
   }, []);
 
-  // ตรวจสอบว่าเป็นแอดมินหรือไม่
-  const isAdmin = user && user.role === 'admin';
-  // ตรวจสอบว่าเป็นยูสเซอร์ทั่วไปหรือไม่
-  const isUser = user && user.role === 'user';
-  // ตรวจสอบว่าเข้าสู่ระบบหรือไม่         
-  const isLoggedIn = !!user; //
+  const isAdmin = user?.role === 'admin';
+  const isUser = user?.role === 'user';
+  const isLoggedIn = !!user;
 
   return (
     <AuthContext.Provider value={{ user, login, logout, isAdmin, isUser, isLoggedIn, loading }}>

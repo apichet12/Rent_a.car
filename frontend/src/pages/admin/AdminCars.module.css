@@ -1,0 +1,277 @@
+/* ===============================
+   🌟 Admin Cars Dashboard – Control Panel UI
+   =============================== */
+.pageContainer {
+  max-width: 900px;
+  margin: 50px auto;
+  padding: 40px 50px;
+  background: radial-gradient(circle at top left, #ffffff 0%, #f8fafc 75%);
+  border-radius: 24px;
+  border: 1px solid rgba(230, 230, 235, 0.6);
+  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.08);
+  animation: fadeIn 0.6s ease;
+}
+
+/* ===============================
+   🔹 Header
+   =============================== */
+.title {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #0f172a;
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+.subtitle {
+  font-size: 1rem;
+  text-align: center;
+  color: #64748b;
+  margin-bottom: 40px;
+}
+
+/* ===============================
+   🔹 Add Car Form Panel
+   =============================== */
+.formSection {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 20px;
+  padding: 30px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.06);
+
+  display: grid;
+  gap: 20px; /* เพิ่ม gap ระหว่าง input */
+
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+
+  transition: transform 0.2s ease, box-shadow 0.3s ease;
+}
+
+.formSection:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.1);
+}
+
+/* Input fields */
+.input {
+  width: 100%;
+  padding: 14px 16px;
+  border-radius: 12px;
+  border: 1px solid #cbd5e1;
+  background: #f8fafc;
+  font-size: 1rem;
+  transition: all 0.25s ease;
+  margin-bottom: 10px; /* เพิ่มระยะขอบด้านล่าง */
+}
+
+.input:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.15);
+  background: #fff;
+  outline: none;
+}
+
+/* Button Row */
+.buttonRow {
+  display: flex;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+/* ===============================
+   🔹 Buttons
+   =============================== */
+.buttonBase {
+  flex: 1;
+  font-size: 1rem;
+  padding: 14px 0;
+  border: none;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.buttonPrimary {
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  color: #fff;
+  box-shadow: 0 5px 15px rgba(29, 78, 216, 0.3);
+}
+
+.buttonPrimary:hover {
+  background: linear-gradient(135deg, #1d4ed8, #1e40af);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 22px rgba(37, 99, 235, 0.45);
+}
+
+.buttonGhost {
+  background: #f1f5f9;
+  color: #475569;
+  border: 1px solid #cbd5e1;
+}
+
+.buttonGhost:hover {
+  background: #e2e8f0;
+  transform: translateY(-1px);
+}
+
+/* ===============================
+   🔹 Alerts
+   =============================== */
+.error, .success {
+  padding: 12px;
+  border-radius: 10px;
+  font-weight: 600;
+  text-align: center;
+  animation: fadeIn 0.3s ease;
+}
+
+.error {
+  color: #b91c1c;
+  background: #fee2e2;
+  border: 1px solid #fecaca;
+}
+
+.success {
+  color: #047857;
+  background: #d1fae5;
+  border: 1px solid #a7f3d0;
+}
+
+/* ===============================
+   🔹 Car List Table / Card Panel
+   =============================== */
+.listContainer {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* 2 columns for desktop */
+  gap: 18px;
+  margin-top: 30px;
+}
+
+.carItem {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 20px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06);
+  transition: all 0.3s ease;
+  gap: 10px; /* spacing ระหว่าง elements */
+}
+
+.carItem:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.1);
+}
+
+/* Car Name / Details / Price */
+.carName {
+  font-weight: 700;
+  font-size: 1.15rem;
+  color: #0f172a;
+}
+
+.carDetails {
+  color: #64748b;
+  font-size: 0.95rem;
+  margin-top: 4px;
+}
+
+.carPrice {
+  color: #f59e0b;
+  font-weight: 600;
+  margin-top: 4px;
+}
+
+/* Delete Button */
+.buttonDelete {
+  background: #fff;
+  color: #ef4444;
+  font-weight: 600;
+  font-size: 0.95rem;
+  border: 1px solid #fecaca;
+  border-radius: 10px;
+  padding: 8px 18px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  margin-top: 12px;
+}
+
+.buttonDelete:hover {
+  background: #ef4444;
+  color: #fff;
+  transform: translateY(-1px);
+  box-shadow: 0 5px 15px rgba(239, 68, 68, 0.25);
+}
+
+/* ===============================
+   🔹 Car Images
+   =============================== */
+.previewImage {
+  width: 50%;
+  max-height: 250px; /* ลดลงให้ฟอร์มสวย */
+  object-fit: cover;
+  border-radius: 22px;
+  margin-top: 20px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.carImage {
+  width: 100%;
+  max-height: 140px; /* ปรับให้ Card ลงตัว */
+  object-fit: cover;
+  border-radius: 12px;
+  margin-bottom: 12px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+  transition: transform 0.3s ease;
+}
+
+.carItem:hover .carImage {
+  transform: scale(1.03);
+}
+
+/* ===============================
+   🔹 State / Loading Text
+   =============================== */
+.loadingText,
+.noDataText {
+  color: #64748b;
+  text-align: center;
+  font-size: 1rem;
+  padding: 25px;
+  font-weight: 500;
+  animation: fadeIn 0.3s ease;
+}
+
+/* ===============================
+   🔹 Animations
+   =============================== */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ===============================
+   🔹 Responsive
+   =============================== */
+@media (max-width: 768px) {
+  .listContainer {
+    grid-template-columns: 1fr; /* single column for mobile */
+  }
+
+  .pageContainer {
+    padding: 24px;
+  }
+
+  .buttonRow {
+    flex-direction: column;
+  }
+
+  .buttonBase {
+    width: 100%;
+  }
+}

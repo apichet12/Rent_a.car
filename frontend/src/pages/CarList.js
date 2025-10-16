@@ -5,7 +5,7 @@ import './CarList.css';
 
 const CarList = () => {
   const [selected, setSelected] = useState(null);
-  const [cars, setCars] = useState([]);
+  const [cars, setCars] = useState([]); // เริ่มต้นว่าง
   const [favorites, setFavorites] = useState({});
   const navigate = useNavigate();
 
@@ -24,17 +24,16 @@ const CarList = () => {
         const res = await fetch('/data/cars.json');
         const data = await res.json();
 
+        // ตั้งค่า availability และ favorites เริ่มต้น
         const stored = JSON.parse(localStorage.getItem('cars_availability') || '{}');
         const carsWithAvailability = data.map(c => ({
           ...c,
           available: stored[c.id] === undefined ? true : stored[c.id]
         }));
-        setCars(carsWithAvailability);
 
-        const map = {};
-        carsWithAvailability.forEach(c => (map[c.id] = c.available));
-        localStorage.setItem('cars_availability', JSON.stringify(map));
-
+        // ตั้งค่า cars แต่เราจะไม่แสดงใด ๆ จนกว่าจะมีการค้นหาหรือกรอง
+        setCars([]); 
+        localStorage.setItem('cars_availability', JSON.stringify({}));
         const storedFav = JSON.parse(localStorage.getItem('cars_favorites') || '{}');
         setFavorites(storedFav);
       } catch (err) {
@@ -103,7 +102,9 @@ const CarList = () => {
                 <option value="ดีเซล">ดีเซล</option>
                 <option value="ไฟฟ้า">ไฟฟ้า</option>
               </select>
-              <label style={{display:'flex', alignItems:'center', gap:8}}><input type="checkbox" checked={onlyAvailable} onChange={e=>setOnlyAvailable(e.target.checked)} /> เฉพาะที่ว่าง</label>
+              <label style={{display:'flex', alignItems:'center', gap:8}}>
+                <input type="checkbox" checked={onlyAvailable} onChange={e=>setOnlyAvailable(e.target.checked)} /> เฉพาะที่ว่าง
+              </label>
               <div style={{display:'flex', gap:8}}>
                 <button onClick={()=>{setQ(''); setMinPrice(''); setMaxPrice(''); setSeatsFilter(''); setFuelFilter(''); setOnlyAvailable(false); setSortBy('recommended');}} className="btn-outline">ล้างตัวกรอง</button>
               </div>
@@ -127,36 +128,8 @@ const CarList = () => {
             </div>
           </div>
 
-          <div className="car-grid">
-            {filteredCars.map(car => (
-              <div key={car.id} className="car-card">
-                <div className="thumb">
-                  <img src={car.image} alt={car.name} onClick={()=>setSelected(car)} />
-                  <span className={car.available ? 'badge-available' : 'badge-unavailable'}>
-                    {car.available ? 'ว่าง' : 'ไม่ว่าง'}
-                  </span>
-                </div>
-                <div className="body">
-                  <div className="meta">
-                    <div>
-                      <h4>{car.name}</h4>
-                      <div className="desc">{car.desc}</div>
-                      <div className="specs">ปี {car.year} • {car.seats} ที่นั่ง • {car.fuel}</div>
-                    </div>
-                    <div className="price">
-                      <div>{car.price.toLocaleString()} ฿</div>
-                      <div style={{color:'#6b7280', fontSize:12}}>โดยประมาณ</div>
-                    </div>
-                  </div>
-
-                  <div className="actions">
-                    <button disabled={!car.available} onClick={()=>navigate('/booking',{state:{car}})} className="btn-primary">รายละเอียดรถเช่า</button>
-                    <button onClick={()=>toggleFavorite(car.id)} className={"fav-btn" + (favorites[car.id] ? ' active' : '')}>❤</button>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
+          {/* รถจะไม่ถูก render จนกว่าจะมีข้อมูลจริง */}
+          <div className="car-grid"></div>
         </main>
       </div>
 

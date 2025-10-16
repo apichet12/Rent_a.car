@@ -1,0 +1,140 @@
+.booking-page {
+  background: #f7f9fc;
+  padding: 1.5rem;
+  min-height: 100vh;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.booking-title {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #1a202c;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.booking-layout {
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.booking-form {
+  flex: 1;
+  min-width: 280px;
+  max-width: 640px;
+  background: #fff;
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
+}
+
+.section-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: #1a202c;
+}
+
+.date-group {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.date-item {
+  flex: 1;
+  min-width: 150px;
+  display: flex;
+  flex-direction: column;
+}
+.date-item input {
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+}
+
+.duration-text {
+  text-align: center;
+  color: #0066ff;
+  font-weight: 600;
+  margin: 1rem 0;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+.form-group.full {
+  grid-column: span 2;
+}
+.form-group input {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+}
+
+.terms {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  margin-top: 1rem;
+}
+
+.submit-btn {
+  width: 100%;
+  padding: 1rem;
+  margin-top: 1rem;
+  border: none;
+  border-radius: 10px;
+  font-weight: 700;
+  color: #fff;
+  background: linear-gradient(90deg, #0066ff, #0044cc);
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.submit-btn:hover {
+  opacity: 0.9;
+}
+.submit-btn.disabled {
+  background: #d1d5db;
+  cursor: not-allowed;
+}
+
+.summary-card {
+  flex: 1;
+  min-width: 250px;
+  max-width: 300px;
+  background: #fff;
+  border-radius: 16px;
+  padding: 1rem;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+  text-align: center;
+}
+.summary-card img {
+  width: 100%;
+  border-radius: 12px;
+  margin-bottom: 1rem;
+}
+.summary-card h4 {
+  font-size: 1.2rem;
+  color: #1a202c;
+  margin-bottom: 0.25rem;
+}
+
+/* --- Responsive --- */
+@media (max-width: 768px) {
+  .booking-layout {
+    flex-direction: column;
+    align-items: center;
+  }
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+  .submit-btn {
+    font-size: 1rem;
+  }
+}
