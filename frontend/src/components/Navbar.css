@@ -367,3 +367,20 @@
         font-size: 1.1rem;
     }
 }
+
+/* ---------- Mobile menu overlay ---------- */
+.navbar-hamburger { display: inline-flex; align-items:center; justify-content:center; width:40px; height:40px; border-radius:8px; }
+.mobile-menu { position: fixed; inset: 0; background: rgba(0,0,0,0.35); display: none; align-items: flex-start; justify-content: center; z-index: 1200; }
+.mobile-menu.open { display: flex; }
+.mobile-menu-inner { width: 100%; max-width: 480px; background: #fff; border-radius: 12px; margin-top: 56px; box-shadow: 0 20px 60px rgba(2,6,23,0.3); overflow: auto; max-height: calc(100vh - 80px); }
+.mobile-menu-top { padding: 16px; border-bottom: 1px solid #f3f4f6; display:flex; align-items:center; gap:12px; }
+.mobile-menu-links { padding: 12px; display: flex; flex-direction: column; gap: 8px; }
+.mobile-menu-section { padding: 8px 0; border-bottom: 1px dashed #f1f5f9; }
+.mobile-menu-section-title { font-weight: 700; color: #0f172a; margin-bottom: 8px; }
+.mobile-menu-link { display:block; padding: 10px 8px; border-radius: 8px; color: #0f172a; text-decoration: none; }
+.mobile-menu-link:hover { background: #f8fafc; }
+.mobile-quicklinks { display:flex; flex-direction: column; gap: 8px; padding-top: 12px; }
+
+@media (max-width: 420px) {
+    .mobile-menu-inner { max-width: 100%; margin: 0; border-radius: 0; height: 100vh; }
+}

@@ -90,6 +90,7 @@ const NavbarLogin = () => {
   // ------------------------------
   // Render Navbar
   // ------------------------------
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   return (
     <nav className={`navbar ${showFullNav ? 'expanded' : 'collapsed'}`}>
       {/* แถวบน */}
@@ -118,6 +119,16 @@ const NavbarLogin = () => {
 
         {/* โปรไฟล์ผู้ใช้ / ปุ่มเข้าสู่ระบบ */}
         <div className="navbar-contact" style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 10 }}>
+          {/* Hamburger for mobile */}
+          <button
+            className="navbar-hamburger"
+            aria-label="Open menu"
+            onClick={() => setMobileMenuOpen(v => !v)}
+            style={{ background: 'transparent', border: 'none', fontSize: 20, cursor: 'pointer' }}
+          >
+            {mobileMenuOpen ? '✕' : '☰'}
+          </button>
+
           {user ? <CustomerProfile /> : <Link to="/login" className="navbar-link">เข้าสู่ระบบ 🔐</Link>}
         </div>
       </div>
@@ -157,6 +168,47 @@ const NavbarLogin = () => {
           <button className="btn-outline" onClick={() => navigate('/cars?type=car')}>เช่ารถ</button>
           <button className="btn-outline" onClick={() => navigate('/cars?type=bike')}>เช่ามอเตอร์ไซค์</button>
           <button className="btn-outline" onClick={() => navigate('/cars?type=special')}>ติว / บริการ</button>
+        </div>
+      </div>
+      {/* Mobile menu overlay */}
+      <div className={`mobile-menu ${mobileMenuOpen ? 'open' : ''}`}>
+        <div className="mobile-menu-inner">
+          <div className="mobile-menu-top">
+            <Link to="/" className="navbar-brand" onClick={() => setMobileMenuOpen(false)}>
+              <img src="/logo192.png" alt="Logo" style={{ width: 36, height: 36 }} />
+              <span>Klick Drive</span>
+            </Link>
+          </div>
+
+          <div className="mobile-menu-links">
+            {MENU_ITEMS.map((m, mi) => (
+              <div key={mi} className="mobile-menu-section">
+                <div className="mobile-menu-section-title">{m.title}</div>
+                <div className="mobile-menu-section-items">
+                  {m.subs.map((s, si) => (
+                    <Link key={si} to={`/cars?q=${encodeURIComponent(s)}`} className="mobile-menu-link" onClick={() => setMobileMenuOpen(false)}>
+                      {s}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            ))}
+
+            {user && user.role === 'admin' && (
+              <div className="mobile-menu-section">
+                <div className="mobile-menu-section-title">เมนูแอดมิน</div>
+                <Link to="/admin/cars" className="mobile-menu-link" onClick={() => setMobileMenuOpen(false)}>🚗 จัดการรถ</Link>
+                <Link to="/admin/bookings" className="mobile-menu-link" onClick={() => setMobileMenuOpen(false)}>📅 จัดการการจอง</Link>
+                <Link to="/admin/users" className="mobile-menu-link" onClick={() => setMobileMenuOpen(false)}>👤 จัดการผู้ใช้</Link>
+              </div>
+            )}
+
+            <div className="mobile-quicklinks">
+              <button className="btn-outline" onClick={() => { setMobileMenuOpen(false); navigate('/cars?type=car'); }}>เช่ารถ</button>
+              <button className="btn-outline" onClick={() => { setMobileMenuOpen(false); navigate('/cars?type=bike'); }}>เช่ามอเตอร์ไซค์</button>
+              <button className="btn-outline" onClick={() => { setMobileMenuOpen(false); navigate('/cars?type=special'); }}>ติว / บริการ</button>
+            </div>
+          </div>
         </div>
       </div>
     </nav>

@@ -1,97 +1,132 @@
-/* responsive.css */
+/* responsive.css
+   A focused mobile-first responsive layer applied on top of desktop styles.
+   This file intentionally enhances spacing, touch targets and stacking behavior
+   so existing desktop rules remain untouched for larger viewports.
+*/
 
-/* --- Mobile --- */
+/* ---------------
+   BASE MOBILE HELPERS
+   --------------- */
+:root {
+  /* mobile-first variables */
+  --gutter-xs: 12px;
+  --gutter-sm: 16px;
+  --max-mobile-width: 600px;
+}
+
+/* Make images, videos and embeds fluid by default */
+img, picture, video, iframe {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Touch-friendly defaults */
+button, a, .btn, input, select, textarea {
+  -webkit-tap-highlight-color: rgba(0,0,0,0.05);
+}
+
+/* Utility classes to help stacking/layout without editing components */
+.stack { display: flex; flex-direction: column; gap: var(--gutter-sm); }
+.stack-sm { display:flex; flex-direction: column; gap: var(--gutter-xs); }
+.hide-mobile { display: none !important; }
+.show-mobile { display: block !important; }
+.center-mobile { text-align: center; }
+
+/* Forms & inputs: full width on small screens */
+input, textarea, select { min-height: 44px; font-size: 15px; }
+input[type="text"], input[type="email"], input[type="password"], textarea, select { width: 100%; }
+
+/* Tables: wrap and allow horizontal scroll */
+  .table-responsive { overflow-x: auto; }
+.table-responsive table { width: 100%; border-collapse: collapse; }
+
+/* Make cards stack nicely on mobile */
+.card { width: 100%; }
+
+/* ---------------
+   BREAKPOINT: <= 1024px (Tablet landscape / small desktop)
+   --------------- */
+@media (max-width: 1024px) {
+  .container { padding-left: 1rem; padding-right: 1rem; }
+  .navbar-bottom { display: none !important; } /* simplify nav for tablets */
+  .grid { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
+}
+
+/* ---------------
+   BREAKPOINT: <= 768px (Tablet portrait)
+   --------------- */
+@media (max-width: 768px) {
+  html, body { font-size: 15px; }
+  .flex { flex-direction: column; gap: 12px; }
+  .hero-inner { flex-direction: column; align-items: center; }
+  .hero-search-pill { width: 92% !important; }
+  .pill-content { flex-direction: column; align-items: stretch; gap: 8px; }
+  .pill-go { width: 100%; }
+  .category-grid { grid-template-columns: repeat(2, 1fr); }
+  .navbar-search { order: 3; width: 100%; }
+}
+
+/* ---------------
+   BREAKPOINT: <= 600px (Mobile phones)
+   --------------- */
 @media (max-width: 600px) {
-  .flex { flex-direction: column; }
-  .grid { grid-template-columns: 1fr !important; }
-  h1 { font-size: 2rem !important; }
-  h2 { font-size: 1.5rem !important; }
-  video { width: 100% !important; height: auto !important; }
-  .container { padding: 0.5rem; }
-}
-/* responsive.css */
+  :root { --gutter-sm: 12px; }
 
-/* --- Mobile Support --- */
-@media (max-width: 600px) {
-  /* Container หลัก */
-  div[style*="max-width: 980px"] {
-    margin: 1rem;
-    padding: 1rem;
-  }
+  /* Global container padding and readable font-size */
+  .container { padding: 12px; }
+  body { font-size: 15px; }
 
-  /* Flex ของ sidebar + form */
-  div[style*="display: flex"][style*="flex-wrap: wrap"] {
-    flex-direction: column;
-  }
+  /* Stack frequently side-by-side columns */
+  .grid { grid-template-columns: 1fr !important; gap: 10px; }
+  .flex { flex-direction: column; align-items: stretch; }
 
-  /* Sidebar Logo */
-  div[style*="flex: 1 1 360px"] {
-    flex: 1 1 100%;
-    padding: 1.5rem;
-    margin-bottom: 1rem;
-  }
+  /* Hero adjustments */
+  .hero-outer { padding: 28px 12px 56px; border-radius: 0 0 12px 12px; }
+  .hero-left h1 { font-size: 22px; }
+  .hero-left p { font-size: 14px; }
 
-  /* Login Form */
-  div[style*="flex: 1 1 420px"] {
-    flex: 1 1 100%;
-    padding: 1.5rem;
-  }
+  /* Search pill becomes vertical */
+  .hero-search-pill { width: 95% !important; padding: 10px; gap: 8px; }
+  .search-pill .pill-content { padding: 8px; }
+  .pill-input { font-size: 14px; }
 
-  /* Font sizes */
-  h2 {
-    font-size: 1.5rem !important;
-  }
+  /* Buttons: full width and larger tap target */
+  button, .btn, .btn-primary, .btn-outline, a.btn { width: 100%; padding: 12px 14px; min-height: 48px; border-radius: 12px; }
 
-  /* Inputs */
-  input {
-    padding: 12px 14px 12px 40px !important;
-    border-radius: 14px !important;
-    min-height: 44px;
-  }
+  /* Navbar: compact top row, bottom menus hidden, simpler interactions */
+  .navbar { padding: 8px 12px; }
+  .navbar-top { gap: 10px; align-items: center; }
+  .navbar-brand { font-size: 1rem; }
+  .navbar-search { order: 3; width: 100%; }
+  .navbar-contact { order: 2; margin-left: 0; }
 
-  /* Submit button */
-  button[type="submit"] {
-    padding: 10px !important;
-    font-size: 0.95rem;
-  }
+  /* Convert multi-column dropdowns to single column */
+  .dropdown-menu.multi-col { grid-template-columns: 1fr; min-width: 200px; }
 
-  /* Navbar tap area */
-  .navbar a, .navbar-link {
-    padding: 12px 16px !important;
-    min-height: 44px;
-    border-radius: 12px;
-  }
+  /* Category cards and grids */
+  .category-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
 
-  /* Error message */
-  div[style*="background: #fee2e2"] {
-    font-size: 13px;
-  }
+  /* Footer stacks */
+  .footer-grid { grid-template-columns: 1fr !important; text-align: center; }
+
+  /* Form elements inside cards */
+  .card form input, .card form select, .card form textarea { padding: 12px; font-size: 14px; }
+
+  /* Make any fixed/sticky sidebars flow naturally on mobile */
+  .sticky, .sidebar, .booking-summary { position: static !important; width: 100% !important; }
 }
 
-/* Booking page specific responsive tweaks */
-@media (max-width: 680px) {
-  .booking-container { padding: 12px !important; }
-
-  /* Stack main columns */
-  .booking-main { flex-direction: column !important; }
-  .booking-left, .booking-summary { flex: 1 1 100% !important; max-width: 100% !important; }
-
-  /* Make summary scrollable block instead of sticky */
-  .booking-summary { position: static !important; top: auto !important; }
-
-  /* Form adjustments */
-  .booking-form { padding: 1rem !important; border-radius: 12px !important; }
-  .booking-dates { flex-direction: column !important; }
-  .booking-dates > div { border-right: none !important; border-bottom: 1px solid #e6eefc; }
-
-  /* Inputs and grid: single column */
-  .booking-grid { grid-template-columns: 1fr !important; }
-  .booking-grid input, .booking-form input { padding: 12px !important; font-size: 15px !important; }
-
-  /* Larger tap targets */
-  .booking-form button[type="submit"] { padding: 14px !important; font-size: 1rem !important; border-radius: 12px !important; }
-
-  /* Summary card adjust */
-  .booking-summary img { height: 64px !important; width: 96px !important; }
-  .booking-summary h4 { font-size: 1.1rem !important; }
+/* ---------------
+   Small tweaks for very small phones <= 420px
+   --------------- */
+@media (max-width: 420px) {
+  .hero-left h1 { font-size: 20px; }
+  .pill-input { font-size: 13px; }
+  .category-grid { grid-template-columns: 1fr 1fr; }
+  .btn-lg { padding: 12px; }
 }
+
+/* Accessibility: increase hit area for small link icons */
+.icon-btn { padding: 8px; border-radius: 10px; display: inline-flex; align-items:center; justify-content:center; }
+
+/* End of responsive.css */
