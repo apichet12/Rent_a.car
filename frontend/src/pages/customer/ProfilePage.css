@@ -1,4 +1,4 @@
-/* ✅ โทนสีและ Layout พรีเมียม */
+/* =================== PROFILE PAGE =================== */
 .profile-page {
   display: flex;
   flex-direction: column;
@@ -7,9 +7,9 @@
   font-family: "Prompt", sans-serif;
 }
 
-/* Header Banner */
+/* =================== HEADER BANNER =================== */
 .profile-banner {
-  background: linear-gradient(120deg, #0d47a1, #1976d2);    /* สีน้ำเงินแถบบน*/
+  background: linear-gradient(120deg, #0d47a1, #1976d2);
   height: 250px;
   width: 100%;
   border-bottom-left-radius: 60px;
@@ -17,10 +17,10 @@
   box-shadow: 0 4px 25px rgba(0, 0, 0, 0.2);
 }
 
-/* Main Layout */
+/* =================== MAIN LAYOUT =================== */
 .profile-main {
   max-width: 1900px;
-  margin: -150px  0; /*ปรับชิดซ้าย*/
+  margin: -150px 0;
   padding: 0 30px;
   display: flex;
   gap: 40px;
@@ -34,7 +34,7 @@
   }
 }
 
-/* -------- PROFILE CARD -------- */
+/* =================== PROFILE CARD =================== */
 .profile-card {
   flex-shrink: 0;
   width: 340px;
@@ -55,7 +55,7 @@
   box-shadow: 0 12px 30px rgba(13, 71, 161, 0.2);
 }
 
-/* วงรี Avatar ซ้อนสองชั้น */
+/* =================== AVATAR =================== */
 .avatar-ring {
   position: absolute;
   top: -85px;
@@ -94,16 +94,14 @@
   font-weight: bold;
 }
 
-/* ชื่อโปรไฟล์ */
+/* =================== NAME & TEXT =================== */
 .profile-name {
-  margin-top: 7px; /* ข้อความในกรอบขาวโปร์ไฟล์*/
+  margin-top: 7px;
   font-size: 24px;
   color: #1e293b;
   font-weight: 600;
   letter-spacing: 0.5px;
 }
-
-
 
 .star {
   font-size: 22px;
@@ -115,7 +113,6 @@
   color: #ffc107;
 }
 
-/* ข้อความ */
 .member-since {
   font-size: 15px;
   color: #64748b;
@@ -126,7 +123,7 @@
   font-weight: 500;
 }
 
-/* ปุ่มแก้ไข */
+/* =================== EDIT ICON =================== */
 .edit-icon {
   position: absolute;
   top: 14px;
@@ -137,27 +134,26 @@
   cursor: pointer;
 }
 
-/* -------- RIGHT CONTENT -------- */
+/* =================== RIGHT CONTENT =================== */
 .profile-right {
   flex-grow: 1;
-  min-height: 500px;    /* เพิ่มระยะให้ footer ไม่นูนชิดเนื้อหา */
+  min-height: 500px;
   padding-top: 150px;
-  
 }
 
 .profile-right .profile-title {
-  color: #52575c;       /* ชื่อหัวข้อ บัญชี */
+  color: #52575c;
 }
 
 .profile-right .tab-bar .tab-item {
-  color: #60666c;       /* แท็บสีฟ้า */
+  color: #60666c;
 }
 
 .profile-right .placeholder {
-  color: #64748b;       /* ข้อความ รีวิว สีเทา */
+  color: #64748b;
 }
 
-
+/* =================== TITLE & TAB =================== */
 .profile-title {
   font-size: 30px;
   color: #0d47a1;
@@ -179,6 +175,11 @@
   padding-bottom: 8px;
   border-bottom: 2px solid transparent;
   cursor: pointer;
+  transition: color 0.3s, border-bottom-color 0.3s;
+}
+
+.tab-item:hover {
+  color: #1565c0;
 }
 
 .tab-item.active {
@@ -191,7 +192,7 @@
   margin-top: 20px;
 }
 
-/* -------- FOOTER -------- */
+/* =================== FOOTER =================== */
 .footer {
   background: #e3f2fd;
   padding: 2.5rem 1rem;

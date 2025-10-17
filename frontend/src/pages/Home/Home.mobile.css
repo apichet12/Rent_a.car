@@ -1,0 +1,117 @@
+/* ================= Home Mobile Container ================= */
+.home-mobile {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: linear-gradient(120deg,#f8fafc 60%,#e0e7ff 100%);
+  font-family: "Segoe UI", sans-serif;
+  overflow-x: hidden; /* ป้องกันล้นขอบ */
+  padding-bottom: 64px; /* เว้นที่ MobileNav */
+  box-sizing: border-box;
+}
+
+/* ================= HERO / Search Pill ================= */
+.hero-search-pill {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  width: 100%;
+  padding: 8px 12px;
+  gap: 8px;
+  background-color: #f8fafc;
+  border-bottom: 1px solid #ddd;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  box-sizing: border-box; /* ป้องกันล้น */
+}
+
+.hero-search-pill input {
+  flex: 1;
+  padding: 12px 16px;
+  border-radius: 999px; /* โค้งมนเต็ม */
+  border: 1px solid #ccc;
+  font-size: 14px;
+  outline: none;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  transition: all 0.2s;
+  box-sizing: border-box;
+}
+
+.hero-search-pill input:focus {
+  border-color: #4f46e5;
+  box-shadow: 0 4px 12px rgba(79,70,229,0.2);
+}
+
+.hero-search-pill button {
+  padding: 12px 16px;
+  border-radius: 999px;
+  border: none;
+  background: linear-gradient(90deg,#06b6d4,#4f46e5);
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(79,70,229,0.2);
+  transition: all 0.2s;
+}
+
+.hero-search-pill button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(79,70,229,0.3);
+}
+
+.hero-search-pill button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(79,70,229,0.2);
+}
+
+.hero-search-pill input::placeholder {
+  color: #999;
+  font-style: italic;
+}
+
+/* ================= Hero Content ================= */
+.hero-content {
+  padding: 0 12px; /* ป้องกันล้นขอบ */
+  margin-top: 8px;
+  box-sizing: border-box;
+}
+
+.hero-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: #111827;
+  margin: 12px 0 4px 0;
+}
+
+.hero-subtitle {
+  font-size: 14px;
+  color: #555;
+  margin: 0 0 12px 0;
+}
+
+.hero-video {
+  width: 100%;
+  height: 180px;
+  border-radius: 16px;
+  object-fit: cover;
+  margin-top: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+/* ================= Mobile Nav ================= */
+.mobile-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  max-width: 100%;
+  height: 64px;
+  background-color: #fff;
+  border-top: 1px solid #ddd;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  z-index: 50;
+  box-shadow: 0 -2px 8px rgba(0,0,0,0.05);
+  box-sizing: border-box;
+}

@@ -4,8 +4,8 @@
  */
 
 /* =================================
-   1. Base Layout & Transition
-   ================================= */
+    1. Base Layout & Transition
+    ================================= */
 .navbar {
     /* Sticky position is good for fixed navigation */
     position: sticky;
@@ -67,8 +67,8 @@
 }
 
 /* =================================
-   2. Branding & Auth
-   ================================= */
+    2. Branding & Auth
+    ================================= */
 .navbar-left {
     display: flex;
     align-items: center;
@@ -117,8 +117,8 @@
 }
 
 /* =================================
-   3. Search Pill (Top Row)
-   ================================= */
+    3. Search Pill (Top Row)
+    ================================= */
 .navbar-search {
     flex-grow: 1;
     max-width: 650px;
@@ -184,8 +184,8 @@
 }
 
 /* =================================
-   4. Bottom Menu & Dropdowns
-   ================================= */
+    4. Bottom Menu & Dropdowns
+    ================================= */
 .navbar-links {
     display: flex;
     align-items: center;
@@ -329,8 +329,8 @@
 
 
 /* =================================
-   5. Responsiveness (Mobile)
-   ================================= */
+    5. Responsiveness (Mobile)
+    ================================= */
 @media (max-width: 1024px) {
     .navbar {
         padding: 8px 20px;
@@ -368,19 +368,103 @@
     }
 }
 
-/* ---------- Mobile menu overlay ---------- */
-.navbar-hamburger { display: inline-flex; align-items:center; justify-content:center; width:40px; height:40px; border-radius:8px; }
-.mobile-menu { position: fixed; inset: 0; background: rgba(0,0,0,0.35); display: none; align-items: flex-start; justify-content: center; z-index: 1200; }
-.mobile-menu.open { display: flex; }
-.mobile-menu-inner { width: 100%; max-width: 480px; background: #fff; border-radius: 12px; margin-top: 56px; box-shadow: 0 20px 60px rgba(2,6,23,0.3); overflow: auto; max-height: calc(100vh - 80px); }
-.mobile-menu-top { padding: 16px; border-bottom: 1px solid #f3f4f6; display:flex; align-items:center; gap:12px; }
-.mobile-menu-links { padding: 12px; display: flex; flex-direction: column; gap: 8px; }
-.mobile-menu-section { padding: 8px 0; border-bottom: 1px dashed #f1f5f9; }
-.mobile-menu-section-title { font-weight: 700; color: #0f172a; margin-bottom: 8px; }
-.mobile-menu-link { display:block; padding: 10px 8px; border-radius: 8px; color: #0f172a; text-decoration: none; }
-.mobile-menu-link:hover { background: #f8fafc; }
-.mobile-quicklinks { display:flex; flex-direction: column; gap: 8px; padding-top: 12px; }
+/* ------------------------------------------------ */
+/* ---------- Mobile menu overlay (Drawer Style from Left) ---------- */
+/* ------------------------------------------------ */
 
-@media (max-width: 420px) {
-    .mobile-menu-inner { max-width: 100%; margin: 0; border-radius: 0; height: 100vh; }
+/* The full-screen overlay for backdrop and hiding */
+.mobile-menu { 
+    position: fixed; 
+    top: 0; 
+    left: 0; /* Start from the left */
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.0); /* Start transparent */
+    z-index: 1200; 
+    /* Use visibility/opacity for smooth background fade */
+    visibility: hidden; 
+    opacity: 0;
+    transition: background 0.3s, visibility 0.3s, opacity 0.3s;
+}
+
+/* When open, show the overlay and fade the background in */
+.mobile-menu.open { 
+    visibility: visible; 
+    opacity: 1;
+    background: rgba(0,0,0,0.5); /* Darken backdrop */
+}
+
+/* The actual menu panel (slides in) */
+.mobile-menu-inner { 
+    position: absolute; 
+    top: 0;
+    left: 0;
+    width: 80%; /* Takes up 80% of the screen width */
+    max-width: 320px; /* Max width for a clean look on larger screens/tablets */
+    height: 100vh; /* Full vertical height */
+    background: #fff; 
+    box-shadow: 2px 0 15px rgba(0,0,0,0.2); /* Shadow on the right edge */
+    overflow-y: auto; /* Allow scrolling within the menu */
+    
+    /* Initially hide to the left */
+    transform: translateX(-100%);
+    transition: transform 0.3s ease-out; /* Slide animation */
+
+    /* Reset unnecessary margins/borders from previous styles */
+    margin: 0;
+    border-radius: 0; 
+}
+
+/* Slide the menu into view */
+.mobile-menu.open .mobile-menu-inner { 
+    transform: translateX(0); 
+}
+
+/* Keep internal padding and link styles */
+.mobile-menu-top { 
+    padding: 16px 20px; /* Add horizontal padding for content */
+    border-bottom: 1px solid #f3f4f6; 
+    display:flex; align-items:center; gap:12px; 
+}
+.mobile-menu-links { 
+    padding: 20px; /* Good overall padding for list content */
+    display: flex; flex-direction: column; gap: 8px; 
+}
+.mobile-menu-section { 
+    padding: 10px 0; /* More vertical space for sections */
+    border-bottom: 1px solid #f0f0f0; 
+}
+.mobile-menu-section:last-child {
+    border-bottom: none;
+}
+.mobile-menu-section-title { 
+    font-weight: 700; 
+    color: #0056b3; /* Use primary color for section titles */
+    font-size: 1.1em;
+    padding-bottom: 5px;
+    margin-bottom: 5px; 
+}
+.mobile-menu-section-items {
+    padding-left: 5px; /* Indent sub-items slightly */
+}
+.mobile-menu-link { 
+    display:block; 
+    padding: 8px 12px; /* Nicer touch target */
+    border-radius: 6px; 
+    color: #1f2937; /* Darker text for readability */
+    text-decoration: none; 
+    font-size: 0.95em;
+}
+.mobile-menu-link:hover { 
+    background: #e9f0ff; 
+    color: #0056b3; 
+}
+
+.mobile-quicklinks { 
+    display:flex; 
+    flex-direction: column; 
+    gap: 10px; 
+    padding: 20px; /* Apply padding consistently */
+    padding-top: 15px; 
+    border-top: 1px solid #f0f0f0;
 }

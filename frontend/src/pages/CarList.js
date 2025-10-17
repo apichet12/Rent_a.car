@@ -5,10 +5,11 @@ import './CarList.css';
 
 const CarList = () => {
   const [selected, setSelected] = useState(null);
-  const [cars, setCars] = useState([]); // เริ่มต้นว่าง
+  const [cars, setCars] = useState([]);
   const [favorites, setFavorites] = useState({});
   const navigate = useNavigate();
 
+  // ตัวกรอง
   const [q, setQ] = useState('');
   const [minPrice, setMinPrice] = useState('');
   const [maxPrice, setMaxPrice] = useState('');
@@ -18,22 +19,20 @@ const CarList = () => {
   const [sortBy, setSortBy] = useState('recommended');
   const [vehicleType, setVehicleType] = useState('all'); // all | car | bike | special
 
+  // โหลดข้อมูลรถ
   useEffect(() => {
     const fetchCars = async () => {
       try {
         const res = await fetch('/data/cars.json');
         const data = await res.json();
 
-        // ตั้งค่า availability และ favorites เริ่มต้น
         const stored = JSON.parse(localStorage.getItem('cars_availability') || '{}');
         const carsWithAvailability = data.map(c => ({
           ...c,
           available: stored[c.id] === undefined ? true : stored[c.id]
         }));
 
-        // ตั้งค่า cars แต่เราจะไม่แสดงใด ๆ จนกว่าจะมีการค้นหาหรือกรอง
-        setCars([]); 
-        localStorage.setItem('cars_availability', JSON.stringify({}));
+        setCars(carsWithAvailability); // ✅ ใช้จริง
         const storedFav = JSON.parse(localStorage.getItem('cars_favorites') || '{}');
         setFavorites(storedFav);
       } catch (err) {
@@ -43,6 +42,7 @@ const CarList = () => {
     fetchCars();
   }, []);
 
+  // toggle favorite ❤️
   const toggleFavorite = id => {
     setFavorites(prev => {
       const updated = { ...prev, [id]: !prev[id] };
@@ -51,38 +51,43 @@ const CarList = () => {
     });
   };
 
+  // การกรองและจัดเรียง
   const filteredCars = useMemo(() => {
     let list = cars.slice();
-    if (q) list = list.filter(c => (c.name || '').toLowerCase().includes(q.toLowerCase()) || (c.desc || '').toLowerCase().includes(q.toLowerCase()));
+    if (q) list = list.filter(c =>
+      (c.name || '').toLowerCase().includes(q.toLowerCase()) ||
+      (c.desc || '').toLowerCase().includes(q.toLowerCase())
+    );
     if (vehicleType && vehicleType !== 'all') list = list.filter(c => (c.type || 'car') === vehicleType);
     if (minPrice) list = list.filter(c => c.price >= Number(minPrice));
     if (maxPrice) list = list.filter(c => c.price <= Number(maxPrice));
     if (seatsFilter) list = list.filter(c => String(c.seats) === String(seatsFilter));
     if (fuelFilter) list = list.filter(c => c.fuel === fuelFilter);
     if (onlyAvailable) list = list.filter(c => c.available);
-    if (sortBy === 'price_asc') list.sort((a,b)=>a.price-b.price);
-    if (sortBy === 'price_desc') list.sort((a,b)=>b.price-a.price);
-    if (sortBy === 'name') list.sort((a,b)=>a.name.localeCompare(b.name));
+    if (sortBy === 'price_asc') list.sort((a, b) => a.price - b.price);
+    if (sortBy === 'price_desc') list.sort((a, b) => b.price - a.price);
+    if (sortBy === 'name') list.sort((a, b) => a.name.localeCompare(b.name));
     return list;
   }, [cars, q, minPrice, maxPrice, seatsFilter, fuelFilter, onlyAvailable, sortBy, vehicleType]);
 
   return (
     <div className="carlist-page">
       <div className="carlist-hero">
-        <h2 style={{fontSize: '2rem', fontWeight:700}}>เลือกรถ / Select Car</h2>
+        <h2 style={{ fontSize: '2rem', fontWeight: 700 }}>เลือกรถ / Select Car</h2>
       </div>
 
       <div className="carlist-wrap">
+        {/* ================= ฟิลเตอร์ด้านข้าง ================= */}
         <aside className="carlist-aside">
           <div className="panel">
             <h3>ตัวช่วยค้นหา</h3>
             <div className="filters">
-              <input className="nice-input" placeholder="ค้นหาชื่อหรือคำอธิบาย" value={q} onChange={e=>setQ(e.target.value)} />
-              <div style={{display:'flex', gap:8}}>
-                <input className="nice-input" placeholder="ราคาต่ำสุด" value={minPrice} onChange={e=>setMinPrice(e.target.value)} />
-                <input className="nice-input" placeholder="ราคาสูงสุด" value={maxPrice} onChange={e=>setMaxPrice(e.target.value)} />
+              <input className="nice-input" placeholder="ค้นหาชื่อหรือคำอธิบาย" value={q} onChange={e => setQ(e.target.value)} />
+              <div style={{ display: 'flex', gap: 8 }}>
+                <input className="nice-input" placeholder="ราคาต่ำสุด" value={minPrice} onChange={e => setMinPrice(e.target.value)} />
+                <input className="nice-input" placeholder="ราคาสูงสุด" value={maxPrice} onChange={e => setMaxPrice(e.target.value)} />
               </div>
-              <select value={seatsFilter} onChange={e=>setSeatsFilter(e.target.value)}>
+              <select value={seatsFilter} onChange={e => setSeatsFilter(e.target.value)}>
                 <option value="">ทุกจำนวนที่นั่ง</option>
                 <option value="2">2</option>
                 <option value="4">4</option>
@@ -91,35 +96,49 @@ const CarList = () => {
                 <option value="12">12</option>
               </select>
               <div style={{ display: 'flex', gap: 8, marginTop: 6, flexWrap: 'wrap' }}>
-                <button type="button" onClick={() => setVehicleType('all')} className={"btn-outline" + (vehicleType==='all' ? ' active' : '')}>ทั้งหมด</button>
-                <button type="button" onClick={() => setVehicleType('car')} className={"btn-outline" + (vehicleType==='car' ? ' active' : '')}>รถยนต์</button>
-                <button type="button" onClick={() => setVehicleType('bike')} className={"btn-outline" + (vehicleType==='bike' ? ' active' : '')}>มอเตอร์ไชค์</button>
-                <button type="button" onClick={() => setVehicleType('special')} className={"btn-outline" + (vehicleType==='special' ? ' active' : '')}>เรียนพิเศษ</button>
+                <button type="button" onClick={() => setVehicleType('all')} className={"btn-outline" + (vehicleType === 'all' ? ' active' : '')}>ทั้งหมด</button>
+                <button type="button" onClick={() => setVehicleType('car')} className={"btn-outline" + (vehicleType === 'car' ? ' active' : '')}>รถยนต์</button>
+                <button type="button" onClick={() => setVehicleType('bike')} className={"btn-outline" + (vehicleType === 'bike' ? ' active' : '')}>มอเตอร์ไซค์</button>
+                <button type="button" onClick={() => setVehicleType('special')} className={"btn-outline" + (vehicleType === 'special' ? ' active' : '')}>พิเศษ</button>
               </div>
-              <select value={fuelFilter} onChange={e=>setFuelFilter(e.target.value)}>
+              <select value={fuelFilter} onChange={e => setFuelFilter(e.target.value)}>
                 <option value="">ทุกเชื้อเพลิง</option>
                 <option value="เบนซิน">เบนซิน</option>
                 <option value="ดีเซล">ดีเซล</option>
                 <option value="ไฟฟ้า">ไฟฟ้า</option>
               </select>
-              <label style={{display:'flex', alignItems:'center', gap:8}}>
-                <input type="checkbox" checked={onlyAvailable} onChange={e=>setOnlyAvailable(e.target.checked)} /> เฉพาะที่ว่าง
+              <label style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <input type="checkbox" checked={onlyAvailable} onChange={e => setOnlyAvailable(e.target.checked)} /> เฉพาะที่ว่าง
               </label>
-              <div style={{display:'flex', gap:8}}>
-                <button onClick={()=>{setQ(''); setMinPrice(''); setMaxPrice(''); setSeatsFilter(''); setFuelFilter(''); setOnlyAvailable(false); setSortBy('recommended');}} className="btn-outline">ล้างตัวกรอง</button>
+              <div style={{ display: 'flex', gap: 8 }}>
+                <button
+                  onClick={() => {
+                    setQ('');
+                    setMinPrice('');
+                    setMaxPrice('');
+                    setSeatsFilter('');
+                    setFuelFilter('');
+                    setOnlyAvailable(false);
+                    setSortBy('recommended');
+                  }}
+                  className="btn-outline"
+                >
+                  ล้างตัวกรอง
+                </button>
               </div>
             </div>
           </div>
         </aside>
 
+        {/* ================= แสดงผลรายการรถ ================= */}
         <main className="carlist-main">
           <div className="carlist-head">
             <div>
-              <h3 style={{margin:0, fontSize:20}}>ผลการค้นหา</h3>
+              <h3 style={{ margin: 0, fontSize: 20 }}>ผลการค้นหา</h3>
               <div className="car-count">พบรถว่าง {filteredCars.length} คัน</div>
             </div>
             <div>
-              <select value={sortBy} onChange={e=>setSortBy(e.target.value)} style={{padding:8, borderRadius:8}}>
+              <select value={sortBy} onChange={e => setSortBy(e.target.value)} style={{ padding: 8, borderRadius: 8 }}>
                 <option value="recommended">เรียงผลตาม: แนะนำ</option>
                 <option value="price_asc">ราคาต่ำ→สูง</option>
                 <option value="price_desc">ราคาสูง→ต่ำ</option>
@@ -128,23 +147,58 @@ const CarList = () => {
             </div>
           </div>
 
-          {/* รถจะไม่ถูก render จนกว่าจะมีข้อมูลจริง */}
-          <div className="car-grid"></div>
+          <div className="car-grid">
+            {filteredCars.map(car => (
+              <div key={car.id} className="car-card">
+                <img src={car.image} alt={car.name} onClick={() => setSelected(car)} />
+                <div style={{ padding: '12px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <h4 style={{ margin: 0 }}>{car.name}</h4>
+                    <button
+                      className="fav-btn"
+                      onClick={() => toggleFavorite(car.id)}
+                      title={favorites[car.id] ? 'นำออกจากรายการโปรด' : 'เพิ่มในรายการโปรด'}
+                    >
+                      {favorites[car.id] ? '❤️' : '🤍'}
+                    </button>
+                  </div>
+                  <p style={{ color: '#555', fontSize: 14, minHeight: 36 }}>{car.desc}</p>
+                  <div style={{ fontWeight: 600 }}>{car.price.toLocaleString()} บาท/วัน</div>
+                  <div style={{ marginTop: 6 }}>
+                    {car.available ? (
+                      <span className="badge-available">ว่าง</span>
+                    ) : (
+                      <span className="badge-unavailable">ไม่ว่าง</span>
+                    )}
+                  </div>
+                  <button
+                    onClick={() => navigate('/booking', { state: { car } })}
+                    className="btn-primary"
+                    style={{ marginTop: 10, width: '100%' }}
+                    disabled={!car.available}
+                  >
+                    จองรถ
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
         </main>
       </div>
 
+      {/* ================= Modal แสดงรายละเอียด ================= */}
       {selected && (
-        <div className="car-modal-backdrop" onClick={()=>setSelected(null)}>
-          <div className="car-modal" onClick={e=>e.stopPropagation()}>
+        <div className="car-modal-backdrop" onClick={() => setSelected(null)}>
+          <div className="car-modal" onClick={e => e.stopPropagation()}>
             <img src={selected.image} alt={selected.name} />
             <h2>{selected.name}</h2>
             <p>{selected.desc}</p>
             <div>ปี {selected.year} | {selected.seats} ที่นั่ง | {selected.fuel}</div>
-            <ul>{selected.features?.map((f,i)=><li key={i}>• {f}</li>)}</ul>
+            <ul>{selected.features?.map((f, i) => <li key={i}>• {f}</li>)}</ul>
             <p>ราคา/วัน: {selected.price.toLocaleString()} บาท</p>
-            <div style={{display:'flex', gap:8, marginTop:12}}>
-              <button onClick={()=>{navigate('/booking',{state:{car:selected}}); setSelected(null)}} className="btn-primary">จองรถ</button>
-              <button className="close-modal" onClick={()=>setSelected(null)}>✕</button>
+            <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
+              <button onClick={() => { navigate('/booking', { state: { car: selected } }); setSelected(null); }} className="btn-primary">จองรถ</button>
+              <button className="close-modal" onClick={() => setSelected(null)}>✕</button>
             </div>
           </div>
         </div>
@@ -154,7 +208,8 @@ const CarList = () => {
         .car-grid {display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:20px;}
         .car-card {border-radius:12px; overflow:hidden; background:#fff; box-shadow:0 8px 20px rgba(0,0,0,0.06); transition:transform 0.18s;}
         .car-card:hover { transform:translateY(-6px); }
-        .car-card img { display:block; width:100%; }
+        .car-card img { display:block; width:100%; height:180px; object-fit:cover; cursor:pointer; }
+        .fav-btn { background:none; border:none; cursor:pointer; font-size:20px; }
         .badge-available { padding:6px 10px; border-radius:8px; font-weight:700; color:#fff; background:linear-gradient(90deg,#22c55e,#16a34a); }
         .badge-unavailable { padding:6px 10px; border-radius:8px; font-weight:700; color:#fff; background:linear-gradient(90deg,#ef4444,#b91c1c); }
         .car-modal-backdrop { position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.35); display:flex; align-items:center; justify-content:center; z-index:99; }

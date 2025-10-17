@@ -1,0 +1,120 @@
+.mobile-profile-page {
+  font-family: "Prompt", sans-serif;
+  background: #f9fbff;
+  min-height: 100vh;
+  padding-bottom: 64px;
+  margin: 0; /* ชิดขอบหน้าจอ */
+  overflow-x: hidden; /* ป้องกัน scroll แนวนอน */
+}
+
+.profile-header {
+  display: flex;
+  justify-content: space-between; /* ฟันเฟืองชิดขวา */
+  align-items: center;
+  background-color: #0d6efd;
+  color: #fff;
+  padding: 20px 16px 16px 16px; /* เพิ่ม padding-top ให้ห่างจากขอบบน */
+  border-bottom-left-radius: 16px;
+  border-bottom-right-radius: 16px;
+  box-sizing: border-box;
+}
+
+.profile-user {
+  display: flex;
+  align-items: center;
+  margin: 0; /* ชิดขอบ */
+}
+
+.profile-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background-color: #fff;
+  color: #0d6efd;
+  font-weight: bold;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 20px;
+  margin-right: 12px; /* เพิ่มระยะห่างเล็กน้อยจากชื่อ */
+  flex-shrink: 0;
+}
+
+.profile-name .username {
+  font-weight: bold;
+  line-height: 1.4; /* เพิ่มความสูงของบรรทัด */
+}
+
+.profile-name .view-profile {
+  font-size: 12px;
+  margin-top: 2px; /* เว้นระยะเล็กๆ */
+}
+
+.profile-settings {
+  font-size: 24px;
+  color: #fff;
+  margin-left: 60px;
+  flex-shrink: 0;
+}
+
+.points-box {
+  background-color: #f0f0f0;
+  padding: 16px;
+  margin: 16px 8px;
+  border-radius: 8px;
+  text-align: center;
+  box-sizing: border-box;
+  max-width: 100%; /* ป้องกันล้นจอ */
+}
+
+.icon-menu {
+  display: flex;
+  justify-content: space-around;
+  padding: 0 8px;
+  margin-bottom: 16px;
+  box-sizing: border-box;
+  max-width: 100%;
+}
+
+.icon-item {
+  text-align: center;
+}
+
+.icon-label {
+  font-size: 12px;
+  margin-top: 2px;
+}
+
+.menu-items {
+  padding: 0 8px;
+  box-sizing: border-box;
+  max-width: 100%;
+}
+
+.menu-item {
+  padding: 14px 0;
+  border-bottom: 1px solid #eee;
+  position: relative;
+  word-break: break-word; /* ป้องกันคำยาวล้น */
+}
+
+.submenu {
+  padding-left: 16px;
+  font-size: 14px;
+  color: #555;
+  margin-top: 4px;
+  word-break: break-word; /* ป้องกันคำยาวล้น */
+}
+
+.profile-footer {
+  padding: 20px 8px 16px 8px;
+  font-size: 12px;
+  color: #888;
+  text-align: center;
+}
+
+/* ปรับให้ทุก container ไม่ล้นจอมือถือ */
+.mobile-profile-page > * {
+  max-width: 100%;
+  box-sizing: border-box;
+}

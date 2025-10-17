@@ -245,4 +245,74 @@
   .footer-grid { grid-template-columns: 1fr; text-align: center; }
   .reveal-section { padding: 12px; }
   .hero-media { min-height: 180px; }
+
+  /* Mobile: make categories horizontally scrollable like the screenshot */
+  .category-grid {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+  }
+  .category-btn {
+    min-width: 140px;
+    flex: 0 0 auto;
+    text-align: left;
+    padding: 14px 16px;
+    border-radius: 12px;
+    background: #fff;
+    border: 1px solid #eef2ff;
+    box-shadow: 0 6px 20px rgba(2,6,23,0.04);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* Featured cars: horizontal cards on mobile */
+  .featured-cars-grid {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    padding: 12px 6px;
+  }
+  .featured-cars-grid > div {
+    min-width: 320px;
+    flex: 0 0 auto;
+  }
+
+  /* Floating search pill anchored above bottom nav */
+  .mobile-search-floating {
+    position: fixed !important;
+    left: 12px;
+    right: 12px;
+    bottom: 86px; /* above bottom nav */
+    z-index: 1200;
+    width: auto !important;
+    margin: 0 auto !important;
+    box-shadow: 0 12px 40px rgba(2,6,23,0.12);
+  }
+
+  /* Hide the large hero media on small phones to match screenshot */
+  .hero-media { display: none; }
+
+  /* Bottom navigation (mobile) */
+  .mobile-bottom-nav {
+    position: fixed;
+    left: 12px;
+    right: 12px;
+    bottom: 12px;
+    height: 56px;
+    background: rgba(255,255,255,0.99);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    box-shadow: 0 12px 30px rgba(2,6,23,0.08);
+    z-index: 1300;
+    border: 1px solid rgba(10,20,60,0.04);
+  }
+  .mobile-bottom-nav .nav-item { display:flex; flex-direction:column; align-items:center; gap:4px; color:#6b7280; font-size:12px; text-decoration:none; }
+  .mobile-bottom-nav .nav-item.active { color: #0b74a6; }
+
+  /* Ensure page content has bottom padding so content isn't hidden under nav */
+  main { padding-bottom: 140px; }
 }

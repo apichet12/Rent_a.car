@@ -82,7 +82,7 @@ const AutoPlayVideo = ({ src, poster }) => {
 };
 
 /* ---------------- FEATURED CARS ---------------- */
-const FeaturedCars = ({ searchQuery }) => {
+const FeaturedCars = ({ searchQuery, layout = 'grid' }) => {
   const [cars, setCars] = useState([]);
   const navigate = useNavigate();
 
@@ -116,7 +116,7 @@ const FeaturedCars = ({ searchQuery }) => {
   );
 
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(240px,1fr))', gap: 16 }}>
+    <div className={layout === 'carousel' ? 'featured-cars-inner' : ''} style={layout === 'carousel' ? { display: 'flex', gap: 12 } : { display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(240px,1fr))', gap: 16 }}>
       {filteredCars.map(car => (
         <div key={car.id} style={{
           background: '#fff', padding: 12, borderRadius: 12,
@@ -173,26 +173,7 @@ const FAQItem = ({ q, a }) => {
 };
 
 /* ---------------- SCROLL TO TOP BUTTON ---------------- */
-const ScrollToTopButton = () => {
-  const [visible, setVisible] = useState(false);
-  useEffect(() => {
-    const toggleVisible = () => setVisible(window.scrollY > 160);
-    window.addEventListener('scroll', toggleVisible);
-    return () => window.removeEventListener('scroll', toggleVisible);
-  }, []);
-  const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
-  if (!visible) return null;
-  return (
-    <button onClick={scrollToTop} style={{
-      position: 'fixed', bottom: 20, right: 20, width: 52, height: 52,
-      background: 'linear-gradient(90deg,#06b6d4,#4f46e5)',
-      color: '#fff', border: 'none', borderRadius: '50%', cursor: 'pointer',
-      boxShadow: '0 6px 18px rgba(0,0,0,0.18)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1200
-    }} aria-label="Scroll to top">
-      ▲
-    </button>
-  );
-};
+
 
 /* ---------------- HOME PAGE ---------------- */
 const Home = () => {
@@ -327,8 +308,8 @@ const Home = () => {
             <AutoPlayVideo src="https://www.w3schools.com/html/mov_bbb.mp4" poster={heroImages[0]} />
           </div>
 
-          {/* centered pill search */}
-          <div className="hero-search-pill search-pill">
+          {/* centered pill search - on mobile it becomes floating */}
+          <div className={`hero-search-pill search-pill ${window.innerWidth <= 480 ? 'mobile-search-floating' : ''}`}>
             <div className="pill-content">
               <div className="search-icon">✨</div>
               <input type="text" className="pill-input" placeholder={typeText || 'ออกแบบโลโก้ร้านอาหารสไตล์...'} value={search} onChange={e => setSearch(e.target.value)} />
@@ -402,7 +383,9 @@ const Home = () => {
         <section style={{ marginTop: 22 }}>
           <h2 style={{ fontSize: 22, color: '#111827' }}>รถแนะนำ / Featured Cars</h2>
           <p style={{ color: '#6b7280' }}>เลือกดูรถยอดนิยม พร้อมสถานะการจองแบบเรียลไทม์</p>
-          <FeaturedCars searchQuery={search} />
+          <div className="featured-cars-grid">
+            <FeaturedCars searchQuery={search} layout={window.innerWidth <= 480 ? 'carousel' : 'grid'} />
+          </div>
         </section>
 
        
@@ -476,7 +459,9 @@ const Home = () => {
         </div>
       </footer>
 
-      <ScrollToTopButton />
+
+      
+      
     </div>
   );
 };

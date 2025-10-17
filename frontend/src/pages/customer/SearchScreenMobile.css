@@ -1,0 +1,227 @@
+/* ================= Search Mobile ================= */
+.search-mobile {
+  position: relative;
+  width: 100%;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 16px calc(env(safe-area-inset-bottom,16px)+16px);
+  font-family: 'Prompt', sans-serif;
+  background: linear-gradient(to bottom, #fff, #f0f5ff);
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+/* Header โลโก้ + ชื่อเว็บ + notification */
+.search-header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding-left: 16px;
+  padding-right: 0;
+  margin-top: 20px;
+  box-sizing: border-box;
+}
+
+.logo-name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.logo {
+  width: 50px;
+  height: 50px;
+  object-fit: contain;
+}
+
+.site-name {
+  font-size: 20px;
+  font-weight: 600;
+  color: #6b46c1;
+}
+
+.notification-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.notification-btn:hover {
+  transform: scale(1.1);
+  transition: transform 0.2s;
+}
+
+.navbar-hamburger {
+  background: transparent;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+/* ข้อความวิ่งตรงกลาง */
+.typewriter-text {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 500;
+  color: #333;
+  text-align: center;
+}
+
+.cursor {
+  display: inline-block;
+  width: 2px;
+  background-color: #6b46c1;
+  margin-left: 2px;
+  animation: blink 0.7s infinite;
+}
+
+@keyframes blink {
+  0%,50%,100% { opacity: 1; }
+  25%,75% { opacity: 0; }
+}
+
+/* Search Pill */
+.search-pill {
+  width: min(90%, 420px);
+  height: 52px;
+  display: flex;
+  align-items: center;
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: 0 6px 18px rgba(210, 197, 197, 0.12);
+  padding: 0 6px;
+  margin-bottom: 10px;
+}
+
+.pill-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 12px;
+  font-size: 18px;
+  color: #333;
+  cursor: pointer;
+}
+
+.pill-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 14px;
+  padding-right: 16px;
+  background: transparent;
+  color: #333;
+  caret-color: #6b46c1;
+  height: 100%;
+}
+
+/* ================= Mobile Drawer ================= */
+.mobile-menu {
+  position: fixed;
+  top: 0;
+  left: -100%;
+  width: 75%;           /* แคบลงจาก 80% */
+  max-width: 280px;     /* ลดจาก 300px */
+  height: 100%;
+  background: #fff;      /* พื้นขาวล้วน */
+  z-index: 1000;
+  transition: left 0.3s ease;
+  box-shadow: none;      /* ลบเงาสีเทา */
+  padding: 20px 12px;    /* เพิ่ม padding ด้านในให้สวย */
+  display: flex;
+  flex-direction: column;
+}
+
+.mobile-menu.open {
+  left: 0;
+}
+
+.mobile-menu-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* โลโก้ซ้าย กากบาทขวา */
+  margin-bottom: 0px;
+}
+
+.mobile-menu-top .navbar-hamburger {
+  font-size: 1.5rem;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  padding: 27px;
+}
+
+.mobile-menu-links {
+  display: flex;
+  flex-direction: column;
+  gap: 2px; /* เว้นระยะระหว่างหัวข้อ */
+}
+
+.mobile-menu-section {
+  display: flex;
+  flex-direction: column;
+  gap: 6px; /* เว้นระยะหัวข้อกับลิงก์ */
+}
+
+.mobile-menu-section-title {
+  font-weight: 600;
+  font-size: 16px;
+  color: #333;
+  cursor: pointer;
+}
+
+.mobile-menu-section-items {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.mobile-menu-link {
+  color: #333;
+  text-decoration: none;
+  padding: 8px 12px;   /* เพิ่มพื้นที่กด */
+  border-radius: 20px; /* โค้งมนสวย */
+  background: #fff;     /* พื้นขาว */
+  box-shadow: none;
+  border: none;
+  transition: background 0.2s;
+}
+
+.mobile-menu-link:hover {
+  background-color: #f0f0ff; /* สีเวลาชี้เมาส์ */
+}
+
+/* ================= บังคับพื้นขาวล้วนทั้งหมดในเมนู ================= */
+.mobile-menu,
+.mobile-menu * {
+  background: #fff !important;
+  box-shadow: none !important;
+  border: none !important;
+}
+
+/* Responsive สำหรับมือถือเล็ก */
+@media (max-width: 480px) {
+  .mobile-menu {
+    width: 80%;
+    max-width: 260px;
+    padding: 16px 10px;
+  }
+  .mobile-menu-section-title {
+    font-size: 15px;
+  }
+  .mobile-menu-link {
+    font-size: 14px;
+    padding: 6px 10px;
+  }
+}

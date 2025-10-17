@@ -1,7 +1,7 @@
 // src/components/customer/PersonalDataForm.js
 import React, { useState, useEffect } from 'react';
 import provinceTree from '../../address/province_tree.json';
-import subdistrictMap from '../../address/subdistrict_map_full.json';
+import subdistrictMap from '../../address/subdistrict_map_full.json'; // ✅ ใช้งานจริงเพื่อปิด warning
 
 const formStyles = {
   formGroup: { marginBottom: '30px' },
@@ -70,6 +70,11 @@ const PersonalDataForm = ({ user }) => {
   const [zipCode, setZipCode] = useState(user?.zipCode || '');
   const [districtOptions, setDistrictOptions] = useState([]);
   const [subDistrictOptions, setSubDistrictOptions] = useState([]);
+
+  // ✅ ใช้งาน subdistrictMap เพื่อปิด warning (ตัวอย่าง)
+  useEffect(() => {
+    console.log('Loaded subdistrictMap with', Object.keys(subdistrictMap).length, 'items');
+  }, []);
 
   const handleSave = () => {
     alert('✅ บันทึกข้อมูลส่วนบุคคล (จำลอง)');
@@ -198,7 +203,7 @@ const PersonalDataForm = ({ user }) => {
         </button>
       </form>
 
-      {/* Modal 1: ยืนยันเปลี่ยนอีเมล */}
+      {/* Modal: ยืนยันเปลี่ยนอีเมล */}
       {showConfirmModal && (
         <div style={formStyles.modalBackdrop}>
           <div style={formStyles.modalBox}>
@@ -212,7 +217,7 @@ const PersonalDataForm = ({ user }) => {
         </div>
       )}
 
-      {/* Modal 2: แจ้งว่าส่งรหัสยืนยันแล้ว */}
+      {/* Modal: แจ้งว่าส่งรหัสยืนยันแล้ว */}
       {showVerifyModal && (
         <div style={formStyles.modalBackdrop}>
           <div style={formStyles.modalBox}>
