@@ -1,4 +1,4 @@
-// src/App.js
+// ✅ src/App.js
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import Navbar from './components/Navbar';
@@ -17,9 +17,9 @@ import AdminBookings from './pages/admin/AdminBookings';
 import CustomerDashboard from './pages/customer/CustomerDashboard';
 import CustomerBookings from './pages/customer/CustomerBookings';
 import CustomerProfile from './pages/customer/CustomerProfile';
-import ProfilePage from './pages/customer/ProfilePage'; // หน้าโปรไฟล์ผู้ใช้เต็ม
-import EditProfilePage from './pages/customer/EditProfilePage';
-import PersonalDataForm from './pages/customer/PersonalDataForm'; // <-- เพิ่มตรงนี้
+import ProfilePage from './pages/customer/ProfilePage'; 
+import EditProfilePage from './pages/customer/EditProfilePage'; // ✅ เหลือแค่บรรทัดนี้
+import PersonalDataForm from './pages/customer/PersonalDataForm';
 import CarsBrowse from './pages/CarsBrowse';
 import Review from './pages/Review';
 import Contact from './pages/Contact';
@@ -36,68 +36,66 @@ import Tuition from './pages/Tuition';
 import './App.css';
 import './responsive.css';
 import 'react-datepicker/dist/react-datepicker.css';
-// i18n removed
+import AccountSettingsPage from './pages/customer/AccountSettingsPage';
 
 const AppContent = () => {
-    const location = useLocation();
-    const NO_NAVBAR_ROUTES = ['/login', '/register', '/customer/profile'];
-    const isHiddenRoute = NO_NAVBAR_ROUTES.includes(location.pathname);
-    
-    return (
-        <div style={{
-            userSelect: 'none',
-            WebkitUserSelect: 'none',
-            MozUserSelect: 'none',
-            msUserSelect: 'none'
-        }}>
-            {!isHiddenRoute && <Navbar />}
+  const location = useLocation();
+  const NO_NAVBAR_ROUTES = ['/login', '/register', '/customer/profile'];
+  const isHiddenRoute = NO_NAVBAR_ROUTES.includes(location.pathname);
 
-            <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/register" element={<Register />} />
-                <Route path="/carlist" element={<CarList />} />
-                <Route path="/cars" element={<CarList />} />
-                <Route path="/cars/:id" element={<CarDetail />} />
-                <Route path="/customer/profile" element={<ProfilePage />} />
-                <Route path="/customer/edit-profile" element={<EditProfilePage />} />
+  return (
+    <div style={{
+      userSelect: 'none',
+      WebkitUserSelect: 'none',
+      MozUserSelect: 'none',
+      msUserSelect: 'none'
+    }}>
+      {!isHiddenRoute && <Navbar />}
 
-                {/* Route สำหรับ PersonalDataForm */}
-                <Route path="/customer/personal-data" element={<PersonalDataForm />} />
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/carlist" element={<CarList />} />
+        <Route path="/cars" element={<CarList />} />
+        <Route path="/cars/:id" element={<CarDetail />} />
+        <Route path="/customer/profile" element={<ProfilePage />} />
+        <Route path="/customer/edit-profile" element={<EditProfilePage />} /> {/* ✅ ใช้อันนี้อันเดียว */}
 
-                <Route path="/gallery" element={<Gallery />} />
-                <Route path="/booking" element={<Booking />} />
-                <Route path="/dashboard" element={<Dashboard />} />
-                <Route path="/admin" element={<AdminDashboard />} />
-                <Route path="/admin/cars" element={<AdminCars />} />
-                <Route path="/admin/bookings" element={<AdminBookings />} />
-                <Route path="/customer" element={<CustomerDashboard />} />
-                <Route path="/customer/bookings" element={<CustomerBookings />} />
-                <Route path="/customer/profile" element={<ProfilePage />} />
-                <Route path="/customer/dropdown" element={<CustomerProfile />} /> {/* ถ้าต้องการ dropdown standalone */}
-                <Route path="/cars-browse" element={<CarsBrowse />} />
-                <Route path="/review" element={<Review />} />
-                <Route path="/contact" element={<Contact />} />
-                <Route path="/notifications" element={<Notifications />} />
-                <Route path="/help/booking" element={<BookingHelp />} />
-                <Route path="/help/docs" element={<DocsHelp />} />
-                <Route path="/help/insurance" element={<InsuranceHelp />} />
-                <Route path="/help/more" element={<MoreHelp />} />
-                <Route path="/privacy" element={<PrivacyPolicy />} />
-                <Route path="/terms" element={<Terms />} />
-                <Route path="/data-deletion" element={<DataDeletionRequest />} />
-                <Route path="/tuition" element={<Tuition />} />
-            </Routes>
-        </div>
-    );
+        <Route path="/customer/personal-data" element={<PersonalDataForm />} />
+        <Route path="/gallery" element={<Gallery />} />
+        <Route path="/booking" element={<Booking />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/admin" element={<AdminDashboard />} />
+        <Route path="/admin/cars" element={<AdminCars />} />
+        <Route path="/admin/bookings" element={<AdminBookings />} />
+        <Route path="/customer" element={<CustomerDashboard />} />
+        <Route path="/customer/bookings" element={<CustomerBookings />} />
+        <Route path="/customer/dropdown" element={<CustomerProfile />} />
+        <Route path="/cars-browse" element={<CarsBrowse />} />
+        <Route path="/review" element={<Review />} />
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/notifications" element={<Notifications />} />
+        <Route path="/help/booking" element={<BookingHelp />} />
+        <Route path="/help/docs" element={<DocsHelp />} />
+        <Route path="/help/insurance" element={<InsuranceHelp />} />
+        <Route path="/help/more" element={<MoreHelp />} />
+        <Route path="/privacy" element={<PrivacyPolicy />} />
+        <Route path="/terms" element={<Terms />} />
+        <Route path="/data-deletion" element={<DataDeletionRequest />} />
+        <Route path="/tuition" element={<Tuition />} />
+        <Route path="/account-settings" element={<AccountSettingsPage />} />
+      </Routes>
+    </div>
+  );
 };
 
 function App() {
-    return (
-        <Router>
-            <AppContent />
-        </Router>
-    );
+  return (
+    <Router>
+      <AppContent />
+    </Router>
+  );
 }
 
 export default App;

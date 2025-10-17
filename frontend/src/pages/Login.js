@@ -70,7 +70,7 @@ const Login = () => {
       if (res.ok && data && data.success) {
         // ✅ ใช้ response ตรง ๆ (รองรับ backend ปัจจุบัน)
         login(data.username, data.role);
-        navigate('/dashboard');
+        navigate('/');
       } else {
         setError((data && data.message) || 'Login failed. Please check your credentials.');
       }

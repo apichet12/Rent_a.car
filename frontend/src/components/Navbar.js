@@ -73,10 +73,8 @@ const NavbarLogin = () => {
   const doSearch = () => navigate(!query ? '/cars' : `/cars?q=${encodeURIComponent(query)}`);
 
   // ------------------------------
-  // ซ่อนเมนูล่างหน้าโปรไฟล์ / แก้ไขโปรไฟล์
+  // ซ่อนเมนูล่างหน้าโปรไฟล์ / แก้ไขโปรไฟล์ (kept comment for future use)
   // ------------------------------
-  const isProfilePage = location.pathname === '/customer/profile';
-  const isEditProfilePage = location.pathname === '/customer/edit-profile';
 
   // ------------------------------
   // เมนูหลักของ navbar

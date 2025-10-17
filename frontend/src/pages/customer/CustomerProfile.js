@@ -60,14 +60,18 @@ const CustomerProfile = () => {
 
           {/* Menu Items แบบแนวตั้ง และ scroll ได้ถ้าเยอะ */}
           <div style={menuContainerStyle}>
-            <MenuItem label="เหรียญ" value="0.00" />
-            <MenuItem label="ตั้งค่าบัญชี" />
-            <MenuItem label="ข้อความและออเดอร์" />
-            <MenuItem label="คูปองส่วนลด" />
-            <MenuItem label="งานที่ชอบ" />
-            <MenuItem label="Jobboard" />
-            <MenuItem label="ออกจากระบบ" onClick={logout} />
-          </div>
+  <MenuItem label="ตั้งค่าบัญชี" onClick={() => navigate('/customer/edit-profile')} />
+  <MenuItem label="ข้อความและออเดอร์" />
+  <MenuItem label="คูปองส่วนลด" />
+  <MenuItem label="งานที่ชอบ" />
+<MenuItem
+  label="ออกจากระบบ"
+  onClick={() => {
+    logout();               // เรียก logout
+    navigate('/');          // หรือ navigate('/customer/edit-profile') ถ้าต้องการไปหน้าจัดการบัญชี
+  }}
+/>
+</div>
         </div>
       )}
     </div>

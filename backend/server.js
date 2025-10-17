@@ -197,3 +197,35 @@ app.use((req, res, next) => {
 // =======================
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));
+
+
+// --- Get User by username with createdAt ---
+app.get('/api/user/:username', async (req, res) => {
+  try {
+    const { username } = req.params;
+
+    const { rows } = await pool.query(
+      'SELECT username, role, name, email, "createdAt" FROM users WHERE username=$1',
+      [username]
+    );
+
+    if (rows.length === 0) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+
+    const user = rows[0];
+
+    // ส่ง createdAt เป็น full ISO string (ไม่ตัด)
+    res.json({
+      success: true,
+      username: user.username,
+      role: user.role,
+      name: user.name,
+      email: user.email,
+      createdAt: user.createdAt.toISOString(),
+    });
+  } catch (err) {
+    console.error('GET /api/user/:username error:', err.message || err);
+    res.status(500).json({ success: false, message: 'Server error', error: err.message });
+  }
+});

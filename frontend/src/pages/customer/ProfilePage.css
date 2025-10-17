@@ -1,0 +1,276 @@
+/* ✅ โทนสีและ Layout พรีเมียม */
+.profile-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: #f9fbff;
+  font-family: "Prompt", sans-serif;
+}
+
+/* Header Banner */
+.profile-banner {
+  background: linear-gradient(120deg, #0d47a1, #1976d2);    /* สีน้ำเงินแถบบน*/
+  height: 250px;
+  width: 100%;
+  border-bottom-left-radius: 60px;
+  border-bottom-right-radius: 60px;
+  box-shadow: 0 4px 25px rgba(0, 0, 0, 0.2);
+}
+
+/* Main Layout */
+.profile-main {
+  max-width: 1900px;
+  margin: -150px  0; /*ปรับชิดซ้าย*/
+  padding: 0 30px;
+  display: flex;
+  gap: 40px;
+  align-items: flex-start;
+}
+
+@media (max-width: 768px) {
+  .profile-main {
+    flex-direction: column;
+    margin-top: -100px;
+  }
+}
+
+/* -------- PROFILE CARD -------- */
+.profile-card {
+  flex-shrink: 0;
+  width: 340px;
+  background: #ffffff;
+  border-radius: 24px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  position: relative;
+  text-align: center;
+  padding: 120px 20px 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: all 0.3s ease;
+}
+
+.profile-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 30px rgba(13, 71, 161, 0.2);
+}
+
+/* วงรี Avatar ซ้อนสองชั้น */
+.avatar-ring {
+  position: absolute;
+  top: -85px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #42a5f5, #1e88e5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 10px rgba(13, 71, 161, 0.3);
+}
+
+.avatar-container {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  background: #e3f2fd;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatar-icon {
+  background: linear-gradient(135deg, #64b5f6, #2196f3);
+  color: white;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 64px;
+  font-weight: bold;
+}
+
+/* ชื่อโปรไฟล์ */
+.profile-name {
+  margin-top: 7px; /* ข้อความในกรอบขาวโปร์ไฟล์*/
+  font-size: 24px;
+  color: #1e293b;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+
+
+.star {
+  font-size: 22px;
+  color: #e0e0e0;
+  transition: color 0.2s;
+}
+
+.star.filled {
+  color: #ffc107;
+}
+
+/* ข้อความ */
+.member-since {
+  font-size: 15px;
+  color: #64748b;
+}
+
+.member-since span {
+  color: #1565c0;
+  font-weight: 500;
+}
+
+/* ปุ่มแก้ไข */
+.edit-icon {
+  position: absolute;
+  top: 14px;
+  right: 18px;
+  font-size: 20px;
+  color: #64b5f6;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+/* -------- RIGHT CONTENT -------- */
+.profile-right {
+  flex-grow: 1;
+  min-height: 500px;    /* เพิ่มระยะให้ footer ไม่นูนชิดเนื้อหา */
+  padding-top: 150px;
+  
+}
+
+.profile-right .profile-title {
+  color: #52575c;       /* ชื่อหัวข้อ บัญชี */
+}
+
+.profile-right .tab-bar .tab-item {
+  color: #60666c;       /* แท็บสีฟ้า */
+}
+
+.profile-right .placeholder {
+  color: #64748b;       /* ข้อความ รีวิว สีเทา */
+}
+
+
+.profile-title {
+  font-size: 30px;
+  color: #0d47a1;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+
+.tab-bar {
+  border-bottom: 2px solid #e0e0e0;
+  display: flex;
+  margin-bottom: 20px;
+}
+
+.tab-item {
+  font-weight: 600;
+  font-size: 18px;
+  color: #0d47a1;
+  margin-right: 20px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+}
+
+.tab-item.active {
+  border-bottom-color: #0d47a1;
+}
+
+.placeholder {
+  font-size: 16px;
+  color: #64748b;
+  margin-top: 20px;
+}
+
+/* -------- FOOTER -------- */
+.footer {
+  background: #e3f2fd;
+  padding: 2.5rem 1rem;
+  margin-top: 40px;
+  border-top: 4px solid #90caf9;
+}
+
+.footer-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 24px;
+}
+
+.footer-content h4 {
+  color: #0d47a1;
+  margin-bottom: 8px;
+}
+
+.footer-content ul {
+  list-style: none;
+  padding: 0;
+  color: #334155;
+  line-height: 1.6;
+}
+
+.footer-content p {
+  color: #334155;
+  line-height: 1.5;
+}
+
+.app-buttons {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.app-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  color: #fff;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.app-btn img {
+  width: 20px;
+  height: 20px;
+}
+
+.app-btn.apple {
+  background: #000;
+}
+
+.app-btn.google {
+  background: #34a853;
+}
+
+.footer-bottom {
+  text-align: center;
+  color: #64748b;
+  margin-top: 24px;
+  font-size: 13px;
+}
+
+.footer-bottom a {
+  color: #0d47a1;
+  text-decoration: underline dotted;
+  margin: 0 8px;
+  font-size: 12px;
+}
+
+.not-logged {
+  padding: 60px;
+  text-align: center;
+  color: #555;
+  font-size: 18px;
+}
