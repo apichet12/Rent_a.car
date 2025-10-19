@@ -91,19 +91,20 @@
   position: relative;
   margin: 18px auto 0;
   width: clamp(560px, 70%, 940px);
-  background: #fff;
+  background: rgba(255,255,255,0.95);
   border-radius: 999px;
-  box-shadow: 0 12px 40px rgba(2,6,23,0.12);
+  box-shadow: 0 14px 44px rgba(79,70,229,0.08);
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 12px 16px;
+  padding: 12px 18px;
+  transition: transform 200ms ease, box-shadow 200ms ease;
 }
 
 .search-pill {
   border-radius: 999px;
   padding: 2px;
-  background: linear-gradient(90deg,#e6eef8,#f8fafc);
+  background: linear-gradient(90deg,#eef2ff,#ffffff);
   display: inline-block;
 }
 
@@ -115,7 +116,7 @@
   border-radius: 999px;
   padding: 8px 12px;
   min-width: 320px;
-  box-shadow: 0 6px 18px rgba(2,6,23,0.04);
+  box-shadow: 0 8px 24px rgba(2,6,23,0.06);
 }
 
 .search-pill .search-icon {
@@ -150,6 +151,8 @@
   font-weight:700;
   cursor:pointer;
 }
+
+.hero-search-pill:focus-within { transform: translateY(-4px); box-shadow: 0 20px 60px rgba(79,70,229,0.12); }
 
 /* ---------- Category Cards ---------- */
 .category-card {

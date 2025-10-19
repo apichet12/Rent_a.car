@@ -1,146 +1,109 @@
-// src/components/SearchScreenMobile.js
-import React, { useState, useEffect, useRef } from 'react';
+// src/pages/customer/SearchScreen.mobile.js
+import React, { useState, useEffect } from 'react';
 import { Bell } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import './SearchScreenMobile.css';
 
 const MENU_ITEMS = [
-  { title: 'เช่ารถ', subs: ['เช่ารายวัน', 'เช่ารายเดือน', 'เช่าพร้อมคนขับ', 'ท่องเที่ยว', 'ธุรกิจ', 'รถไฟฟ้า'] },
-  { title: 'เช่ามอเตอร์ไซค์', subs: ['รายวัน', 'ท่องเที่ยว', 'สกู๊ตเตอร์ไฟฟ้า', 'พรีเมียม'] },
-  { title: 'ติวเรียน', subs: ['คณิตศาสตร์', 'ภาษาอังกฤษ', 'วิทยาศาสตร์', 'ติวสอบเข้า', 'เรียนออนไลน์'] },
-  { title: 'บริการ', subs: ['ช่างซ่อม', 'จัดส่ง', 'ทำความสะอาด', 'รับส่งสนามบิน'] },
-  { title: 'องค์กร', subs: ['เช่าองค์กร', 'แพ็กเกจพนักงาน', 'เช่าสำหรับอีเวนท์'] },
+  { title: 'เช่ารถ', subs: ['รายวัน', 'รายเดือน', 'พร้อมคนขับ'] },
+  { title: 'เช่ามอเตอร์ไซค์', subs: ['รายวัน', 'ท่องเที่ยว'] },
+  { title: 'ติวเรียน', subs: ['คณิตศาสตร์', 'อังกฤษ', 'วิทย์'] },
+  { title: 'บริการ', subs: ['ซ่อม', 'จัดส่ง'] },
 ];
 
 const SearchScreenMobile = () => {
   const [query, setQuery] = useState('');
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [expandedMenu, setExpandedMenu] = useState(null); // เก็บหัวข้อที่เปิดอยู่
-  const inputRef = useRef(null);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [expandedMenu, setExpandedMenu] = useState(null);
 
-  const phrasesRef = useRef([
+  // Typewriter
+  const phrases = [
     "เช่ารถรายวันง่ายๆ...",
     "เช่ามอเตอร์ไซค์สะดวก...",
-    "ติวเรียนคณิตศาสตร์ออนไลน์..."
-  ]);
+    "ติวเรียนออนไลน์...",
+    "บริการส่งถึงที่ ฟรี!",
+  ];
+  const [text, setText] = useState('');
+  const [index, setIndex] = useState(0);
+  const [deleting, setDeleting] = useState(false);
 
-  const [currentPhraseIndex, setCurrentPhraseIndex] = useState(0);
-  const [displayedText, setDisplayedText] = useState('');
-  const [isDeleting, setIsDeleting] = useState(false);
-
-  // ================== Typewriter Effect ต่อเนื่อง ==================
   useEffect(() => {
-    let charIndex = 0;
-    let timeout;
-
-    const type = () => {
-      const currentPhrase = phrasesRef.current[currentPhraseIndex];
-
-      if (!isDeleting) {
-        setDisplayedText(currentPhrase.substring(0, charIndex + 1));
-        charIndex++;
-        if (charIndex === currentPhrase.length) {
-          setIsDeleting(true);
-        }
+    let char = 0;
+    let timer;
+    const loop = () => {
+      const phrase = phrases[index];
+      if (!deleting) {
+        setText(phrase.substring(0, char + 1));
+        char++;
+        if (char === phrase.length) { timer = setTimeout(() => setDeleting(true), 1200); return; }
       } else {
-        setDisplayedText(currentPhrase.substring(0, charIndex - 1));
-        charIndex--;
-        if (charIndex === 0) {
-          setIsDeleting(false);
-          setCurrentPhraseIndex((prev) => (prev + 1) % phrasesRef.current.length);
-        }
+        setText(phrase.substring(0, char - 1));
+        char--;
+        if (char === 0) { setDeleting(false); setIndex((prev)=> (prev+1)%phrases.length); }
       }
-
-      timeout = setTimeout(type, isDeleting ? 50 : 100); // ความเร็วพิมพ์ / ลบ
+      timer = setTimeout(loop, deleting?40:90);
     };
+    loop();
+    return ()=>clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [index, deleting]);
 
-    type();
-    return () => clearTimeout(timeout);
-  }, [currentPhraseIndex, isDeleting]);
-  // ==================================================================
-
-  const doSearch = () => {
-    if (!query) return;
-    console.log('Searching:', query);
-  };
-
-  const handleNotification = () => {
-    console.log('Notification clicked!');
-  };
-
-  const toggleMobileMenu = () => setIsMobileMenuOpen(prev => !prev);
-  const closeMobileMenu = () => setIsMobileMenuOpen(false);
-
-  const toggleMenuSection = (index) => {
-    setExpandedMenu(prev => (prev === index ? null : index));
-  };
+  const doSearch = () => query && console.log('Search:', query);
+  const toggleMenuSection = (i) => setExpandedMenu(prev => (prev===i?null:i));
 
   return (
-    <div className="search-mobile">
-      {/* Header โลโก้ + ชื่อเว็บ + notification */}
+    <div className="search-mobile full-screen">
+      {/* Header */}
       <div className="search-header">
         <div className="logo-name">
-          <img src="/logo192.png" alt="Logo" className="logo" />
+          <img src="/logo192.png" alt="Logo" className="logo"/>
           <span className="site-name">Klick Drive</span>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <button className="notification-btn" onClick={handleNotification}>
-            <Bell size={28} />
-          </button>
-          <button className="navbar-hamburger" onClick={toggleMobileMenu}>☰</button>
+        <div style={{ display:'flex', gap:10 }}>
+          <button className="notification-btn"><Bell size={24}/></button>
+          <button className="navbar-hamburger" onClick={()=>setIsMenuOpen(!isMenuOpen)}>☰</button>
         </div>
       </div>
 
-      {/* ข้อความวิ่งตรงกลาง */}
-      <div className="typewriter-text">
-        {displayedText}
-        <span className="cursor">|</span>
-      </div>
+      {/* Typewriter */}
+      <div className="typewriter-text">{text}<span className="cursor">|</span></div>
 
-      {/* Search Pill */}
+      {/* Search pill */}
       <div className="search-pill">
         <span className="pill-icon" onClick={doSearch}>🔍</span>
         <input
           type="text"
-          className="pill-input"
           value={query}
-          onChange={e => setQuery(e.target.value)}
-          onKeyDown={e => e.key === 'Enter' && doSearch()}
+          onChange={e=>setQuery(e.target.value)}
+          onKeyDown={e=>e.key==='Enter'&&doSearch()}
+          className="pill-input"
           placeholder="ค้นหาฟรีแลนซ์..."
-          ref={inputRef}
         />
       </div>
 
       {/* Mobile Menu Drawer */}
-      <div className={`mobile-menu ${isMobileMenuOpen ? 'open' : ''}`} onClick={closeMobileMenu}>
-        <div className="mobile-menu-inner" onClick={e => e.stopPropagation()}>
+      <div className={`mobile-menu ${isMenuOpen?'open':''}`} onClick={()=>setIsMenuOpen(false)}>
+        <div className="mobile-menu-inner" onClick={e=>e.stopPropagation()}>
           <div className="mobile-menu-top">
-            <Link to="/" className="navbar-brand" onClick={closeMobileMenu}>
-              <img src="/logo192.png" alt="Logo" style={{ width: 32, height: 32 }} />
+            <Link to="/" onClick={()=>setIsMenuOpen(false)}>
+              <img src="/logo192.png" alt="Logo" style={{width:32,height:32}}/>
               <span>Klick Drive</span>
             </Link>
-            <button className="navbar-hamburger" onClick={closeMobileMenu}>✕</button>
+            <button onClick={()=>setIsMenuOpen(false)}>✕</button>
           </div>
-
           <div className="mobile-menu-links">
-            {MENU_ITEMS.map((m, index) => (
-              <div key={index} className="mobile-menu-section">
-                <button
-                  className="mobile-menu-section-title"
-                  onClick={() => toggleMenuSection(index)}
-                  style={{ display: 'flex', justifyContent: 'space-between', width: '100%', background: 'none', border: 'none', cursor: 'pointer', padding: '8px 0' }}
-                >
-                  {m.title} <span>{expandedMenu === index ? '▴' : '▾'}</span>
+            {MENU_ITEMS.map((m,i)=>(
+              <div key={i} className="mobile-menu-section">
+                <button className="mobile-menu-section-title" onClick={()=>toggleMenuSection(i)}>
+                  {m.title} {expandedMenu===i?'▴':'▾'}
                 </button>
-                {expandedMenu === index && (
-                  <div className="mobile-menu-section-items">
-                    {m.subs.map((s, si) => (
-                      <Link key={si} className="mobile-menu-link" to={`/cars?q=${encodeURIComponent(s)}`} onClick={closeMobileMenu}>
-                        {s}
-                      </Link>
-                    ))}
-                  </div>
-                )}
+                {expandedMenu===i && <div className="mobile-menu-section-items">
+                  {m.subs.map((s,si)=>(
+                    <Link key={si} to={`/cars?q=${encodeURIComponent(s)}`} className="mobile-menu-link" onClick={()=>setIsMenuOpen(false)}>
+                      {s}
+                    </Link>
+                  ))}
+                </div>}
               </div>
             ))}
           </div>

@@ -1,277 +1,200 @@
-/* =================== PROFILE PAGE =================== */
-.profile-page {
+/* ================= Profile Mobile ================= */
+.mobile-profile-page {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  background: #f9fbff;
-  font-family: "Prompt", sans-serif;
+  background: linear-gradient(160deg, #f8fafc, #e0e7ff);
+  font-family: 'Prompt', sans-serif;
+  padding: 16px 12px;
+  padding-bottom: 100px; /* เว้นที่ MobileNav */
+  box-sizing: border-box;
+  color: #111827;
 }
 
-/* =================== HEADER BANNER =================== */
-.profile-banner {
-  background: linear-gradient(120deg, #0d47a1, #1976d2);
-  height: 250px;
-  width: 100%;
-  border-bottom-left-radius: 60px;
-  border-bottom-right-radius: 60px;
-  box-shadow: 0 4px 25px rgba(0, 0, 0, 0.2);
-}
-
-/* =================== MAIN LAYOUT =================== */
-.profile-main {
-  max-width: 1900px;
-  margin: -150px 0;
-  padding: 0 30px;
+/* ---------------- Header ---------------- */
+.profile-header {
   display: flex;
-  gap: 40px;
-  align-items: flex-start;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #e5e7eb;
 }
 
-@media (max-width: 768px) {
-  .profile-main {
-    flex-direction: column;
-    margin-top: -100px;
+.profile-user {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.profile-avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #d4d4d8, #cfdbdb);
+  color: #1b1a1a;
+  font-weight: 700;
+  font-size: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(79, 69, 69, 0.1);
+  flex-shrink: 0;
+}
+
+.profile-name .username {
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 1.2;
+}
+
+.profile-name .view-profile {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.profile-settings {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  color: #4f46e5;
+  cursor: pointer;
+  border-radius: 12px;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.profile-settings:hover {
+  background: #dbeafe;
+  transform: scale(1.05);
+}
+
+/* ---------------- Menu Items ---------------- */
+.menu-items {
+  margin-top: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.menu-item {
+  background: #fff;
+  border-radius: 12px;
+  padding: 14px 16px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+  font-size: 15px;
+  font-weight: 500;
+  color: #111827;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+}
+
+.menu-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+}
+
+.submenu {
+  margin-top: 6px;
+  font-size: 13px;
+  color: #6b7280;
+  line-height: 1.4;
+  padding-left: 12px;
+}
+
+/* ---------------- Footer ---------------- */
+.profile-footer {
+  margin-top: 50px;
+  text-align: center;
+  font-size: 13px;
+  color: #6b7280;
+  padding: 12px 0;
+}
+
+/* ---------------- Responsive ---------------- */
+@media (max-width: 600px) {
+  .mobile-profile-page {
+    padding: 16px 10px;
+    padding-bottom: 100px;
+  }
+
+  .profile-header {
+    padding-bottom: 12px;
+  }
+
+  .profile-avatar {
+    width: 48px;
+    height: 48px;
+    font-size: 20px;
+  }
+
+  .profile-name .username {
+    font-size: 16px;
+  }
+
+  .profile-settings {
+    width: 36px;
+    height: 36px;
+    font-size: 20px;
+  }
+
+  .menu-item {
+    padding: 12px 14px;
+    font-size: 14px;
+  }
+
+  .submenu {
+    font-size: 12px;
+    padding-left: 10px;
   }
 }
 
-/* =================== PROFILE CARD =================== */
-.profile-card {
-  flex-shrink: 0;
-  width: 340px;
-  background: #ffffff;
-  border-radius: 24px;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-  position: relative;
-  text-align: center;
-  padding: 120px 20px 40px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  transition: all 0.3s ease;
-}
+@media (max-width: 400px) {
+  .profile-avatar {
+    width: 40px;
+    height: 40px;
+    font-size: 18px;
+  }
 
-.profile-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 30px rgba(13, 71, 161, 0.2);
-}
+  .profile-name .username {
+    font-size: 15px;
+  }
 
-/* =================== AVATAR =================== */
-.avatar-ring {
-  position: absolute;
-  top: -85px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 160px;
-  height: 160px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #42a5f5, #1e88e5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 4px 10px rgba(13, 71, 161, 0.3);
-}
+  .profile-settings {
+    width: 32px;
+    height: 32px;
+    font-size: 18px;
+  }
 
-.avatar-container {
-  width: 140px;
-  height: 140px;
-  border-radius: 50%;
-  background: #e3f2fd;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
+  .menu-item {
+    padding: 10px 12px;
+    font-size: 13px;
+  }
 
-.avatar-icon {
-  background: linear-gradient(135deg, #64b5f6, #2196f3);
-  color: white;
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 64px;
-  font-weight: bold;
+  .submenu {
+    font-size: 11px;
+    padding-left: 8px;
+  }
 }
-
-/* =================== NAME & TEXT =================== */
-.profile-name {
-  margin-top: 7px;
-  font-size: 24px;
-  color: #1e293b;
+/* ---------------- Logout Button ---------------- */
+.logout-button {
+  background: linear-gradient(135deg, #fee2e2, #fca5a5);
+  color: #b91c1c;
   font-weight: 600;
-  letter-spacing: 0.5px;
-}
-
-.star {
-  font-size: 22px;
-  color: #e0e0e0;
-  transition: color 0.2s;
-}
-
-.star.filled {
-  color: #ffc107;
-}
-
-.member-since {
-  font-size: 15px;
-  color: #64748b;
-}
-
-.member-since span {
-  color: #1565c0;
-  font-weight: 500;
-}
-
-/* =================== EDIT ICON =================== */
-.edit-icon {
-  position: absolute;
-  top: 14px;
-  right: 18px;
-  font-size: 20px;
-  color: #64b5f6;
-  text-decoration: none;
+  text-align: center;
+  border-radius: 12px;
+  padding: 14px 16px;
+  box-shadow: 0 4px 16px rgba(185, 28, 28, 0.2);
   cursor: pointer;
+  transition: all 0.2s;
+  margin-top: 12px;
 }
 
-/* =================== RIGHT CONTENT =================== */
-.profile-right {
-  flex-grow: 1;
-  min-height: 500px;
-  padding-top: 150px;
-}
-
-.profile-right .profile-title {
-  color: #52575c;
-}
-
-.profile-right .tab-bar .tab-item {
-  color: #60666c;
-}
-
-.profile-right .placeholder {
-  color: #64748b;
-}
-
-/* =================== TITLE & TAB =================== */
-.profile-title {
-  font-size: 30px;
-  color: #0d47a1;
-  font-weight: 700;
-  margin-bottom: 16px;
-}
-
-.tab-bar {
-  border-bottom: 2px solid #e0e0e0;
-  display: flex;
-  margin-bottom: 20px;
-}
-
-.tab-item {
-  font-weight: 600;
-  font-size: 18px;
-  color: #0d47a1;
-  margin-right: 20px;
-  padding-bottom: 8px;
-  border-bottom: 2px solid transparent;
-  cursor: pointer;
-  transition: color 0.3s, border-bottom-color 0.3s;
-}
-
-.tab-item:hover {
-  color: #1565c0;
-}
-
-.tab-item.active {
-  border-bottom-color: #0d47a1;
-}
-
-.placeholder {
-  font-size: 16px;
-  color: #64748b;
-  margin-top: 20px;
-}
-
-/* =================== FOOTER =================== */
-.footer {
-  background: #e3f2fd;
-  padding: 2.5rem 1rem;
-  margin-top: 40px;
-  border-top: 4px solid #90caf9;
-}
-
-.footer-content {
-  max-width: 1200px;
-  margin: 0 auto;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 24px;
-}
-
-.footer-content h4 {
-  color: #0d47a1;
-  margin-bottom: 8px;
-}
-
-.footer-content ul {
-  list-style: none;
-  padding: 0;
-  color: #334155;
-  line-height: 1.6;
-}
-
-.footer-content p {
-  color: #334155;
-  line-height: 1.5;
-}
-
-.app-buttons {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
-.app-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 12px;
-  border-radius: 6px;
-  color: #fff;
-  text-decoration: none;
-  font-weight: 600;
-}
-
-.app-btn img {
-  width: 20px;
-  height: 20px;
-}
-
-.app-btn.apple {
-  background: #000;
-}
-
-.app-btn.google {
-  background: #34a853;
-}
-
-.footer-bottom {
-  text-align: center;
-  color: #64748b;
-  margin-top: 24px;
-  font-size: 13px;
-}
-
-.footer-bottom a {
-  color: #0d47a1;
-  text-decoration: underline dotted;
-  margin: 0 8px;
-  font-size: 12px;
-}
-
-.not-logged {
-  padding: 60px;
-  text-align: center;
-  color: #555;
-  font-size: 18px;
+.logout-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(185, 28, 28, 0.3);
+  background: linear-gradient(135deg, #fca5a5, #f87171);
 }

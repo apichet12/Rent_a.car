@@ -1,4 +1,4 @@
-/* ================= Search Mobile ================= */
+/* =================== Search Screen Mobile =================== */
 .search-mobile {
   position: relative;
   width: 100%;
@@ -6,12 +6,85 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: space-between;
-  padding: 20px 16px calc(env(safe-area-inset-bottom,16px)+16px);
+  justify-content: flex-start;
+  padding: 18px 16px calc(env(safe-area-inset-bottom,16px)+16px);
   font-family: 'Prompt', sans-serif;
-  background: linear-gradient(to bottom, #fff, #f0f5ff);
   box-sizing: border-box;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
+
+  /* 🩵 พื้นหลังไล่สีขาวกลืนเฉดพาสเทล */
+  background: linear-gradient(
+    to bottom,
+    #ffffff 0%,
+    #ffffff 55%,
+    rgba(245, 247, 255, 0.9) 65%,
+    rgba(238, 240, 255, 0.95) 80%,
+    rgba(240, 243, 255, 1) 100%
+  );
+  transition: background 0.5s ease;
+  scroll-behavior: smooth;
+}
+
+/* 🌈 ไล่สีเคลื่อนไหวเบาๆ ครึ่งล่าง */
+.search-mobile::before {
+  content: '';
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 55vh;
+  pointer-events: none;
+  z-index: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(147, 112, 255, 0.08) 25%,
+    rgba(99, 102, 241, 0.12) 50%,
+    rgba(59, 130, 246, 0.12) 75%,
+    rgba(236, 72, 153, 0.14) 100%
+  );
+  background-size: 300% 300%;
+  animation: softFlow 12s ease-in-out infinite alternate;
+  filter: blur(25px);
+}
+
+@keyframes softFlow {
+  0% { background-position: 0% 50%; opacity: 0.8; }
+  50% { background-position: 100% 55%; opacity: 1; }
+  100% { background-position: 0% 50%; opacity: 0.8; }
+}
+
+/* ✨ แสงเรืองอ่อนสุดล่างเพิ่มมิติ */
+.search-mobile::after {
+  content: '';
+  position: fixed;
+  bottom: -12%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 140%;
+  height: 45vh;
+  background: radial-gradient(
+    circle at 50% 100%,
+    rgba(180, 150, 255, 0.25),
+    rgba(236, 72, 153, 0.2),
+    rgba(0, 0, 0, 0)
+  );
+  filter: blur(45px);
+  z-index: 0;
+  animation: glowPulse 14s ease-in-out infinite alternate;
+}
+
+@keyframes glowPulse {
+  0% { transform: translateX(-50%) scale(1); opacity: 0.7; }
+  50% { transform: translateX(-50%) scale(1.05); opacity: 1; }
+  100% { transform: translateX(-50%) scale(1); opacity: 0.7; }
+}
+
+/* ✅ ให้เนื้อหาอยู่เหนือพื้นหลัง */
+.search-mobile > * {
+  position: relative;
+  z-index: 1;
 }
 
 /* Header โลโก้ + ชื่อเว็บ + notification */
@@ -21,8 +94,7 @@
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  padding-left: 16px;
-  padding-right: 0;
+  padding: 0 16px;
   margin-top: 20px;
   box-sizing: border-box;
 }
@@ -43,6 +115,9 @@
   font-size: 20px;
   font-weight: 600;
   color: #6b46c1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .notification-btn {
@@ -52,18 +127,13 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: transform 0.2s, color 0.2s;
+  color: #4f46e5;
 }
 
 .notification-btn:hover {
-  transform: scale(1.1);
-  transition: transform 0.2s;
-}
-
-.navbar-hamburger {
-  background: transparent;
-  border: none;
-  font-size: 1.5rem;
-  cursor: pointer;
+  transform: scale(1.15);
+  color: #7c3aed;
 }
 
 /* ข้อความวิ่งตรงกลาง */
@@ -76,6 +146,7 @@
   font-weight: 500;
   color: #333;
   text-align: center;
+  padding: 0 8px;
 }
 
 .cursor {
@@ -93,15 +164,16 @@
 
 /* Search Pill */
 .search-pill {
-  width: min(90%, 420px);
-  height: 52px;
+  width: min(94%, 420px);
+  height: 56px;
   display: flex;
   align-items: center;
   border-radius: 999px;
-  background: #fff;
-  box-shadow: 0 6px 18px rgba(210, 197, 197, 0.12);
-  padding: 0 6px;
-  margin-bottom: 10px;
+  background: rgba(255,255,255,0.98);
+  box-shadow: 0 8px 24px rgba(99, 102, 241, 0.15), 0 4px 12px rgba(0,0,0,0.08);
+  padding: 0 8px;
+  margin: 18px 0 26px 0;
+  transition: transform 220ms cubic-bezier(.2,.9,.2,1), box-shadow 220ms, background 0.3s;
 }
 
 .pill-icon {
@@ -110,20 +182,34 @@
   justify-content: center;
   padding: 0 12px;
   font-size: 18px;
-  color: #333;
+  color: #555;
   cursor: pointer;
+  transition: transform 0.2s, color 0.2s;
+}
+
+.pill-icon:hover {
+  transform: scale(1.1);
+  color: #7c3aed;
 }
 
 .pill-input {
   flex: 1;
   border: none;
   outline: none;
-  font-size: 14px;
-  padding-right: 16px;
+  font-size: 15px;
+  padding: 0 12px;
   background: transparent;
   color: #333;
   caret-color: #6b46c1;
   height: 100%;
+}
+
+.pill-input::placeholder { color: #a3a3a3; opacity: 1; }
+
+.search-pill:focus-within {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 36px rgba(99, 102, 241, 0.2), 0 6px 16px rgba(0,0,0,0.12);
+  background: rgba(255,255,255,1);
 }
 
 /* ================= Mobile Drawer ================= */
@@ -131,26 +217,23 @@
   position: fixed;
   top: 0;
   left: -100%;
-  width: 75%;           /* แคบลงจาก 80% */
-  max-width: 280px;     /* ลดจาก 300px */
+  width: 75%;
+  max-width: 280px;
   height: 100%;
-  background: #fff;      /* พื้นขาวล้วน */
+  background: #fff;
   z-index: 1000;
   transition: left 0.3s ease;
-  box-shadow: none;      /* ลบเงาสีเทา */
-  padding: 20px 12px;    /* เพิ่ม padding ด้านในให้สวย */
+  padding: 20px 12px;
   display: flex;
   flex-direction: column;
 }
 
-.mobile-menu.open {
-  left: 0;
-}
+.mobile-menu.open { left: 0; }
 
 .mobile-menu-top {
   display: flex;
   align-items: center;
-  justify-content: space-between; /* โลโก้ซ้าย กากบาทขวา */
+  justify-content: space-between;
   margin-bottom: 0px;
 }
 
@@ -165,13 +248,13 @@
 .mobile-menu-links {
   display: flex;
   flex-direction: column;
-  gap: 2px; /* เว้นระยะระหว่างหัวข้อ */
+  gap: 2px;
 }
 
 .mobile-menu-section {
   display: flex;
   flex-direction: column;
-  gap: 6px; /* เว้นระยะหัวข้อกับลิงก์ */
+  gap: 6px;
 }
 
 .mobile-menu-section-title {
@@ -190,19 +273,18 @@
 .mobile-menu-link {
   color: #333;
   text-decoration: none;
-  padding: 8px 12px;   /* เพิ่มพื้นที่กด */
-  border-radius: 20px; /* โค้งมนสวย */
-  background: #fff;     /* พื้นขาว */
-  box-shadow: none;
-  border: none;
-  transition: background 0.2s;
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: #fff;
+  transition: background 0.2s, color 0.2s;
 }
 
 .mobile-menu-link:hover {
-  background-color: #f0f0ff; /* สีเวลาชี้เมาส์ */
+  background-color: #f5f3ff;
+  color: #6b46c1;
 }
 
-/* ================= บังคับพื้นขาวล้วนทั้งหมดในเมนู ================= */
+/* 🧼 เมนูพื้นขาว */
 .mobile-menu,
 .mobile-menu * {
   background: #fff !important;
@@ -210,18 +292,22 @@
   border: none !important;
 }
 
-/* Responsive สำหรับมือถือเล็ก */
+/* 🌈 ซ่อน scrollbar แบบปลอดภัย */
+.search-mobile::-webkit-scrollbar { display: none; } 
+.search-mobile { -ms-overflow-style: none; } 
+@supports (scrollbar-width: none) { .search-mobile { scrollbar-width: none; } }
+
+/* ================= Responsive ================= */
 @media (max-width: 480px) {
-  .mobile-menu {
-    width: 80%;
-    max-width: 260px;
-    padding: 16px 10px;
+  .search-mobile {
+    padding: 14px 12px calc(env(safe-area-inset-bottom,12px)+12px);
   }
-  .mobile-menu-section-title {
-    font-size: 15px;
-  }
-  .mobile-menu-link {
-    font-size: 14px;
-    padding: 6px 10px;
-  }
+  .search-pill { height: 50px; padding: 0 6px; }
+  .pill-input { font-size: 14px; }
+  .pill-icon { font-size: 16px; }
+  .search-header { margin-top: 12px; padding: 0 10px; }
+  .site-name { font-size: 18px; }
+  .mobile-menu { width: 80%; max-width: 260px; padding: 14px 10px; }
+  .mobile-menu-section-title { font-size: 15px; }
+  .mobile-menu-link { font-size: 14px; padding: 6px 10px; border-radius: 10px; }
 }

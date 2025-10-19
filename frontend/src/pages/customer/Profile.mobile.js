@@ -14,7 +14,7 @@ const formatThaiDate = (dateString) => {
 
 const ProfileMobile = () => {
   const { user, setUser } = useContext(AuthContext);
-  const username = user?.username || 'Klick Drive Member';
+  const username = user?.username || '';
   const memberSince = formatThaiDate(user?.createdAt);
 
   useEffect(() => {
@@ -31,24 +31,38 @@ const ProfileMobile = () => {
     fetchUser();
   }, [username, setUser]);
 
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    setUser(null);
+  };
+
   return (
     <div className="mobile-profile-page" style={{ paddingBottom: 64 }}>
       <LoadingOverlay visible={false} />
 
       {/* Header */}
-      <div className="profile-header">
-        <div className="profile-user">
-          <div className="profile-avatar">{username.charAt(0).toUpperCase()}</div>
-          <div className="profile-name">
-            <div className="username">{username}</div>
-            <div className="view-profile">ดูโปรไฟล์</div>
+      {user ? (
+        <div className="profile-header">
+          <div className="profile-user">
+            <div className="profile-avatar">{username.charAt(0).toUpperCase()}</div>
+            <div className="profile-name">
+              <div className="username">{username}</div>
+              <div className="view-profile">ดูโปรไฟล์</div>
+            </div>
+          </div>
+          <Link to="/settings" className="profile-settings">⚙️</Link>
+        </div>
+      ) : (
+        <div className="login-notice-wrapper">
+          <div className="login-notice">
+            คุณยังไม่ได้เข้าสู่ระบบ กรุณาเข้าสู่ระบบ หรือสมัครสมาชิก
+          </div>
+          <div className="profile-header login-register-header">
+            <Link to="/login" className="btn-login">เข้าสู่ระบบ</Link>
+            <Link to="/register" className="btn-register">สมัครสมาชิก</Link>
           </div>
         </div>
-        <Link to="/settings" className="profile-settings">
-          ⚙️
-        </Link>
-      </div>
-
+      )}
 
       {/* Menu Items */}
       <div className="menu-items">
@@ -70,10 +84,17 @@ const ProfileMobile = () => {
         </div>
       </div>
 
-      {/* Footer */}
-      <div className="profile-footer">
-        เป็นสมาชิกเมื่อ {memberSince}
-      </div>
+      {/* Logout + Member Since */}
+{user && (
+  <div className="logout-wrapper">
+    <div className="logout-btn" onClick={handleLogout}>
+      🔓 ออกจากระบบ
+    </div>
+    <div className="member-since">
+      เป็นสมาชิกเมื่อ {memberSince}
+    </div>
+  </div>
+)}
 
       {/* Bottom Navigation */}
       <MobileNav />
