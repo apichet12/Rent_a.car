@@ -196,9 +196,7 @@ const NavbarLogin = () => {
         </div>
       </nav>
 
-      {/* ------------------------------ */}
-      {/* Mobile Menu Drawer Structure (Off-Canvas) */}
-      {/* ------------------------------ */}
+      
       <div 
           className={`mobile-menu ${isMobileMenuOpen ? 'open' : ''}`} 
           onClick={closeMobileMenu} // Close when clicking backdrop
