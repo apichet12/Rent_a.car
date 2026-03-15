@@ -35,7 +35,7 @@ export default function BookingHelp() {
 
       <section style={{ marginBottom: 28 }}>
         <h2 style={{ fontSize: 20 }}>ติดต่อเรา</h2>
-        <p style={{ color: '#6b7280' }}>หากพบปัญหาในการจอง ติดต่อฝ่ายบริการลูกค้า: 02-038-5222 หรือ Line: @drivehub</p>
+        <p style={{ color: '#6b7280' }}>หากพบปัญหาในการจอง ติดต่อฝ่ายบริการลูกค้า: 02-038-5222 หรือ Line: @kattycar</p>
       </section>
     </div>
   );

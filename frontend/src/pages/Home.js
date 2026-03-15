@@ -55,32 +55,6 @@ function CertificateCard({ cert }) {
   );
 }
 
-/* ---------------- AUTOPLAY VIDEO ---------------- */
-const AutoPlayVideo = ({ src, poster }) => {
-  const videoRef = useRef();
-  useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return;
-    const observer = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) video.play().catch(() => {});
-      else video.pause();
-    });
-    observer.observe(video);
-    return () => observer.disconnect();
-  }, []);
-  return (
-    <video
-      ref={videoRef}
-      src={src}
-      poster={poster}
-      muted
-      loop
-      playsInline
-      style={{ width: '100%', height: '100%', borderRadius: 12, objectFit: 'cover' }}
-    />
-  );
-};
-
 /* ---------------- FEATURED CARS ---------------- */
 const FeaturedCars = ({ searchQuery, layout = 'grid' }) => {
   const [cars, setCars] = useState([]);
@@ -179,11 +153,28 @@ const FAQItem = ({ q, a }) => {
 const Home = () => {
   const [search, setSearch] = useState('');
   const [typeText, setTypeText] = useState('');
+  const [activeTab, setActiveTab] = useState('รถยนต์');
+
+  const [bookingLocation, setBookingLocation] = useState('สนามบินสุวรรณภูมิ');
+  const [showLocationDropdown, setShowLocationDropdown] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
+  const [pickupDate, setPickupDate] = useState(() => {
+    const d = new Date();
+    return d.toISOString().split('T')[0];
+  });
+  const [pickupTime, setPickupTime] = useState('10:00');
+  const [returnDate, setReturnDate] = useState(() => {
+    const d = new Date();
+    d.setDate(d.getDate() + 3);
+    return d.toISOString().split('T')[0];
+  });
+  const [returnTime, setReturnTime] = useState('10:00');
+
   const typePhrasesRef = React.useRef([
-    'ไอเดียโลโก้ร้านอาหารที่ดีที่สุด...',
-  'เปรียบเทียบราคาการเช่า SUV 7 ที่นั่ง...',
-  'ติวคณิตศาสตร์สำหรับนักเรียนมัธยม...',
-  'ค้นหาบริการเช่ามอเตอร์ไซค์...'
+    'ค้นหารถสนามบิน กรุงเทพฯ → เชียงใหม่...',
+    'เปรียบเทียบราคาเช่ารถ 7 ที่นั่ง...',
+    'จองรถพร้อมรับ-ส่งสนามบิน...',
+    'เช่ารถระยะยาวคุ้มที่สุด...'
   ]);
 
   useEffect(() => {
@@ -215,12 +206,6 @@ const Home = () => {
     return () => clearTimeout(timeoutId);
   }, []);
 
-  const heroImages = [
-    'https://images.unsplash.com/photo-1511918984145-48de785d4c4e',
-    'https://images.unsplash.com/photo-1503736334956-4c8f8e92946d',
-    'https://images.unsplash.com/photo-1461632830798-3adb3034e4c8',
-  ];
-
   const certificates = [
     { name: 'ISO 9001', img: '/images/iso9001.png', desc: 'มาตรฐานคุณภาพสากล' },
     { name: 'Thailand Trusted Quality', img: '/images/633db849-5816-477f-8c09-b0bac0df786f.jpg', desc: 'รับรองโดยหน่วยงานที่เกี่ยวข้อง' },
@@ -238,7 +223,65 @@ const Home = () => {
     }, 700);
   };
 
+  const handleBookingSearch = () => {
+    const params = new URLSearchParams({
+      location: bookingLocation,
+      pickup: pickupDate,
+      pickupTime,
+      dropoff: returnDate,
+      dropoffTime: returnTime,
+    });
+    setToastMessage(`กำลังค้นหา "${bookingLocation}" ...`);
+    setTimeout(() => setToastMessage(''), 2400);
+    simulateSearchAndNavigate(`/cars?${params.toString()}`);
+  };
+
+  const locationDropdownRef = useRef(null);
+
+  const selectLocation = (loc) => {
+    setBookingLocation(loc);
+    setShowLocationDropdown(false);
+  };
+
+  const handleLocationInput = (value) => {
+    setBookingLocation(value);
+    setShowLocationDropdown(true);
+  };
+
+  useEffect(() => {
+    const onClickOutside = (event) => {
+      if (locationDropdownRef.current && !locationDropdownRef.current.contains(event.target)) {
+        setShowLocationDropdown(false);
+      }
+    };
+    window.addEventListener('mousedown', onClickOutside);
+    return () => window.removeEventListener('mousedown', onClickOutside);
+  }, []);
+
+  const handleClearBooking = () => {
+    setBookingLocation('');
+    const today = new Date();
+    setPickupDate(today.toISOString().split('T')[0]);
+    setReturnDate(() => {
+      const d = new Date();
+      d.setDate(d.getDate() + 3);
+      return d.toISOString().split('T')[0];
+    });
+    setPickupTime('10:00');
+    setReturnTime('10:00');
+  };
+
   const popular = ['Family cars', 'Sports cars', 'Airport pickup', 'Self-drive', 'Long term', 'Math tuition', 'English'];
+
+  const locationOptions = [
+    { label: 'ประวัติศาสตร์', type: 'header' },
+    { label: 'เมืองเมลเบิร์น', icon: '🏬' },
+    { label: 'สถานียอดนิยม', type: 'header' },
+    { label: 'สนามบินมิวินิก', icon: '✈️' },
+    { label: 'สนามบินนานาชาติเชียงใหม่', icon: '✈️' },
+    { label: 'สนามบินนานาชาติภูเก็ต', icon: '✈️' },
+    { label: 'กรุงเทพฯ', icon: '🏙️' },
+  ];
 
   // reveal-on-scroll for subcategory sections
   useEffect(() => {
@@ -278,6 +321,12 @@ const Home = () => {
   return (
     <div className={`home-root ${introActive ? 'intro-active' : ''}`} style={{ padding: 0, background: 'linear-gradient(120deg,#f8fafc 60%,#e0e7ff 100%)', minHeight: '100vh', fontFamily: 'Segoe UI, sans-serif' }}>
       <LoadingOverlay visible={loading} />
+      {toastMessage && (
+        <div className="toast-notification">
+          <div className="toast-content">{toastMessage}</div>
+        </div>
+      )}
+
       {/* Intro overlay: when introActive is true we keep header visible and hide the page body */}
       {introActive && (
         <div className="intro-banner">
@@ -296,24 +345,119 @@ const Home = () => {
       <section className="hero-outer">
         <div className="hero-inner">
           <div className="hero-left">
-            <h1>Klick Drive — เช่ารถ ง่ายและปลอดภัย</h1>
-            <p>รถใหม่ สะอาด พร้อมบริการครบวงจร — จองง่าย สะดวกทั้งมือถือและเดสก์ท็อป</p>
-            <div className="hero-actions">
-              <button className="btn btn-primary" onClick={() => simulateSearchAndNavigate('/cars')}>เลือกรถ</button>
-              <button className="btn btn-ghost" onClick={() => navigate('/booking')}>จองรถ</button>
-            </div>
+            <h1>เช่ารถกับแคทตี้ — ค้นหา เปรียบเทียบ จองง่ายในที่เดียว</h1>
+            <p>บริการจัดหารถเช่า พร้อมตัวเลือกเปรียบเทียบราคาจากหลายเจ้า และบริการรับ-ส่งสนามบิน</p>
+            <div className="hero-subtitle">คลิกเลือกประเภทบริการ แล้วเริ่มค้นหารถที่ตรงใจคุณได้เลย</div>
           </div>
 
-          <div className="hero-media">
-            <AutoPlayVideo src="https://www.w3schools.com/html/mov_bbb.mp4" poster={heroImages[0]} />
-          </div>
+          <div className="hero-right">
+            <div className="booking-card">
+              <div className="booking-card-header">
+                <div className="booking-tabs">
+                  {['รถยนต์', 'รถบรรทุก', 'การสมัครสมาชิก'].map((tab) => (
+                    <button
+                      key={tab}
+                      className={`booking-tab ${tab === activeTab ? 'active' : ''}`}
+                      onClick={() => setActiveTab(tab)}
+                      aria-selected={tab === activeTab}
+                    >
+                      {tab}
+                    </button>
+                  ))}
+                </div>
+                <button className="booking-link" onClick={() => navigate('/booking')}>ดู/แก้ไขข้อมูลการจองของฉัน</button>
+              </div>
 
-          {/* centered pill search - on mobile it becomes floating */}
-          <div className={`hero-search-pill search-pill ${window.innerWidth <= 480 ? 'mobile-search-floating' : ''}`}>
-            <div className="pill-content">
-              <div className="search-icon">✨</div>
-              <input type="text" className="pill-input" placeholder={typeText || 'ออกแบบโลโก้ร้านอาหารสไตล์...'} value={search} onChange={e => setSearch(e.target.value)} />
-              <button className="pill-go" onClick={() => navigate(`/cars?q=${encodeURIComponent(search)}`)}>AI Search 🔍</button>
+              <div className="booking-row">
+                <div className="booking-field booking-location">
+                  <label>จุดรับรถ</label>
+                  <input
+                    type="text"
+                    value={bookingLocation}
+                    onChange={e => handleLocationInput(e.target.value)}
+                    onFocus={() => setShowLocationDropdown(true)}
+                    placeholder={
+                      activeTab === 'รถบรรทุก'
+                        ? 'เลือกที่รับสินค้า หรือคลังสินค้า'
+                        : 'สนามบิน, เมือง หรือสถานี'
+                    }
+                    autoComplete="off"
+                  />
+
+                  {showLocationDropdown && (
+                    <div className="location-dropdown" ref={locationDropdownRef}>
+                      {(() => {
+                        const query = bookingLocation.trim().toLowerCase();
+                        const groups = [];
+                        let currentGroup = null;
+
+                        locationOptions.forEach((opt) => {
+                          if (opt.type === 'header') {
+                            currentGroup = { header: opt.label, items: [] };
+                            groups.push(currentGroup);
+                            return;
+                          }
+
+                          const matches = !query || opt.label.toLowerCase().includes(query);
+                          if (matches && currentGroup) {
+                            currentGroup.items.push(opt);
+                          }
+                        });
+
+                        return groups.map((group, gi) => {
+                          if (!group.items.length) return null;
+                          return (
+                            <div key={gi}>
+                              <div className="location-dropdown-heading">{group.header}</div>
+                              {group.items.map((opt, idx) => (
+                                <button
+                                  key={idx}
+                                  type="button"
+                                  className="location-dropdown-item"
+                                  onMouseDown={() => selectLocation(opt.label)}
+                                >
+                                  <span className="location-icon">{opt.icon}</span>
+                                  <span>{opt.label}</span>
+                                </button>
+                              ))}
+                            </div>
+                          );
+                        });
+                      })()}
+                    </div>
+                  )}
+                </div>
+                <div className="booking-field booking-field-ext">
+                  <button className="link-button">+ สถานที่ส่งคืนที่แตกต่างกัน</button>
+                </div>
+              </div>
+              <div className="booking-row">
+                <div className="booking-field">
+                  <label>วันที่รับ</label>
+                  <input type="date" value={pickupDate} onChange={e => setPickupDate(e.target.value)} />
+                </div>
+                <div className="booking-field">
+                  <label>เวลา</label>
+                  <input type="time" value={pickupTime} onChange={e => setPickupTime(e.target.value)} />
+                </div>
+              </div>
+              <div className="booking-row">
+                <div className="booking-field">
+                  <label>วันที่คืน</label>
+                  <input type="date" value={returnDate} onChange={e => setReturnDate(e.target.value)} />
+                </div>
+                <div className="booking-field">
+                  <label>เวลา</label>
+                  <input type="time" value={returnTime} onChange={e => setReturnTime(e.target.value)} />
+                </div>
+              </div>
+              <div className="booking-row booking-actions">
+                <button className="btn btn-primary" onClick={handleBookingSearch}>รถโชว์</button>
+                <button className="btn btn-outline" onClick={handleClearBooking}>ล้าง</button>
+              </div>
+              <div className="booking-note">
+                <span>ใช้อัตราค่าบริการของบริษัท</span>
+              </div>
             </div>
           </div>
         </div>
@@ -428,14 +572,14 @@ const Home = () => {
           <div>
             <h4 style={{ color: '#0b74a6' }}>เกี่ยวกับ</h4>
             <ul style={{ color: '#334155', listStyle: 'none', padding: 0 }}>
-              <li>เกี่ยวกับ Klick Drive</li>
+              <li>เกี่ยวกับ เช่ารถกับแคทตี้</li>
               <li>ร่วมงานกับเรา</li>
               <li><Link to="/terms">ข้อกำหนดและเงื่อนไข</Link></li>
             </ul>
           </div>
           <div>
             <h4 style={{ color: '#0b74a6' }}>ช่องทางติดต่อ</h4>
-            <div style={{ color: '#334155' }}>โทร 02-038-5222 • Line: @drivehub • Email: contact@drivehub.com</div>
+            <div style={{ color: '#334155' }}>โทร 02-038-5222 • Line: @kattycar • Email: contact@kattycar.com</div>
           </div>
           <div>
             <h4 style={{ color: '#0b74a6' }}>ดาวน์โหลดแอพ</h4>
@@ -451,7 +595,7 @@ const Home = () => {
           </div>
         </div>
         <div style={{ textAlign: 'center', color: '#64748b', marginTop: 16, fontSize: 13 }}>
-          © {new Date().getFullYear()} Klick Drive — All rights reserved
+          © {new Date().getFullYear()} เช่ารถกับแคทตี้ — All rights reserved
           <div style={{ marginTop: 6, fontSize: 12 }}>
             <Link to="/privacy" style={{ color: '#64748b', marginRight: 12, textDecoration: 'underline dotted' }}>นโยบายความเป็นส่วนตัว</Link>
             <Link to="/terms" style={{ color: '#64748b', textDecoration: 'underline dotted' }}>ข้อกำหนดการให้บริการ</Link>

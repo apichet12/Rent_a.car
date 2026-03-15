@@ -1,88 +1,62 @@
 // src/components/NavbarLogin.js
-import React, { useContext, useState, useEffect } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import React, { useContext, useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../contexts/AuthContext';
 import './Navbar.css';
 import CustomerProfile from '../pages/customer/CustomerProfile';
 
-const TYPING_SPEED = 100;
-const DELETING_SPEED = 50;
-const PAUSE_DURATION = 1500;
-
 const NavbarLogin = () => {
   const { user } = useContext(AuthContext);
   const [query, setQuery] = useState('');
-  const [showFullNav, setShowFullNav] = useState(false);
-  
-  // สถานะใหม่สำหรับควบคุมเมนูมือถือ
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false); 
-  
+  const [placeholder, setPlaceholder] = useState('สนามบิน, เมือง หรือสถานี');
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
-  const location = useLocation();
 
-  // ------------------------------
-  // Typewriter placeholder effect
-  // ------------------------------
-  const [placeholderIndex, setPlaceholderIndex] = useState(0);
-  const [displayedPlaceholder, setDisplayedPlaceholder] = useState('');
-  const [isDeleting, setIsDeleting] = useState(false);
-
-  useEffect(() => {
-    const placeholders = [
-      'ออกแบบโลโก้ร้านอาหาร...',
-      'เปรียบเทียบราคาเช่ารถยนต์ SUV 7 ที่นั่ง...',
-      'หาวิธีเรียนพิเศษคณิตศาสตร์ ม.ปลาย...',
-      'ค้นหาบริการเช่ามอเตอร์ไซค์...'
-    ];
-    const fullText = placeholders[placeholderIndex % placeholders.length];
-    let timer;
-
-    if (isDeleting) {
-      timer = setTimeout(() => setDisplayedPlaceholder(prev => prev.slice(0, -1)), DELETING_SPEED);
-      if (displayedPlaceholder === '') {
-        setIsDeleting(false);
-        setPlaceholderIndex(prev => prev + 1);
-      }
-    } else {
-      timer = setTimeout(() => setDisplayedPlaceholder(fullText.slice(0, displayedPlaceholder.length + 1)), TYPING_SPEED);
-      if (displayedPlaceholder === fullText) {
-        clearTimeout(timer);
-        timer = setTimeout(() => setIsDeleting(true), PAUSE_DURATION);
-      }
-    }
-    return () => clearTimeout(timer);
-  }, [displayedPlaceholder, isDeleting, placeholderIndex]);
-
-  // ------------------------------
-  // แสดง navbar เต็มเมื่อ scroll หรืออยู่หน้าอื่น
-  // ------------------------------
-  useEffect(() => {
-    if (location.pathname !== '/') {
-      setShowFullNav(true);
-      return;
-    }
-    const hero = document.querySelector('.hero-search-pill');
-    const threshold = hero
-      ? window.scrollY + hero.getBoundingClientRect().top + hero.getBoundingClientRect().height
-      : 220;
-    const onScroll = () => setShowFullNav(window.scrollY > threshold - 80);
-    window.addEventListener('scroll', onScroll, { passive: true });
-    onScroll();
-    return () => window.removeEventListener('scroll', onScroll);
-  }, [location.pathname]);
-
-  // ------------------------------
-  // ฟังก์ชันค้นหา
-  // ------------------------------
-  const doSearch = () => {
-    navigate(!query ? '/cars' : `/cars?q=${encodeURIComponent(query)}`);
-    // ปิดเมนูมือถือหลังจากค้นหา
-    setIsMobileMenuOpen(false); 
-  };
-  
   // ------------------------------
   // Handlers for Mobile Menu
   // ------------------------------
+  const doSearch = () => {
+    navigate(!query ? '/cars' : `/cars?q=${encodeURIComponent(query)}`);
+    setIsMobileMenuOpen(false);
+  };
+
+  // typewriter placeholder
+  useEffect(() => {
+    const phrases = [
+      'สนามบิน สุวรรณภูมิ → เชียงใหม่... คุณพร้อมหรือยัง?',
+      'ค้นหาเช่ารถ 7 ที่นั่ง สำหรับครอบครัว...',
+      'จองรถรับ-ส่งสนามบินในสักครู่...',
+    ];
+    let phraseIndex = 0;
+    let charIndex = 0;
+    let forward = true;
+    let timeout;
+
+    const tick = () => {
+      const current = phrases[phraseIndex];
+      if (forward) {
+        charIndex++;
+        setPlaceholder(current.slice(0, charIndex));
+        if (charIndex === current.length) {
+          forward = false;
+          timeout = setTimeout(tick, 900);
+          return;
+        }
+      } else {
+        charIndex--;
+        setPlaceholder(current.slice(0, charIndex));
+        if (charIndex === 0) {
+          forward = true;
+          phraseIndex = (phraseIndex + 1) % phrases.length;
+        }
+      }
+      timeout = setTimeout(tick, forward ? 80 : 40);
+    };
+
+    timeout = setTimeout(tick, 400);
+    return () => clearTimeout(timeout);
+  }, []);
+
   const toggleMobileMenu = () => setIsMobileMenuOpen(prev => !prev);
   const closeMobileMenu = () => setIsMobileMenuOpen(false);
 
@@ -103,10 +77,20 @@ const NavbarLogin = () => {
   // ------------------------------
   return (
     <>
-      <nav className={`navbar ${showFullNav ? 'expanded' : 'collapsed'}`}>
+      <nav className="navbar">
         {/* แถวบน */}
         <div className="navbar-row navbar-top">
           <div className="navbar-left">
+            {/* ปุ่มแฮมเบอร์เกอร์ (แสดงเฉพาะบนมือถือ/แท็บเล็ต) */}
+            <button
+              className="navbar-hamburger"
+              onClick={toggleMobileMenu}
+              aria-label="Toggle navigation menu"
+              style={{ display: window.innerWidth <= 1024 ? 'inline-flex' : 'none', marginRight: 12 }}
+            >
+              {isMobileMenuOpen ? '✕' : '☰'}
+            </button>
+
             <Link to="/" className="navbar-brand">
               {/* ใช้ SVG สำหรับโลโก้เพื่อให้ดูคมชัดและยืดหยุ่น */}
               <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -114,86 +98,53 @@ const NavbarLogin = () => {
                 <path d="M12 4a8 8 0 100 16 8 8 0 000-16zM11 8v4h4" stroke="#007bff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                 <path d="M16 16.5c-1.5-1.5-3.5-2-6-2s-4.5.5-6 2" stroke="#007bff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
-              <span>Klick Drive</span>
+              <span>เช่ารถกับแคทตี้</span>
             </Link>
-          </div>
 
-          {/* ช่องค้นหา */}
-          <div className="navbar-search search-pill" style={{ flex: 1, margin: '0 20px' }}>
-            <div className="pill-content">
-              <div className="search-icon">✨</div>
+            {/* ช่องค้นหา (Desktop) */}
+            <div className="navbar-search" style={{ display: window.innerWidth > 1024 ? 'flex' : 'none' }}>
+              <div className="navbar-search-icon">🔍</div>
               <input
-                className="pill-input navbar-search-input"
-                placeholder={displayedPlaceholder || 'ออกแบบโลโก้ร้านอาหาร...'}
+                className="navbar-search-input"
                 value={query}
                 onChange={e => setQuery(e.target.value)}
                 onKeyDown={e => e.key === 'Enter' && doSearch()}
+                placeholder={placeholder}
               />
-              <button className="pill-go" onClick={doSearch}>ค้นหา 🔍</button>
+              <button className="navbar-search-button" onClick={doSearch}>ค้นหา</button>
             </div>
           </div>
 
-          {/* โปรไฟล์ผู้ใช้ / ปุ่มเข้าสู่ระบบ / ปุ่มเมนูมือถือ */}
-          <div className="navbar-contact" style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 10 }}>
-            {/* แสดงปุ่ม Login/Profile บนเดสก์ท็อปเท่านั้น (แสดงเมื่อหน้าจอกว้างกว่า 1024px) */}
-            <div 
-              style={{ display: window.innerWidth > 1024 ? 'flex' : 'none' }}
-              className="desktop-auth-buttons" 
-            >
-              {user ? <CustomerProfile /> : <Link to="/login" className="navbar-link">เข้าสู่ระบบ 🔐</Link>}
-            </div>
-
-            {/* ปุ่มแฮมเบอร์เกอร์ (แสดงเฉพาะบนมือถือ/แท็บเล็ต) */}
-            <button
-              className="navbar-hamburger"
-              onClick={toggleMobileMenu}
-              aria-label="Toggle navigation menu"
-              // แสดงเฉพาะบนหน้าจอเล็ก (ตาม CSS media query ที่คาดไว้)
-              style={{ display: window.innerWidth <= 1024 ? 'inline-flex' : 'none' }} 
-            >
-              {isMobileMenuOpen ? '✕' : '☰'}
-            </button>
-
-          </div>
-        </div>
-
-        {/* แถวล่าง (ซ่อนด้วย CSS บนมือถือ) */}
-        <div className={`navbar-row navbar-bottom ${user?.role === 'admin' ? 'admin-row' : ''}`}>
-          <div className="navbar-links">
-            <div className="navbar-topmenu">
-              {MENU_ITEMS.map((m, mi) => (
-                <div key={mi} className="menu-item dropdown hover-dropdown">
-                  <button className="dropdown-toggle">{m.title} ▾</button>
-                  <div className="dropdown-menu multi-col">
-                    {m.subs.map((s, si) => (
-                      <Link key={si} className="dropdown-item" to={`/cars?q=${encodeURIComponent(s)}`}>
-                        {s}
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-              ))}
-
-              {user && user.role === 'admin' && (
-                <div className="menu-item dropdown hover-dropdown admin-menu">
-                  <button className="dropdown-toggle">เมนูแอดมิน ▾</button>
-                  <div className="dropdown-menu multi-col">
-                    <Link className="dropdown-item" to="/admin/cars">🚗 จัดการรถ</Link>
-                    <Link className="dropdown-item" to="/admin/bookings">📅 จัดการการจอง</Link>
-                    <Link className="dropdown-item" to="/admin/users">👤 จัดการผู้ใช้</Link>
-                  </div>
-                </div>
+          {/* เมนูลัดด้านขวา (Desktop) */}
+          <div className="navbar-contact" style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 12 }}>
+            <div className="navbar-action-group" style={{ display: window.innerWidth > 1024 ? 'flex' : 'none', gap: 12, alignItems: 'center' }}>
+              <button className="navbar-action" type="button" onClick={() => navigate('/help')}>
+                ❓ <span className="navbar-action-label">ช่วย</span>
+              </button>
+              <button className="navbar-action" type="button" onClick={() => navigate('/booking')}>
+                🚗 <span className="navbar-action-label">จัดการการจอง</span>
+              </button>
+              <button className="navbar-action" type="button">
+                🌐 <span className="navbar-action-label">EN | $</span>
+              </button>
+              <div className="navbar-divider" />
+              {user ? (
+                <CustomerProfile />
+              ) : (
+                <>
+                  <Link to="/login" className="navbar-link">
+                    👤 เข้าสู่ระบบ
+                  </Link>
+                  <span className="navbar-separator">|</span>
+                  <Link to="/register" className="navbar-link">
+                    สมัครสมาชิก
+                  </Link>
+                </>
               )}
             </div>
           </div>
-
-          {/* ปุ่มลัด */}
-          <div className="navbar-quicklinks">
-            <button className="btn-outline" onClick={() => navigate('/cars?type=car')}>เช่ารถ</button>
-            <button className="btn-outline" onClick={() => navigate('/cars?type=bike')}>เช่ามอเตอร์ไซค์</button>
-            <button className="btn-outline" onClick={() => navigate('/cars?type=special')}>ติว / บริการ</button>
-          </div>
         </div>
+
       </nav>
 
       
@@ -209,7 +160,7 @@ const NavbarLogin = () => {
           <div className="mobile-menu-top">
             <Link to="/" className="navbar-brand" onClick={closeMobileMenu}>
               <img src="/logo192.png" alt="Logo" style={{ width: 32, height: 32 }} />
-              <span>Klick Drive</span>
+              <span>เช่ารถกับแคทตี้</span>
             </Link>
             <button 
               className="navbar-hamburger" 

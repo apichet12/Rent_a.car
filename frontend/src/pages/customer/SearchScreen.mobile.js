@@ -18,10 +18,10 @@ const SearchScreenMobile = () => {
 
   // Typewriter
   const phrases = [
-    "เช่ารถรายวันง่ายๆ...",
-    "เช่ามอเตอร์ไซค์สะดวก...",
-    "ติวเรียนออนไลน์...",
-    "บริการส่งถึงที่ ฟรี!",
+    "ค้นหารถสนามบินได้ทันใจ...",
+    "เปรียบเทียบราคาเช่าง่าย ๆ...",
+    "จองรถพร้อมรับ-ส่งสนามบิน...",
+    "บริการเช่ารถแบบครบวงจร...",
   ];
   const [text, setText] = useState('');
   const [index, setIndex] = useState(0);
@@ -57,7 +57,7 @@ const SearchScreenMobile = () => {
       <div className="search-header">
         <div className="logo-name">
           <img src="/logo192.png" alt="Logo" className="logo"/>
-          <span className="site-name">Klick Drive</span>
+          <span className="site-name">เช่ารถกับแคทตี้</span>
         </div>
         <div style={{ display:'flex', gap:10 }}>
           <button className="notification-btn"><Bell size={24}/></button>
@@ -77,7 +77,7 @@ const SearchScreenMobile = () => {
           onChange={e=>setQuery(e.target.value)}
           onKeyDown={e=>e.key==='Enter'&&doSearch()}
           className="pill-input"
-          placeholder="ค้นหาฟรีแลนซ์..."
+          placeholder="สนามบิน, เมือง หรือสถานี..."
         />
       </div>
 
@@ -87,7 +87,7 @@ const SearchScreenMobile = () => {
           <div className="mobile-menu-top">
             <Link to="/" onClick={()=>setIsMenuOpen(false)}>
               <img src="/logo192.png" alt="Logo" style={{width:32,height:32}}/>
-              <span>Klick Drive</span>
+              <span>เช่ารถกับแคทตี้</span>
             </Link>
             <button onClick={()=>setIsMenuOpen(false)}>✕</button>
           </div>

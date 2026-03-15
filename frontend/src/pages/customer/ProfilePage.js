@@ -16,7 +16,7 @@ const formatThaiDate = (dateString) => {
 const ProfilePage = () => {
   const { user, setUser } = useContext(AuthContext);
 
-  const username = user?.username || 'Klick Drive Member';
+  const username = user?.username || 'สมาชิกเช่ารถกับแคทตี้';
 
   // โหลด user จาก server
   useEffect(() => {
@@ -86,7 +86,7 @@ const ProfilePage = () => {
           <div>
             <h4>เกี่ยวกับ</h4>
             <ul>
-              <li>เกี่ยวกับ Klick Drive</li>
+              <li>เกี่ยวกับ เช่ารถกับแคทตี้</li>
               <li>ร่วมงานกับเรา</li>
               <li>
                 <Link to="/terms">ข้อกำหนดและเงื่อนไข</Link>
@@ -95,7 +95,7 @@ const ProfilePage = () => {
           </div>
           <div>
             <h4>ช่องทางติดต่อ</h4>
-            <p>โทร 02-038-5222 • Line: @drivehub • Email: contact@drivehub.com</p>
+            <p>โทร 02-038-5222 • Line: @kattycar • Email: contact@kattycar.com</p>
           </div>
           <div>
             <h4>ดาวน์โหลดแอพ</h4>
@@ -111,7 +111,7 @@ const ProfilePage = () => {
           </div>
         </div>
         <div className="footer-bottom">
-          © {new Date().getFullYear()} Klick Drive — All rights reserved
+          © {new Date().getFullYear()} เช่ารถกับแคทตี้ — All rights reserved
           <div>
             <Link to="/privacy">นโยบายความเป็นส่วนตัว</Link>
             <Link to="/terms">ข้อกำหนดการให้บริการ</Link>

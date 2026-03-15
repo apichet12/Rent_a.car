@@ -55,22 +55,6 @@ function CertificateCard({ cert }) {
   );
 }
 
-/* ---------------- AUTOPLAY VIDEO ---------------- */
-const AutoPlayVideo = ({ src, poster, className }) => {
-  const videoRef = useRef();
-  useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return;
-    const observer = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) video.play().catch(() => {});
-      else video.pause();
-    });
-    observer.observe(video);
-    return () => observer.disconnect();
-  }, []);
-  return <video ref={videoRef} src={src} poster={poster} muted loop playsInline className={className} />;
-};
-
 /* ---------------- FEATURED CARS ---------------- */
 const FeaturedCars = ({ searchQuery, layout = "grid" }) => {
   const [cars, setCars] = useState([]);
@@ -165,10 +149,10 @@ const HomeMobile = () => {
   const [typeText, setTypeText] = useState("");
   const [loading] = useState(false);
   const typePhrasesRef = useRef([
-    "ไอเดียโลโก้ร้านอาหารที่ดีที่สุด...",
-    "เปรียบเทียบราคาการเช่า SUV 7 ที่นั่ง...",
-    "ติวคณิตศาสตร์สำหรับนักเรียนมัธยม...",
-    "ค้นหาบริการเช่ามอเตอร์ไซค์...",
+    "ค้นหารถสนามบินได้ทันใจ...",
+    "เปรียบเทียบราคาเช่ารถ 7 ที่นั่ง...",
+    "จองรถพร้อมรับ-ส่งสนามบิน...",
+    "เช่ารถระยะยาวคุ้มที่สุด...",
   ]);
 
   const navigate = useNavigate();
@@ -212,7 +196,7 @@ const HomeMobile = () => {
       <div className="hero-search-pill">
         <input
           type="text"
-          placeholder={typeText || "ออกแบบโลโก้ร้านอาหารสไตล์..."}
+          placeholder={typeText || "สนามบิน, เมือง หรือสถานี..."}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
@@ -221,10 +205,10 @@ const HomeMobile = () => {
 
       {/* HERO */}
       <section className="hero-outer" style={{ padding: "0 12px", marginTop: 8 }}>
-        <h1 className="hero-title">Klick Drive — เช่ารถ ง่ายและปลอดภัย</h1>
-        <p className="hero-subtitle">รถใหม่ สะอาด พร้อมบริการครบวงจร — จองง่าย สะดวกทั้งมือถือ</p>
+        <h1 className="hero-title">เช่ารถกับแคทตี้ — บริการจัดหารถเช่า ค้นหา เปรียบเทียบ ประหยัด</h1>
+        <p className="hero-subtitle">รวบรวมข้อเสนอรถเช่าจากหลายแหล่ง พร้อมบริการรับ-ส่งสนามบินและเช่าระยะยาว</p>
 
-        <AutoPlayVideo src="https://www.w3schools.com/html/mov_bbb.mp4" poster={heroImages[0]} className="hero-video" />
+        <img src={heroImages[0]} alt="hero" className="hero-video" style={{ width: '100%', borderRadius: 12, objectFit: 'cover' }} />
       </section>
 
       {/* Featured Cars */}
