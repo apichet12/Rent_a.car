@@ -16,6 +16,17 @@ const Booking = () => {
   });
   const [acceptTerms, setAcceptTerms] = useState(false);
 
+  // สถานะการจ่ายเงินด้วยบัตรเครดิต
+  const [showPayment, setShowPayment] = useState(false);
+  const [paymentInfo, setPaymentInfo] = useState({
+    cardName: '',
+    cardNumber: '',
+    expiry: '',
+    cvc: ''
+  });
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [pendingBooking, setPendingBooking] = useState(null);
+
   const pickup = form.pickupDate ? new Date(form.pickupDate) : null;
   const dropoff = form.dropoffDate ? new Date(form.dropoffDate) : null;
   const durationDays =
@@ -29,6 +40,7 @@ const Booking = () => {
   }, [preCar]);
 
   const handleChange = e => setForm({ ...form, [e.target.name]: e.target.value });
+  const handlePaymentChange = e => setPaymentInfo({ ...paymentInfo, [e.target.name]: e.target.value });
 
   const handleSubmit = e => {
     e.preventDefault();
@@ -36,19 +48,35 @@ const Booking = () => {
     if (!form.pickupDate || !form.dropoffDate || durationDays <= 0)
       return alert('กรุณาเลือกช่วงวันรับและวันคืนรถให้ถูกต้อง');
 
-    try {
-      const bookingData = {
-        ...form,
-        carId: preCar?.id || null,
-        duration: `${form.pickupDate} ถึง ${form.dropoffDate} (${durationDays} วัน)`,
-        total: totalPrice,
-        createdAt: new Date().toISOString()
-      };
-      delete bookingData.pickupDate;
-      delete bookingData.dropoffDate;
+    const bookingData = {
+      ...form,
+      carId: preCar?.id || null,
+      duration: `${form.pickupDate} ถึง ${form.dropoffDate} (${durationDays} วัน)`,
+      total: totalPrice,
+      createdAt: new Date().toISOString()
+    };
+    delete bookingData.pickupDate;
+    delete bookingData.dropoffDate;
 
+    // เก็บข้อมูลไว้ก่อน แล้วไปหน้าจ่ายบัตรเครดิต
+    setPendingBooking(bookingData);
+    setShowPayment(true);
+  };
+
+  const completeBooking = () => {
+    if (!pendingBooking) return;
+
+    try {
       const bookings = JSON.parse(localStorage.getItem('bookings') || '[]');
-      bookings.push(bookingData);
+      const bookingToSave = {
+        ...pendingBooking,
+        payment: {
+          method: 'บัตรเครดิต',
+          cardLast4: paymentInfo.cardNumber.slice(-4)
+        }
+      };
+
+      bookings.push(bookingToSave);
       localStorage.setItem('bookings', JSON.stringify(bookings));
 
       if (preCar?.id) {
@@ -57,12 +85,28 @@ const Booking = () => {
         localStorage.setItem('cars_availability', JSON.stringify(map));
       }
 
-      alert('✅ จองรถสำเร็จ!');
+      alert('✅ ชำระเงินเรียบร้อยและจองรถสำเร็จ!');
       navigate('/carlist');
     } catch (err) {
       console.error('Booking failed:', err);
       alert('⚠️ เกิดข้อผิดพลาดในการบันทึกข้อมูล');
     }
+  };
+
+  const handlePaymentSubmit = e => {
+    e.preventDefault();
+    if (isProcessing) return;
+
+    if (!paymentInfo.cardName || !paymentInfo.cardNumber || !paymentInfo.expiry || !paymentInfo.cvc) {
+      return alert('กรุณากรอกข้อมูลบัตรเครดิตให้ครบถ้วน');
+    }
+
+    setIsProcessing(true);
+    setTimeout(() => {
+      setIsProcessing(false);
+      setShowPayment(false);
+      completeBooking();
+    }, 1400);
   };
 
   return (
@@ -111,8 +155,12 @@ const Booking = () => {
             ฉันยอมรับข้อกำหนดและเงื่อนไข
           </label>
 
-          <button type="submit" className={`submit-btn ${acceptTerms ? '' : 'disabled'}`} disabled={!acceptTerms}>
-            💸 ยืนยันการจองและชำระเงิน
+          <button
+            type="submit"
+            className={`submit-btn ${acceptTerms ? '' : 'disabled'}`}
+            disabled={!acceptTerms || showPayment}
+          >
+            {showPayment ? 'กำลังรอการชำระเงิน...' : '💸 ยืนยันการจองและชำระเงิน'}
           </button>
         </form>
 
@@ -132,6 +180,72 @@ const Booking = () => {
           </div>
         )}
       </div>
+
+      {showPayment && (
+        <div className="payment-overlay">
+          <div className="payment-modal">
+            <h3>💳 ชำระเงินด้วยบัตรเครดิต</h3>
+            <p>ยอดชำระ: <strong>{totalPrice.toLocaleString()} ฿</strong></p>
+
+            <form className="payment-form" onSubmit={handlePaymentSubmit}>
+              <div className="payment-row">
+                <label>ชื่อบนบัตร</label>
+                <input
+                  name="cardName"
+                  value={paymentInfo.cardName}
+                  onChange={handlePaymentChange}
+                  placeholder="ชื่อ-นามสกุล"
+                  required
+                />
+              </div>
+              <div className="payment-row">
+                <label>หมายเลขบัตร</label>
+                <input
+                  name="cardNumber"
+                  value={paymentInfo.cardNumber}
+                  onChange={handlePaymentChange}
+                  placeholder="1234 5678 9012 3456"
+                  maxLength={19}
+                  required
+                />
+              </div>
+              <div className="payment-row payment-grid">
+                <div>
+                  <label>วันหมดอายุ (MM/YY)</label>
+                  <input
+                    name="expiry"
+                    value={paymentInfo.expiry}
+                    onChange={handlePaymentChange}
+                    placeholder="MM/YY"
+                    maxLength={5}
+                    required
+                  />
+                </div>
+                <div>
+                  <label>CVC</label>
+                  <input
+                    name="cvc"
+                    value={paymentInfo.cvc}
+                    onChange={handlePaymentChange}
+                    placeholder="123"
+                    maxLength={4}
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="payment-actions">
+                <button type="button" className="payment-cancel" onClick={() => setShowPayment(false)} disabled={isProcessing}>
+                  ยกเลิก
+                </button>
+                <button type="submit" className="payment-confirm" disabled={isProcessing}>
+                  {isProcessing ? 'กำลังชำระเงิน...' : 'ชำระเงินและยืนยัน'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

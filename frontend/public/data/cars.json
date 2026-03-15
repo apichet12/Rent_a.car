@@ -7,7 +7,8 @@
     "fuel":"เบนซิน",
     "image":"/images/toyota.jpg",
     "desc":"รถสวย นั่งสบาย",
-    "features":["แอร์","ABS"]
+    "features":["แอร์","ABS"],
+    "popular": true
   },
   {
     "id": 2,
@@ -27,6 +28,66 @@
     "fuel": "ไฟฟ้า",
     "image": "/images/tesla.jpg",
     "desc": "รถไฟฟ้า ทันสมัย",
-    "features": ["Autopilot", "Touchscreen"]
-  }
+    "features": ["Autopilot", "Touchscreen"],
+    "popular": true
+  },
+  {
+    "id": 4,
+    "name": "Ford Ranger",
+    "price": 1800,
+    "seats": 5,
+    "fuel": "ดีเซล",
+    "image": "/images/ranger.jpg",
+    "desc": "กระบะสมรรถนะสูง เดินทางไกลสบาย",
+    "features": ["4WD", "LED Lights"]
+  },
+  {
+    "id": 5,
+    "name": "Mitsubishi Pajero",
+    "price": 2200,
+    "seats": 7,
+    "fuel": "ดีเซล",
+    "image": "/images/pajero.jpg",
+    "desc": "SUV ครอบครัว วางใจได้",
+    "features": ["Cruise Control", "Panoramic Roof"]
+  },
+  {
+    "id": 6,
+    "name": "Honda Jazz",
+    "price": 850,
+    "seats": 5,
+    "fuel": "เบนซิน",
+    "image": "/images/honda_jazz.jpg",
+    "desc": "เอนกประสงค์ ประหยัดน้ำมัน",
+    "features": ["Bluetooth", "Rear Camera"]
+  },
+  {
+    "id": 7,
+    "name": "BMW X5",
+    "price": 3200,
+    "seats": 5,
+    "fuel": "เบนซิน",
+    "image": "/images/bmw_x5.jpg",
+    "desc": "SUV หรูพรีเมียมสำหรับทุกการเดินทาง",
+    "features": ["Leather Seats", "Premium sound"]
+  },
+  {
+    "id": 8,
+    "name": "Mini Cooper",
+    "price": 1250,
+    "seats": 4,
+    "fuel": "เบนซิน",
+    "image": "/images/mini_cooper.jpg",
+    "desc": "ขับสนุก เคลื่อนตัวคล่องตัวในเมือง",
+    "features": ["Navigation", "Sport Mode"]
+  },
+  {
+    "id": 9,
+    "name": "Toyota Alphard",
+    "price": 4200,
+    "seats": 7,
+    "fuel": "เบนซิน",
+    "image": "/images/alphard.jpg",
+    "desc": "รถตู้หรูสำหรับครอบครัวหรือทีมงาน",
+    "features": ["Premium Seating", "Privacy Glass"]  }
 ]

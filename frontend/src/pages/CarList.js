@@ -18,6 +18,7 @@ const CarList = () => {
   const [onlyAvailable, setOnlyAvailable] = useState(false);
   const [sortBy, setSortBy] = useState('recommended');
   const [vehicleType, setVehicleType] = useState('all'); // all | car | bike | special
+  const [visibleCount, setVisibleCount] = useState(8);
 
   // โหลดข้อมูลรถ
   useEffect(() => {
@@ -70,10 +71,18 @@ const CarList = () => {
     return list;
   }, [cars, q, minPrice, maxPrice, seatsFilter, fuelFilter, onlyAvailable, sortBy, vehicleType]);
 
+  const visibleCars = filteredCars.slice(0, visibleCount);
+  const canLoadMore = filteredCars.length > visibleCount;
+
+  useEffect(() => {
+    setVisibleCount(8);
+  }, [filteredCars.length]);
+
   return (
     <div className="carlist-page">
       <div className="carlist-hero">
         <h2 style={{ fontSize: '2rem', fontWeight: 700 }}>เลือกรถ / Select Car</h2>
+        <p style={{ marginTop: 6, color: '#475569' }}>ดูรถมากขึ้น เลือกตามสไตล์ ทั้งราคาถูกสุด ไปจนถึงรุ่นพรีเมียม</p>
       </div>
 
       <div className="carlist-wrap">
@@ -148,41 +157,49 @@ const CarList = () => {
           </div>
 
           <div className="car-grid">
-            {filteredCars.map(car => (
+            {visibleCars.map(car => (
               <div key={car.id} className="car-card">
-                <img src={car.image} alt={car.name} onClick={() => setSelected(car)} />
-                <div style={{ padding: '12px' }}>
+                <div className="thumb">
+                  <img src={car.image} alt={car.name} onClick={() => setSelected(car)} />
+                  {car.popular && <span className="badge-hot">ฮอตฮิต</span>}
+                </div>
+                <div className="body">
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <h4 style={{ margin: 0 }}>{car.name}</h4>
                     <button
-                      className="fav-btn"
+                      className={`fav-btn ${favorites[car.id] ? 'active' : ''}`}
                       onClick={() => toggleFavorite(car.id)}
                       title={favorites[car.id] ? 'นำออกจากรายการโปรด' : 'เพิ่มในรายการโปรด'}
                     >
                       {favorites[car.id] ? '❤️' : '🤍'}
                     </button>
                   </div>
-                  <p style={{ color: '#555', fontSize: 14, minHeight: 36 }}>{car.desc}</p>
-                  <div style={{ fontWeight: 600 }}>{car.price.toLocaleString()} บาท/วัน</div>
-                  <div style={{ marginTop: 6 }}>
-                    {car.available ? (
-                      <span className="badge-available">ว่าง</span>
-                    ) : (
-                      <span className="badge-unavailable">ไม่ว่าง</span>
-                    )}
+                  <p className="desc">{car.desc}</p>
+                  <div className="specs">
+                    {car.seats} ที่นั่ง • {car.fuel}
                   </div>
-                  <button
-                    onClick={() => navigate('/booking', { state: { car } })}
-                    className="btn-primary"
-                    style={{ marginTop: 10, width: '100%' }}
-                    disabled={!car.available}
-                  >
-                    จองรถ
-                  </button>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 8 }}>
+                    <div className="price">{car.price.toLocaleString()} ฿</div>
+                    <button
+                      onClick={() => navigate('/booking', { state: { car } })}
+                      className="btn-primary"
+                      disabled={!car.available}
+                      style={{ minWidth: 120 }}
+                    >
+                      จองรถ
+                    </button>
+                  </div>
                 </div>
               </div>
             ))}
           </div>
+          {canLoadMore && (
+            <div style={{ textAlign: 'center', marginTop: 18 }}>
+              <button className="btn-outline" onClick={() => setVisibleCount((p) => p + 8)}>
+                ดูรถเพิ่มเติม ({filteredCars.length - visibleCount} คัน)
+              </button>
+            </div>
+          )}
         </main>
       </div>
 

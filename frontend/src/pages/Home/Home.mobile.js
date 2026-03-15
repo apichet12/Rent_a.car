@@ -205,7 +205,7 @@ const HomeMobile = () => {
 
       {/* HERO */}
       <section className="hero-outer" style={{ padding: "0 12px", marginTop: 8 }}>
-        <h1 className="hero-title">เช่ารถกับแคทตี้ — บริการจัดหารถเช่า ค้นหา เปรียบเทียบ ประหยัด</h1>
+        <h1 className="hero-title">Rent a car with Katty — บริการจัดหารถเช่า ค้นหา เปรียบเทียบ ประหยัด</h1>
         <p className="hero-subtitle">รวบรวมข้อเสนอรถเช่าจากหลายแหล่ง พร้อมบริการรับ-ส่งสนามบินและเช่าระยะยาว</p>
 
         <img src={heroImages[0]} alt="hero" className="hero-video" style={{ width: '100%', borderRadius: 12, objectFit: 'cover' }} />

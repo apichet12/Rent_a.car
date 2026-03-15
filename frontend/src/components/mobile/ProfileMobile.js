@@ -14,7 +14,7 @@ export default function ProfileMobile() {
   const { user, setUser } = useContext(AuthContext);
   const isMobile = useIsMobile();
 
-  const username = user?.username || "สมาชิกเช่ารถกับแคทตี้";
+  const username = user?.username || "สมาชิก Rent a car with Katty";
 
   // โหลด user จาก server
   useEffect(() => {
@@ -63,7 +63,7 @@ export default function ProfileMobile() {
 
       {/* Footer */}
       <footer style={{ marginTop: 28, padding: "16px", fontSize: 12, color: "#64748b", textAlign: "center" }}>
-        © {new Date().getFullYear()} เช่ารถกับแคทตี้
+        © {new Date().getFullYear()} Rent a car with Katty
       </footer>
 
       {/* Mobile Navigation */}

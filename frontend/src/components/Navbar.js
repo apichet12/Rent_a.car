@@ -98,7 +98,7 @@ const NavbarLogin = () => {
                 <path d="M12 4a8 8 0 100 16 8 8 0 000-16zM11 8v4h4" stroke="#007bff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                 <path d="M16 16.5c-1.5-1.5-3.5-2-6-2s-4.5.5-6 2" stroke="#007bff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
-              <span>เช่ารถกับแคทตี้</span>
+              <span>Rent a car with Katty</span>
             </Link>
 
             {/* ช่องค้นหา (Desktop) */}
@@ -160,7 +160,7 @@ const NavbarLogin = () => {
           <div className="mobile-menu-top">
             <Link to="/" className="navbar-brand" onClick={closeMobileMenu}>
               <img src="/logo192.png" alt="Logo" style={{ width: 32, height: 32 }} />
-              <span>เช่ารถกับแคทตี้</span>
+              <span>Rent a car with Katty</span>
             </Link>
             <button 
               className="navbar-hamburger" 

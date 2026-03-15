@@ -8,6 +8,7 @@ const cors = require('cors');
 const { Pool } = require('pg');
 const bcrypt = require('bcrypt');
 const crypto = require('crypto');
+const fetch = require('node-fetch');
 
 const app = express();
 app.use(cors());
@@ -125,6 +126,59 @@ app.get('/api/cars', async (req, res) => {
     res.json(cars);
   } catch (err) {
     console.error('GET /api/cars error:', err.message || err);
+    res.status(500).json({ success: false, message: 'Server error', error: err.message });
+  }
+});
+
+// --- Chat (OpenAI GPT-like) ---
+app.post('/api/chat', async (req, res) => {
+  try {
+    const { message, history } = req.body || {};
+    if (!message || typeof message !== 'string') {
+      return res.status(400).json({ success: false, message: 'Message is required' });
+    }
+
+    const apiKey = process.env.OPENAI_API_KEY;
+    if (!apiKey) {
+      return res.status(500).json({ success: false, message: 'OpenAI API key not configured' });
+    }
+
+    const systemPrompt = `You are an AI customer service assistant for a car rental service called Rent a car with Katty. Answer questions clearly and help the user with booking, pricing, availability, and general support.`;
+
+    const messages = [
+      { role: 'system', content: systemPrompt },
+      ...(Array.isArray(history) ? history : []).map((item) => ({
+        role: item.from === 'user' ? 'user' : 'assistant',
+        content: item.text,
+      })),
+      { role: 'user', content: message },
+    ];
+
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({
+        model: 'gpt-3.5-turbo',
+        messages,
+        max_tokens: 300,
+        temperature: 0.7,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorBody = await response.text();
+      console.error('OpenAI error:', response.status, errorBody);
+      return res.status(500).json({ success: false, message: 'OpenAI API error', error: errorBody });
+    }
+
+    const data = await response.json();
+    const reply = data?.choices?.[0]?.message?.content || 'ขอโทษครับ ผมยังไม่เข้าใจคำถามลองถามใหม่อีกครั้งได้ไหมครับ';
+    res.json({ success: true, reply });
+  } catch (err) {
+    console.error('POST /api/chat error:', err.message || err);
     res.status(500).json({ success: false, message: 'Server error', error: err.message });
   }
 });

@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-route
 import Navbar from './components/Navbar';
 import { useIsMobile } from './hooks/useIsMobile';
 import MobileNav from './components/mobile/MobileNav';
+import Footer from './components/Footer';
 
 // Pages - Desktop
 import Home from './pages/Home';
@@ -117,6 +118,9 @@ const AppContent = () => {
         <Route path="/tuition" element={<Tuition />} />
         <Route path="/account-settings" element={<AccountSettingsPage />} />
       </Routes>
+
+      {/* Footer */}
+      <Footer />
 
       {/* Mobile Bottom Navigation */}
       {isMobile && <MobileNav />}

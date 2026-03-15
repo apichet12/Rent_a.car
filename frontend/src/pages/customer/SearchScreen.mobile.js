@@ -57,7 +57,7 @@ const SearchScreenMobile = () => {
       <div className="search-header">
         <div className="logo-name">
           <img src="/logo192.png" alt="Logo" className="logo"/>
-          <span className="site-name">เช่ารถกับแคทตี้</span>
+          <span className="site-name">Rent a car with Katty</span>
         </div>
         <div style={{ display:'flex', gap:10 }}>
           <button className="notification-btn"><Bell size={24}/></button>
@@ -87,7 +87,7 @@ const SearchScreenMobile = () => {
           <div className="mobile-menu-top">
             <Link to="/" onClick={()=>setIsMenuOpen(false)}>
               <img src="/logo192.png" alt="Logo" style={{width:32,height:32}}/>
-              <span>เช่ารถกับแคทตี้</span>
+              <span>Rent a car with Katty</span>
             </Link>
             <button onClick={()=>setIsMenuOpen(false)}>✕</button>
           </div>

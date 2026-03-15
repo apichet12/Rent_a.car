@@ -4,6 +4,7 @@ import { AuthContext } from '../../contexts/AuthContext';
 import { Link } from 'react-router-dom';
 import NavbarLogin from '../../components/Navbar';
 import ScrollToTopButton from '../../components/ScrollToTopButton';
+import Footer from '../../components/Footer';
 import './ProfilePage.css';
 
 // แปลงวันที่เป็นไทย (แก้ปัญหา TimeZone)
@@ -16,7 +17,7 @@ const formatThaiDate = (dateString) => {
 const ProfilePage = () => {
   const { user, setUser } = useContext(AuthContext);
 
-  const username = user?.username || 'สมาชิกเช่ารถกับแคทตี้';
+  const username = user?.username || 'สมาชิก Rent a car with Katty';
 
   // โหลด user จาก server
   useEffect(() => {
@@ -73,51 +74,7 @@ const ProfilePage = () => {
         </div>
       </div>
 
-      <footer className="footer">
-        <div className="footer-content">
-          <div>
-            <h4>บริการลูกค้า</h4>
-            <ul>
-              <li>การรับประกันบริการ</li>
-              <li>ข้อมูลเพิ่มเติม</li>
-              <li>ติดต่อเรา</li>
-            </ul>
-          </div>
-          <div>
-            <h4>เกี่ยวกับ</h4>
-            <ul>
-              <li>เกี่ยวกับ เช่ารถกับแคทตี้</li>
-              <li>ร่วมงานกับเรา</li>
-              <li>
-                <Link to="/terms">ข้อกำหนดและเงื่อนไข</Link>
-              </li>
-            </ul>
-          </div>
-          <div>
-            <h4>ช่องทางติดต่อ</h4>
-            <p>โทร 02-038-5222 • Line: @kattycar • Email: contact@kattycar.com</p>
-          </div>
-          <div>
-            <h4>ดาวน์โหลดแอพ</h4>
-            <p>เช่ารถสะดวกยิ่งขึ้นด้วยมือถือ</p>
-            <div className="app-buttons">
-              <a href="https://www.apple.com/app-store/" target="_blank" rel="noopener noreferrer" className="app-btn apple">
-                <img src="/images/apple-logo.png" alt="App Store" /> App Store
-              </a>
-              <a href="https://play.google.com/store" target="_blank" rel="noopener noreferrer" className="app-btn google">
-                <img src="/images/google-play-logo.png" alt="Google Play" /> Google Play
-              </a>
-            </div>
-          </div>
-        </div>
-        <div className="footer-bottom">
-          © {new Date().getFullYear()} เช่ารถกับแคทตี้ — All rights reserved
-          <div>
-            <Link to="/privacy">นโยบายความเป็นส่วนตัว</Link>
-            <Link to="/terms">ข้อกำหนดการให้บริการ</Link>
-          </div>
-        </div>
-      </footer>
+      <Footer />
 
       <ScrollToTopButton />
     </div>
